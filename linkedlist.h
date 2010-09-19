@@ -29,7 +29,7 @@ typedef struct ll_iter {
 
 
 /*
- * Initializes a new linked list.
+ * Initializes a new linked list with no nodes.
  * Returns: a pointer to the initialized list.
  */
 extern linkedlist_t* ll_init();
@@ -45,6 +45,13 @@ extern void ll_deinit(linkedlist_t *list);
  * Appends a new node with the given value at the end of the list.
  */
 extern void ll_append(linkedlist_t *list, value_t *value);
+
+/*
+ * Inserts a new node with the given value at the given index in the list.
+ * If the index is greater than the length of the list, the node is appended
+ * at the tail of the list.
+ */
+extern void ll_insert(linkedlist_t *list, value_t *value, size_t index);
 
 /*
  * Returns a pointer to the first list node containing the given value,

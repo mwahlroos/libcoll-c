@@ -42,6 +42,29 @@ extern void ll_append(linkedlist_t *list, value_t *value)
     }
 }
 
+extern void ll_insert(linkedlist_t *list, value_t *value, size_t index)
+{
+    if (index >= list->length) {
+        ll_append(list, value);
+    } else {
+        ll_node_t *new_node = (ll_node_t*) malloc(sizeof(ll_node_t));
+        
+        ll_node_t *insert_before = list->head;
+        size_t counter = 0;
+        while (counter < index) {
+            insert_before = insert_before->next;
+            counter++;
+        }
+        if (insert_before->previous != NULL) {
+            insert_before->previous->next = new_node;
+        }
+        new_node->previous = insert_before->previous;
+        new_node->next = insert_before;
+        
+        insert_before->previous = new_node;
+    }
+}
+
 extern value_t* ll_get(linkedlist_t *list, value_t *value)
 {
     /* FIXME: stub */
@@ -73,6 +96,7 @@ extern ll_iter_t* ll_get_iter_at(linkedlist_t *list, size_t index)
         size_t counter = 0;
         while (counter < index) {
             ll_next(iter);
+            counter++;
         }
     }
     return iter;

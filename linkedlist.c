@@ -22,7 +22,6 @@ extern void ll_deinit(linkedlist_t *list)
         free(node);
         node = next;
     }
-    free(list->iter);
     free(list);
 }
 
@@ -58,31 +57,30 @@ extern value_t* ll_remove(linkedlist_t *list, value_t *value)
 
 extern ll_iter_t* ll_get_iter(linkedlist_t *list)
 {
-    if (list->iter == NULL) {
-        list->iter = (ll_iter_t*) malloc(sizeof(ll_iter_t));
-        list->iter->next = list->head;
-        list->iter->previous = NULL;
-        list->iter->dirty = 0;
-    }
-    return list->iter;
+    ll_iter_t *iter = (ll_iter_t*) malloc(sizeof(ll_iter_t));
+    iter->next = list->head;
+    iter->previous = NULL;
+
+    return iter;
 }
 
 extern ll_iter_t* ll_get_iter_at(linkedlist_t *list, size_t index)
 {
-    /*
     ll_iter_t *iter = ll_get_iter(list);
     if (index >= list->length) {
         index = list->length - 1;
     } else {
         size_t counter = 0;
-        while (counter < index)
+        while (counter < index) {
+            ll_next(iter);
+        }
     }
-    iter->next = list->head;
-    
     return iter;
-    */
-    /* FIXME: stub */
-    return NULL;
+}
+
+extern void ll_drop_iter(ll_iter_t *iter)
+{
+    free(iter);
 }
 
 extern ll_node_t* ll_next(ll_iter_t *iter)

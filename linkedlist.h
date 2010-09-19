@@ -15,18 +15,18 @@ typedef struct ll_node {
     value_t *value;
 } ll_node_t;
 
-typedef struct ll_iter {
-    ll_node_t *next;
-    ll_node_t *previous;
-    char dirty;
-} ll_iter_t;
-
 typedef struct linkedlist {
     size_t length;
     ll_node_t *head;
     ll_node_t *tail;
-    ll_iter_t *iter;
 } linkedlist_t;
+
+typedef struct ll_iter {
+    ll_node_t *next;
+    ll_node_t *previous;
+    linkedlist_t *list;
+} ll_iter_t;
+
 
 /*
  * Initializes a new linked list.
@@ -59,21 +59,31 @@ extern value_t* ll_get(linkedlist_t *list, value_t *value);
 extern value_t* ll_remove(linkedlist_t *list, value_t *value);
 
 /*
- * Returns the iterator for the given list. Each list is currently limited to
- * a single iterator, so if one has already been initialized, a pointer to the
- * existing one is given. If not, a new iterator pointing in front of the head
- * of the list is initialized and returned.
+ * Initializes a new iterator for the given list. The new iterator will point
+ * in front of the head of the list.
+ * 
+ * Remember to call ll_drop_iter on the iterator to free the memory used by
+ * it when you don't need the iterator anymore.
+ *
+ * Returns: a pointer to the new iterator
  */
 extern ll_iter_t* ll_get_iter(linkedlist_t *list);
 
 /*
- * Returns the iterator for the given list, set to point in front of the node
- * with the given index. If index >= the length of the list, the iterator will
- * point after the last node on the list.
+ * Initializes a new iterator for the given list, set to point in front of
+ * the node with the given index. If index >= the length of the list,
+ * the iterator will point after the last node on the list.
+ *
+ * Remember to call ll_drop_iter on the iterator to free the memory used by
+ * it when you don't need the iterator anymore.
+ *
+ * Returns: a pointer to the new iterator
  */
 extern ll_iter_t* ll_get_iter_at(linkedlist_t *list, size_t index);
 
-
+/*
+ * Deletes the iterator and frees the memory used by it.
+ */
 extern void ll_drop_iter(ll_iter_t *iter);
 
 /*

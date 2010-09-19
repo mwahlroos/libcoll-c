@@ -62,6 +62,11 @@ extern void ll_insert(linkedlist_t *list, value_t *value, size_t index)
         new_node->next = insert_before;
         
         insert_before->previous = new_node;
+        
+        list->length++;
+        if (index == 0) {
+            list->head = new_node;
+        }
     }
 }
 

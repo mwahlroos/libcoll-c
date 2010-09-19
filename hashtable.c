@@ -17,7 +17,7 @@ extern void ht_deinit(hashtable_t *ht)
     free(ht);
 }
 
-extern int ht_add(hashtable_t *ht, ht_key_t *key, value_t *value)
+extern int ht_add(hashtable_t *ht, ht_key_t *key, node_value_t *value)
 {
     /* FIXME: stub */
     
@@ -26,13 +26,13 @@ extern int ht_add(hashtable_t *ht, ht_key_t *key, value_t *value)
     return 0;
 }
 
-extern value_t* ht_get(hashtable_t *ht, ht_key_t *key)
+extern node_value_t* ht_get(hashtable_t *ht, ht_key_t *key)
 {
     /* FIXME: stub */
     return NULL;
 }
 
-extern value_t* ht_remove(hashtable_t *ht, ht_key_t *key)
+extern node_value_t* ht_remove(hashtable_t *ht, ht_key_t *key)
 {
     /* FIXME: stub */
     return NULL;

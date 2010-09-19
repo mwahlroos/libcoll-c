@@ -3,7 +3,7 @@
  */
 
 #include <stdlib.h>
-#include "value.h"
+#include "node.h"
 
 #ifndef LINKEDLIST_H
 #define LINKEDLIST_H
@@ -12,13 +12,14 @@
 typedef struct ll_node {
     struct ll_node *next;
     struct ll_node *previous;
-    value_t *value;
+    node_value_t *value;
 } ll_node_t;
 
 typedef struct linkedlist {
     size_t length;
     ll_node_t *head;
     ll_node_t *tail;
+    int (*compare_function)(node_value_t *v1, node_value_t *v2);
 } linkedlist_t;
 
 typedef struct ll_iter {
@@ -30,9 +31,15 @@ typedef struct ll_iter {
 
 /*
  * Initializes a new linked list with no nodes.
+ *
+ * The given compare function will be used for determining the equality of node
+ * values when finding nodes by value. The function must return 0 for equal and
+ * non-zero for nonequal values. If the argument is NULL, the equality will be
+ * based on comparing memory addresses.
+ *
  * Returns: a pointer to the initialized list.
  */
-extern linkedlist_t* ll_init();
+extern linkedlist_t* ll_init(int (*compare_function)(node_value_t *v1, node_value_t *v2));
 
 /*
  * Deinitializes a linked list, freeing the resources used by it. Note that this
@@ -44,26 +51,26 @@ extern void ll_deinit(linkedlist_t *list);
 /*
  * Appends a new node with the given value at the end of the list.
  */
-extern void ll_append(linkedlist_t *list, value_t *value);
+extern void ll_append(linkedlist_t *list, node_value_t *value);
 
 /*
  * Inserts a new node with the given value at the given index in the list.
  * If the index is greater than the length of the list, the node is appended
  * at the tail of the list.
  */
-extern void ll_insert(linkedlist_t *list, value_t *value, size_t index);
+extern void ll_insert(linkedlist_t *list, node_value_t *value, size_t index);
 
 /*
  * Returns a pointer to the first list node containing the given value,
  * or NULL if no such node exists.
  */
-extern value_t* ll_get(linkedlist_t *list, value_t *value);
+extern node_value_t* ll_get(linkedlist_t *list, node_value_t *value);
 
 /*
  * Removes the first list node containing the given value if such a node exists.
  * Returns: the value contained by the removed node, or NULL if none
  */
-extern value_t* ll_remove(linkedlist_t *list, value_t *value);
+extern node_value_t* ll_remove(linkedlist_t *list, node_value_t *value);
 
 /*
  * Initializes a new iterator for the given list. The new iterator will point

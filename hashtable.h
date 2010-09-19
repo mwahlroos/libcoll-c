@@ -3,7 +3,7 @@
  */
 
 #include <stdlib.h>
-#include "value.h"
+#include "node.h"
 
 #ifndef HASHTABLE_H
 #define HASHTABLE_H
@@ -29,10 +29,10 @@ extern hashtable_t* ht_init(size_t init_capacity, unsigned int (*hash_function)(
 
 extern void ht_deinit(hashtable_t *ht);
 
-extern int ht_add(hashtable_t *ht, ht_key_t *key, value_t *value);
+extern int ht_add(hashtable_t *ht, ht_key_t *key, node_value_t *value);
 
-extern value_t* ht_get(hashtable_t *ht, ht_key_t *key);
+extern node_value_t* ht_get(hashtable_t *ht, ht_key_t *key);
 
-extern value_t* ht_remove(hashtable_t *ht, ht_key_t *key);
+extern node_value_t* ht_remove(hashtable_t *ht, ht_key_t *key);
 
 extern size_t ht_get_capacity(hashtable_t *ht);

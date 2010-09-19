@@ -5,11 +5,16 @@
 #include <stdlib.h>
 #include "linkedlist.h"
 
-extern linkedlist_t* ll_init()
+extern linkedlist_t* ll_init(int (*compare_function)(node_value_t *v1, node_value_t *v2))
 {
     linkedlist_t *list = (linkedlist_t*) malloc(sizeof(linkedlist_t));
     list->length = 0;
     list->head = list->tail = NULL;
+    if (compare_function != NULL) {
+        list->compare_function = compare_function;
+    } else {
+        list->compare_function = &_node_memaddr_comparator;
+    }
     return list;
 }
 
@@ -25,7 +30,7 @@ extern void ll_deinit(linkedlist_t *list)
     free(list);
 }
 
-extern void ll_append(linkedlist_t *list, value_t *value)
+extern void ll_append(linkedlist_t *list, node_value_t *value)
 {
     ll_node_t *new_node = (ll_node_t*) malloc(sizeof(ll_node_t));
     new_node->next = NULL;
@@ -42,7 +47,7 @@ extern void ll_append(linkedlist_t *list, value_t *value)
     }
 }
 
-extern void ll_insert(linkedlist_t *list, value_t *value, size_t index)
+extern void ll_insert(linkedlist_t *list, node_value_t *value, size_t index)
 {
     if (index >= list->length) {
         ll_append(list, value);
@@ -70,13 +75,13 @@ extern void ll_insert(linkedlist_t *list, value_t *value, size_t index)
     }
 }
 
-extern value_t* ll_get(linkedlist_t *list, value_t *value)
+extern node_value_t* ll_get(linkedlist_t *list, node_value_t *value)
 {
     /* FIXME: stub */
     return NULL;
 }
 
-extern value_t* ll_remove(linkedlist_t *list, value_t *value)
+extern node_value_t* ll_remove(linkedlist_t *list, node_value_t *value)
 {
     /* FIXME: stub */
     return NULL;

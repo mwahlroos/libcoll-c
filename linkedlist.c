@@ -10,10 +10,10 @@ extern linkedlist_t* ll_init(int (*compare_function)(node_value_t *v1, node_valu
     linkedlist_t *list = (linkedlist_t*) malloc(sizeof(linkedlist_t));
     list->length = 0;
     list->head = list->tail = NULL;
-    if (compare_function != NULL) {
+    if (NULL != compare_function) {
         list->compare_function = compare_function;
     } else {
-        list->compare_function = &_node_memaddr_comparator;
+        list->compare_function = &_node_comparator_memaddr;
     }
     return list;
 }
@@ -22,7 +22,7 @@ extern void ll_deinit(linkedlist_t *list)
 {
     ll_node_t *node = list->head;
     ll_node_t *next;
-    while (node != NULL) {
+    while (NULL != node) {
         next = node->next;
         free(node);
         node = next;
@@ -35,7 +35,7 @@ extern void ll_append(linkedlist_t *list, node_value_t *value)
     ll_node_t *new_node = (ll_node_t*) malloc(sizeof(ll_node_t));
     new_node->next = NULL;
     new_node->value = value;
-    if (list->head == NULL) {
+    if (NULL == list->head) {
         new_node->previous = NULL;
         list->head = list->tail = new_node;
         list->length = 1;
@@ -120,7 +120,7 @@ extern void ll_drop_iter(ll_iter_t *iter)
 extern ll_node_t* ll_next(ll_iter_t *iter)
 {
     ll_node_t *node = iter->next;
-    if (node != NULL) {
+    if (NULL != node) {
         iter->previous = node;
         iter->next = node->next;
     }
@@ -130,7 +130,7 @@ extern ll_node_t* ll_next(ll_iter_t *iter)
 extern ll_node_t* ll_previous(ll_iter_t *iter)
 {
     ll_node_t *node = iter->previous;
-    if (node != NULL) {
+    if (NULL != node) {
         iter->previous = node->previous;
         iter->next = node;
     }

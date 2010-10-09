@@ -3,7 +3,9 @@
  */
 
 #include <stdlib.h>
+#ifndef NODE_H
 #include "node.h"
+#endif
 
 #ifndef LINKEDLIST_H
 #define LINKEDLIST_H

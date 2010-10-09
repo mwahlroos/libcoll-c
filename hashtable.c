@@ -5,7 +5,8 @@
 #include <stdlib.h>
 #include "hashtable.h"
 
-extern hashtable_t* ht_init(size_t init_capacity, unsigned int (*hash_function)(ht_key_t*))
+extern hashtable_t* ht_init(size_t init_capacity,
+                            unsigned int (*hash_value_function)(ht_key_t*))
 {
     hashtable_t *ht = (hashtable_t*) malloc(init_capacity * sizeof(hashtable_t));
     ht->capacity = init_capacity;
@@ -21,7 +22,7 @@ extern int ht_add(hashtable_t *ht, ht_key_t *key, node_value_t *value)
 {
     /* FIXME: stub */
     
-    /* unsigned int slot = (ht->hash_function(key) % ht->capacity); */
+    /* unsigned int slot = (ht->hash_value_function(key) % ht->capacity); */
     
     return 0;
 }

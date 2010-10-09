@@ -21,11 +21,12 @@ typedef struct ht_key {
 typedef struct hashtable {
     ht_key_t *start;
     size_t capacity;
-    unsigned int (*hash_function)(ht_key_t*);
+    unsigned int (*hash_value_function)(ht_key_t*);
 } hashtable_t;
 
 
-extern hashtable_t* ht_init(size_t init_capacity, unsigned int (*hash_function)(ht_key_t*));
+extern hashtable_t* ht_init(size_t init_capacity,
+                            unsigned int (*hash_value_function)(ht_key_t*));
 
 extern void ht_deinit(hashtable_t *ht);
 

@@ -8,7 +8,6 @@
 
 #ifndef NODE_H
 #define NODE_H
-#endif
 
 typedef struct {
     size_t size;
@@ -26,3 +25,5 @@ extern int _node_comparator_memaddr(node_value_t *v1, node_value_t *v2);
  * hash value.
  */
 extern unsigned int _node_hashvalue_memaddr(node_value_t *value);
+
+#endif

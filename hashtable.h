@@ -4,13 +4,10 @@
 
 #include <stdlib.h>
 #include "linkedlist.h"
-#ifndef NODE_H
 #include "node.h"
-#endif
 
 #ifndef HASHTABLE_H
 #define HASHTABLE_H
-#endif
 
 #define HASHTABLE_DEFAULT_INIT_SIZE     100
 #define HASHTABLE_DEFAULT_LOAD_FACTOR   0.75
@@ -44,3 +41,5 @@ extern node_value_t* ht_remove(hashtable_t *ht, node_value_t *key);
 extern size_t ht_get_capacity(hashtable_t *ht);
 
 extern size_t ht_get_size(hashtable_t *ht);
+
+#endif

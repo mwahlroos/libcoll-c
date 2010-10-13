@@ -3,13 +3,10 @@
  */
 
 #include <stdlib.h>
-#ifndef NODE_H
 #include "node.h"
-#endif
 
 #ifndef LINKEDLIST_H
 #define LINKEDLIST_H
-#endif
 
 typedef struct ll_node {
     struct ll_node *next;
@@ -126,3 +123,5 @@ extern ll_node_t* ll_next(ll_iter_t *iter);
  * Returns: the node that was passed over, or NULL if none
  */
 extern ll_node_t* ll_previous(ll_iter_t *iter);
+
+#endif

@@ -117,6 +117,16 @@ extern void ll_drop_iter(ll_iter_t *iter)
     free(iter);
 }
 
+extern char ll_has_next(ll_iter_t *iter)
+{
+    return (NULL != iter->next);
+}
+
+extern char ll_has_previous(ll_iter_t *iter)
+{
+    return (NULL != iter->previous);
+}
+
 extern ll_node_t* ll_next(ll_iter_t *iter)
 {
     ll_node_t *node = iter->next;

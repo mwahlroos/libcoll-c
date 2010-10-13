@@ -12,7 +12,7 @@
 #define HASHTABLE_H
 #endif
 
-#define HASHTABLE_DEFAULT_SIZE          100
+#define HASHTABLE_DEFAULT_INIT_SIZE     100
 #define HASHTABLE_DEFAULT_LOAD_FACTOR   0.75
 
 typedef struct ht_key_value_pair {

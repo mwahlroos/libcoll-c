@@ -46,7 +46,8 @@ extern linkedlist_t* ll_init(int (*compare_function)(node_value_t *v1, node_valu
 /*
  * Deinitializes a linked list, freeing the resources used by it. Note that this
  * does not touch the contents the list points to since you may still have
- * pointers to those contents elsewhere.
+ * pointers to those contents elsewhere. Also, any resources used by iterators
+ * must be separately freed by calling ll_drop_iter for each iterator.
  */
 extern void ll_deinit(linkedlist_t *list);
 
@@ -103,14 +104,25 @@ extern ll_iter_t* ll_get_iter_at(linkedlist_t *list, size_t index);
 extern void ll_drop_iter(ll_iter_t *iter);
 
 /*
+ * Returns TRUE if the given iterator has a node available for retrieving with
+ * a call to ll_next, and FALSE if not.
+ */
+extern char ll_has_next(ll_iter_t *iter);
+
+/*
+ * Returns TRUE if the given iterator has a node available for retrieving with
+ * a call to ll_previous, and FALSE if not.
+ */
+extern char ll_has_previous(ll_iter_t *iter);
+
+/*
  * Advances the iterator over the next node on the list.
- * Returns: the node that was passed over
+ * Returns: the node that was passed over, or NULL if none
  */
 extern ll_node_t* ll_next(ll_iter_t *iter);
 
 /*
  * Moves the iterator over the previous node on the list.
- * Returns: the node that was passed over
+ * Returns: the node that was passed over, or NULL if none
  */
 extern ll_node_t* ll_previous(ll_iter_t *iter);
-

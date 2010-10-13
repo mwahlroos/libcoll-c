@@ -1,17 +1,21 @@
 CC=gcc
 CFLAGS= -ansi -Wall -pedantic -g
 CFLAGS_LIB= -shared -fPIC
-SRC= hashtable.c hashtable_test.c linkedlist.c node.c
-OBJS= hashtable.o hashtable_test.o linkedlist.o node.o
+SRC= hashtable.c linkedlist.c node.c
+OBJS= hashtable.o linkedlist.o node.o
 LIB= datastruct.so
-TEST_PROGRAM=hashtable_test
+HT_TEST=hashtable_test
+LL_TEST=linkedlist_test
 
 lib:
 	$(CC) $(CFLAGS) $(CFLAGS_LIB) $(SRC) -o $(LIB)
 
-$TEST_PROGRAM:
-	$(CC) $(CFLAGS) $(SRC) -o $(TEST_PROGRAM)
+ht_test: lib
+	$(CC) $(CFLAGS) $(HT_TEST).c -o $(HT_TEST)
+
+ll_test: lib
+	$(CC) $(CFLAGS) $(LL_TEST).c -o $(LL_TEST)
 
 clean:
-	rm -f $(OBJS) $(LIB) $(TEST_PROGRAM)
+	rm -f $(OBJS) $(LIB) $(HT_TEST) $(LL_TEST)
 

@@ -124,4 +124,9 @@ extern ll_node_t* ll_next(ll_iter_t *iter);
  */
 extern ll_node_t* ll_previous(ll_iter_t *iter);
 
+/*
+ * Returns the current length of the given linked list.
+ */
+extern size_t ll_length(linkedlist_t *list);
+
 #endif

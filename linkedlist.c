@@ -3,6 +3,7 @@
  */
 
 #include <stdlib.h>
+#include <stdio.h>
 #include "linkedlist.h"
 
 extern linkedlist_t* ll_init(int (*compare_function)(node_value_t *v1, node_value_t *v2))
@@ -32,19 +33,24 @@ extern void ll_deinit(linkedlist_t *list)
 
 extern void ll_append(linkedlist_t *list, node_value_t *value)
 {
+    printf("New node: %d\n", *(int*)(value->payload));
     ll_node_t *new_node = (ll_node_t*) malloc(sizeof(ll_node_t));
     new_node->next = NULL;
     new_node->value = value;
     if (NULL == list->head) {
+        printf("Empty list; inserting as first node\n");
         new_node->previous = NULL;
         list->head = list->tail = new_node;
         list->length = 1;
     } else {
+        printf("Inserting after: %d\n", *(int*)(list->tail->value->payload));
         new_node->previous = list->tail;
         list->tail->next = new_node;
         list->tail = new_node;
         list->length++;
     }
+    printf("List head / tail: %d / %d\n", *(int*)(list->head->value->payload),
+                                          *(int*)(list->tail->value->payload));
 }
 
 extern void ll_insert(linkedlist_t *list, node_value_t *value, size_t index)
@@ -131,8 +137,8 @@ extern ll_node_t* ll_next(ll_iter_t *iter)
 {
     ll_node_t *node = iter->next;
     if (NULL != node) {
-        iter->previous = node;
         iter->next = node->next;
+        iter->previous = node;
     }
     return node;
 }

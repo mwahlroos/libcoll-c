@@ -1,21 +1,22 @@
 CC=gcc
-CFLAGS= -ansi -Wall -pedantic -g
-CFLAGS_LIB= -shared -fPIC
+CFLAGS= -std=c99 -Wall -pedantic -g
+CFLAGS_LIB_SO= -shared -fPIC
 SRC= hashtable.c linkedlist.c node.c
 OBJS= hashtable.o linkedlist.o node.o
-LIB= datastruct.so
-HT_TEST=hashtable_test
-LL_TEST=linkedlist_test
+LIB_SO= datastruct.so
+HT_TEST= hashtable_test
+LL_TEST= linkedlist_test
 
-lib:
-	$(CC) $(CFLAGS) $(CFLAGS_LIB) $(SRC) -o $(LIB)
 
-ht_test: lib
-	$(CC) $(CFLAGS) $(HT_TEST).c -o $(HT_TEST)
+lib_so:
+	$(CC) $(CFLAGS) $(CFLAGS_LIB_SO) $(SRC) -o $(LIB_SO)
 
-ll_test: lib
-	$(CC) $(CFLAGS) $(LL_TEST).c -o $(LL_TEST)
+ht_test:
+	$(CC) $(CFLAGS) $(SRC) $(HT_TEST).c -o $(HT_TEST)
+
+ll_test:
+	$(CC) $(CFLAGS) $(SRC) $(LL_TEST).c -o $(LL_TEST)
 
 clean:
-	rm -f $(OBJS) $(LIB) $(HT_TEST) $(LL_TEST)
+	rm -f $(OBJS) $(LIB_SO) $(HT_TEST) $(LL_TEST)
 

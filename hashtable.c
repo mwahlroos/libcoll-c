@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include "hashtable.h"
 
-extern hashtable_t* ht_init(size_t init_capacity,
+hashtable_t* ht_init(size_t init_capacity,
                             unsigned int (*hash_value_function)(node_value_t*),
                             int (*compare_function)(node_value_t *v1, node_value_t *v2))
 {
@@ -32,14 +32,14 @@ extern hashtable_t* ht_init(size_t init_capacity,
     return ht;
 }
 
-extern void ht_deinit(hashtable_t *ht)
+void ht_deinit(hashtable_t *ht)
 {
     /* TODO: deinit each non-null linkedlist? */
     free(ht->hash_slots);
     free(ht);
 }
 
-extern int ht_add(hashtable_t *ht, node_value_t *key, node_value_t *value)
+int ht_add(hashtable_t *ht, node_value_t *key, node_value_t *value)
 {   
     /* FIXME: make up something better than plain modulo */
     size_t slot_index;
@@ -65,24 +65,24 @@ extern int ht_add(hashtable_t *ht, node_value_t *key, node_value_t *value)
     return 0;
 }
 
-extern node_value_t* ht_get(hashtable_t *ht, node_value_t *key)
+node_value_t* ht_get(hashtable_t *ht, node_value_t *key)
 {
     /* FIXME: stub */
     return NULL;
 }
 
-extern node_value_t* ht_remove(hashtable_t *ht, node_value_t *key)
+node_value_t* ht_remove(hashtable_t *ht, node_value_t *key)
 {
     /* FIXME: stub */
     return NULL;
 }
 
-extern size_t ht_get_capacity(hashtable_t *ht)
+size_t ht_get_capacity(hashtable_t *ht)
 {
     return ht->capacity;
 }
 
-extern size_t ht_get_size(hashtable_t *ht)
+size_t ht_get_size(hashtable_t *ht)
 {
     return ht->size;
 }

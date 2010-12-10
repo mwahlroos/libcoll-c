@@ -1,22 +1,25 @@
+VER_MAJOR=0
+VER_MINOR=0
 CC=gcc
+LD=ld
 CFLAGS= -std=c99 -Wall -pedantic -g
-CFLAGS_LIB_SO= -shared -fPIC
+CFLAGS_LIB= -shared -fPIC
+LDFLAGS_LIB= -shared
 SRC= hashtable.c linkedlist.c node.c
 OBJS= hashtable.o linkedlist.o node.o
-LIB_SO= datastruct.so
-HT_TEST= hashtable_test
-LL_TEST= linkedlist_test
+TEST_SRC= datastruct_test.c
+TEST_PROG= datastruct_test
+LIB_BASENAME= libdatastruct
+LIB_SONAME= $(LIB_BASENAME).so.$(VER_MAJOR)
+LIB_FILENAME= $(LIB_SONAME).$(VER_MINOR)
 
+so:
+	$(CC) $(CFLAGS) $(CFLAGS_LIB) -c $(SRC)
+	$(LD) $(LDFLAGS_LIB) -soname $(LIB_SONAME) -o $(LIB_FILENAME) -lc $(OBJS)
 
-lib_so:
-	$(CC) $(CFLAGS) $(CFLAGS_LIB_SO) $(SRC) -o $(LIB_SO)
-
-ht_test:
-	$(CC) $(CFLAGS) $(SRC) $(HT_TEST).c -o $(HT_TEST)
-
-ll_test:
-	$(CC) $(CFLAGS) $(SRC) $(LL_TEST).c -o $(LL_TEST)
+test: so
+	$(CC) $(CFLAGS) $(TEST_SRC) -o $(TEST_PROG) -L. -ldatastruct
 
 clean:
-	rm -f $(OBJS) $(LIB_SO) $(HT_TEST) $(LL_TEST)
+	rm -f $(OBJS) $(LIB_FILENAME) $(TEST_PROG)
 

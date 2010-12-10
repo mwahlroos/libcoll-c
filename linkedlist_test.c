@@ -48,7 +48,7 @@ void add_int_to_list(linkedlist_t *list, int value)
     ll_append(list, nodeval);
 }
 
-int main()
+int ll_test_main()
 {
     linkedlist_t *list1 = ll_init(&intcmp);
 
@@ -61,6 +61,6 @@ int main()
     }
 
     ll_deinit(list1);
-    exit(EXIT_SUCCESS);
+    return EXIT_SUCCESS;
 }
 

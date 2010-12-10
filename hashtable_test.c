@@ -1,6 +1,6 @@
 #include <stdlib.h>
 
-int main()
+int ht_test_main()
 {
-    exit(EXIT_SUCCESS);
+    return EXIT_SUCCESS;
 }

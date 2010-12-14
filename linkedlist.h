@@ -129,4 +129,4 @@ extern ll_node_t* ll_previous(ll_iter_t *iter);
  */
 extern size_t ll_length(linkedlist_t *list);
 
-#endif
+#endif  /* LINKEDLIST_H */

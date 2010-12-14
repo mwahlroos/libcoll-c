@@ -42,4 +42,4 @@ extern size_t ht_get_capacity(hashtable_t *ht);
 
 extern size_t ht_get_size(hashtable_t *ht);
 
-#endif
+#endif  /* HASHTABLE_H */

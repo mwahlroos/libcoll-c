@@ -6,7 +6,12 @@
 #include <stdio.h>
 #include "linkedlist.h"
 
-linkedlist_t* ll_init(int (*compare_function)(node_value_t *v1, node_value_t *v2))
+linkedlist_t* ll_init()
+{
+    return ll_init_with_comparator(NULL);
+}
+
+linkedlist_t* ll_init_with_comparator(int (*compare_function)(node_value_t *v1, node_value_t *v2))
 {
     linkedlist_t *list = (linkedlist_t*) malloc(sizeof(linkedlist_t));
     list->length = 0;

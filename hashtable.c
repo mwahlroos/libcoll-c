@@ -5,9 +5,17 @@
 #include <stdlib.h>
 #include "hashtable.h"
 
-hashtable_t* ht_init(size_t init_capacity,
-                            unsigned int (*hash_value_function)(node_value_t*),
-                            int (*compare_function)(node_value_t *v1, node_value_t *v2))
+#define HASHTABLE_DEFAULT_INIT_SIZE     100
+#define HASHTABLE_DEFAULT_LOAD_FACTOR   0.75
+
+hashtable_t* ht_init()
+{
+    return ht_init_with_params(HASHTABLE_DEFAULT_INIT_SIZE, NULL, NULL);
+}
+
+hashtable_t* ht_init_with_params(size_t init_capacity,
+                                 unsigned int (*hash_value_function)(node_value_t*),
+                                 int (*compare_function)(node_value_t *v1, node_value_t *v2))
 {
     hashtable_t *ht = (hashtable_t*) malloc(sizeof(hashtable_t));
 

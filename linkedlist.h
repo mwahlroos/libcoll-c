@@ -28,6 +28,15 @@ typedef struct ll_iter {
 } ll_iter_t;
 
 
+
+/*
+ * Initializes a new linked list with no nodes and with the default
+ * (memory address) comparator function for determining equality of nodes.
+ *
+ * Returns: a pointer to the initialized list.
+ */
+extern linkedlist_t* ll_init();
+
 /*
  * Initializes a new linked list with no nodes.
  *
@@ -38,7 +47,9 @@ typedef struct ll_iter {
  *
  * Returns: a pointer to the initialized list.
  */
-extern linkedlist_t* ll_init(int (*compare_function)(node_value_t *v1, node_value_t *v2));
+extern linkedlist_t* ll_init_with_comparator(
+    int (*compare_function)(node_value_t *v1, node_value_t *v2)
+);
 
 /*
  * Deinitializes a linked list, freeing the resources used by it. Note that this

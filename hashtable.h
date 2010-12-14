@@ -9,9 +9,6 @@
 #ifndef HASHTABLE_H
 #define HASHTABLE_H
 
-#define HASHTABLE_DEFAULT_INIT_SIZE     100
-#define HASHTABLE_DEFAULT_LOAD_FACTOR   0.75
-
 typedef struct ht_key_value_pair {
     node_value_t *key;
     node_value_t *value;
@@ -25,10 +22,11 @@ typedef struct hashtable {
     int (*compare_function)(node_value_t *v1, node_value_t *v2);
 } hashtable_t;
 
+extern hashtable_t* ht_init();
 
-extern hashtable_t* ht_init(size_t init_capacity,
-                            unsigned int (*hash_value_function)(node_value_t*),
-                            int (*compare_function)(node_value_t *v1, node_value_t *v2));
+extern hashtable_t* ht_init_with_params(size_t init_capacity,
+                                        unsigned int (*hash_value_function)(node_value_t*),
+                                        int (*compare_function)(node_value_t *v1, node_value_t *v2));
 
 extern void ht_deinit(hashtable_t *ht);
 

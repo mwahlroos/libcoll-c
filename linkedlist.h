@@ -25,6 +25,8 @@ typedef struct ll_iter {
     ll_node_t *next;
     ll_node_t *previous;
     linkedlist_t *list;
+    ll_node_t *last_returned;
+    char last_skip_forward;
 } ll_iter_t;
 
 
@@ -134,6 +136,11 @@ extern ll_node_t* ll_next(ll_iter_t *iter);
  * Returns: the node that was passed over, or NULL if none
  */
 extern ll_node_t* ll_previous(ll_iter_t *iter);
+
+/*
+ * Removes the node last returned by the given iterator.
+ */
+extern void ll_remove_last_returned(ll_iter_t *iter);
 
 /*
  * Returns the current length of the given linked list.

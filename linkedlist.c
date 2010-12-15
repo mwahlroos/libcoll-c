@@ -6,6 +6,28 @@
 #include <stdio.h>
 #include "linkedlist.h"
 
+
+static void _remove_node(linkedlist_t *list, ll_node_t *node)
+{
+    if (NULL != node) {
+        if (NULL != node->previous) {
+            node->previous->next = node->next;
+        }
+        if (NULL != node->next) {
+            node->next->previous = node->previous;
+        }
+        if (node == list->head) {
+            list->head = node->next;
+        } else if (node == list->tail) {
+            list->tail = node->previous;
+        }
+        list->length--;
+        free(node);
+    }
+}
+
+
+
 linkedlist_t* ll_init()
 {
     return ll_init_with_comparator(NULL);
@@ -26,13 +48,14 @@ linkedlist_t* ll_init_with_comparator(int (*compare_function)(node_value_t *v1, 
 
 void ll_deinit(linkedlist_t *list)
 {
-    ll_node_t *node = list->head;
-    ll_node_t *next;
-    while (NULL != node) {
-        next = node->next;
-        free(node);
-        node = next;
+    /* remove all nodes first to make sure the memory gets freed */
+    ll_iter_t *iter = ll_get_iter(list);
+    while (ll_has_next(iter)) {
+        ll_next(iter);
+        ll_remove_last_returned(iter);
     }
+    ll_drop_iter(iter);
+
     free(list);
 }
 
@@ -104,6 +127,7 @@ ll_iter_t* ll_get_iter(linkedlist_t *list)
     ll_iter_t *iter = (ll_iter_t*) malloc(sizeof(ll_iter_t));
     iter->next = list->head;
     iter->previous = NULL;
+    iter->list = list;
 
     return iter;
 }
@@ -145,6 +169,8 @@ ll_node_t* ll_next(ll_iter_t *iter)
         iter->next = node->next;
         iter->previous = node;
     }
+    iter->last_returned = node;
+    iter->last_skip_forward = 1;
     return node;
 }
 
@@ -155,7 +181,21 @@ ll_node_t* ll_previous(ll_iter_t *iter)
         iter->previous = node->previous;
         iter->next = node;
     }
+    iter->last_returned = node;
+    iter->last_skip_forward = 0;
     return node;
+}
+
+void ll_remove_last_returned(ll_iter_t *iter)
+{
+    if (NULL != iter->last_returned) {
+        if (iter->last_skip_forward) {
+            iter->previous = iter->last_returned->previous;
+        } else {
+            iter->next = iter->last_returned->next;
+        }
+        _remove_node(iter->list, iter->last_returned);
+    }
 }
 
 size_t ll_length(linkedlist_t *list)

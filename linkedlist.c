@@ -18,7 +18,8 @@ static void _remove_node(linkedlist_t *list, ll_node_t *node)
         }
         if (node == list->head) {
             list->head = node->next;
-        } else if (node == list->tail) {
+        }
+        if (node == list->tail) {
             list->tail = node->previous;
         }
         list->length--;

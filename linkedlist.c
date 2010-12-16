@@ -27,8 +27,6 @@ static void _remove_node(linkedlist_t *list, ll_node_t *node)
     }
 }
 
-
-
 linkedlist_t* ll_init()
 {
     return ll_init_with_comparator(NULL);

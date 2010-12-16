@@ -62,7 +62,7 @@ void ll_deinit(linkedlist_t *list)
 
 void ll_append(linkedlist_t *list, node_value_t *value)
 {
-    DEBUG("New node: %d\n", *(int*)(value->payload));
+    DEBUGF("New node: %d\n", *(int*)(value->payload));
     ll_node_t *new_node = (ll_node_t*) malloc(sizeof(ll_node_t));
     new_node->next = NULL;
     new_node->value = value;
@@ -72,14 +72,14 @@ void ll_append(linkedlist_t *list, node_value_t *value)
         list->head = list->tail = new_node;
         list->length = 1;
     } else {
-        DEBUG("Inserting after: %d\n", *(int*)(list->tail->value->payload));
+        DEBUGF("Inserting after: %d\n", *(int*)(list->tail->value->payload));
         new_node->previous = list->tail;
         list->tail->next = new_node;
         list->tail = new_node;
         list->length++;
     }
-    DEBUG("List head / tail: %d / %d\n", *(int*)(list->head->value->payload),
-                                         *(int*)(list->tail->value->payload));
+    DEBUGF("List head / tail: %d / %d\n", *(int*)(list->head->value->payload),
+                                          *(int*)(list->tail->value->payload));
 }
 
 void ll_insert(linkedlist_t *list, node_value_t *value, size_t index)

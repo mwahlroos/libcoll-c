@@ -7,6 +7,7 @@
 
 #define DEBUG_ENABLED   1
 
-#define DEBUG(fmt, ...)      if (DEBUG_ENABLED) printf(fmt, __VA_ARGS__)
+#define DEBUGF(fmt, ...)        if (DEBUG_ENABLED) printf(fmt, __VA_ARGS__)
+#define DEBUG(msg)              DEBUGF("%s", msg)
 
 #endif  /* DEBUG_H */

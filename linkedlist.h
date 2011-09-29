@@ -11,14 +11,14 @@
 typedef struct ll_node {
     struct ll_node *next;
     struct ll_node *previous;
-    node_value_t *value;
+    void *value;
 } ll_node_t;
 
 typedef struct linkedlist {
     size_t length;
     ll_node_t *head;
     ll_node_t *tail;
-    int (*compare_function)(node_value_t *v1, node_value_t *v2);
+    int (*compare_function)(void *value1, void *value2);
 } linkedlist_t;
 
 typedef struct ll_iter {
@@ -50,7 +50,7 @@ extern linkedlist_t* ll_init();
  * Returns: a pointer to the initialized list.
  */
 extern linkedlist_t* ll_init_with_comparator(
-    int (*compare_function)(node_value_t *v1, node_value_t *v2)
+    int (*compare_function)(void *value1, void *value2)
 );
 
 /*
@@ -64,26 +64,27 @@ extern void ll_deinit(linkedlist_t *list);
 /*
  * Appends a new node with the given value at the end of the list.
  */
-extern void ll_append(linkedlist_t *list, node_value_t *value);
+extern void ll_append(linkedlist_t *list, void *value);
 
 /*
  * Inserts a new node with the given value at the given index in the list.
  * If the index is greater than the length of the list, the node is appended
  * at the tail of the list.
  */
-extern void ll_insert(linkedlist_t *list, node_value_t *value, size_t index);
+extern void ll_insert(linkedlist_t *list, void *value, size_t index);
 
 /*
- * Returns a pointer to the first list node containing the given value,
- * or NULL if no such node exists.
+ * Returns the index of the first list node containing the given value,
+ * or -1 if no such node exists.
+ * FIXME: should perhaps return a size_t with an error value indicating non-existence
  */
-extern node_value_t* ll_get(linkedlist_t *list, node_value_t *value);
+extern int ll_index_of(linkedlist_t *list, void *value);
 
 /*
  * Removes the first list node containing the given value if such a node exists.
- * Returns: the value contained by the removed node, or NULL if none
+ * Returns: a pointer to the value contained by the removed node, or NULL if none
  */
-extern node_value_t* ll_remove(linkedlist_t *list, node_value_t *value);
+extern void* ll_remove(linkedlist_t *list, void *value);
 
 /*
  * Initializes a new iterator for the given list. The new iterator will point

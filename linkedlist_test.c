@@ -7,10 +7,10 @@
 #include "linkedlist.h"
 #include "node.h"
 
-int intcmp(node_value_t *node_a, node_value_t *node_b)
+int intcmp(void *value1, void *value2)
 {
-    int *a = (int*) (node_a->payload);
-    int *b = (int*) (node_b->payload);
+    int *a = (int*) value1;
+    int *b = (int*) value2;
     int cmpval;
     if (*a < *b) {
         cmpval = -1;
@@ -24,7 +24,7 @@ int intcmp(node_value_t *node_a, node_value_t *node_b)
 
 void print_node_as_int_with_index(ll_node_t *node, int index)
 {
-    int *intval = (int*) node->value->payload;
+    int *intval = (int*) node->value;
     if (index >= 0) {
         printf("%d ", index);
     }
@@ -60,9 +60,14 @@ void add_int_to_list(linkedlist_t *list, int value)
 {
     int *value_ptr = (int*) malloc (sizeof(int));
     *value_ptr = value;
-    node_value_t *nodeval = (node_value_t*) malloc (sizeof(node_value_t));
-    nodeval->payload = (void*) value_ptr;
-    ll_append(list, nodeval);
+    ll_append(list, value_ptr);
+}
+
+void insert_int_at_index(linkedlist_t *list, int value, size_t index)
+{
+    int *value_ptr = (int*) malloc (sizeof(int));
+    *value_ptr = value;
+    ll_insert(list, value_ptr, index);
 }
 
 void test_iter_at(linkedlist_t *list, size_t init_index)
@@ -81,6 +86,7 @@ void test_iter_at(linkedlist_t *list, size_t init_index)
         print_node_as_int(node);
     }
     ll_drop_iter(iter);
+    printf("\n");
 
     printf("Testing node removal\n");
     iter = ll_get_iter_at(list, init_index);
@@ -128,6 +134,11 @@ int ll_test_main()
         add_int_to_list(list1, intarr[i]);
         print_int_list(list1);
     }
+    int insert_test_val = 314;
+    size_t insert_test_index = 3U;
+    printf("Trying to insert %d at %d\n", insert_test_val, insert_test_index);
+    insert_int_at_index(list1, insert_test_val, insert_test_index);
+    print_int_list(list1);
 
     printf("Testing iterator...\n");
     test_iter_at(list1, list1->length / 2);

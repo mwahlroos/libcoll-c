@@ -54,10 +54,11 @@ extern linkedlist_t* ll_init_with_comparator(
 );
 
 /*
- * Deinitializes a linked list, freeing the resources used by it. Note that this
- * does not touch the contents the list points to since you may still have
- * pointers to those contents elsewhere. Also, any resources used by iterators
- * must be separately freed by calling ll_drop_iter for each iterator.
+ * Deinitializes a linked list, freeing the resources used by it.
+ * Note that this does not touch the contents the list points to since
+ * you may still have pointers to those contents elsewhere.
+ * Also, any resources used by iterators must be separately freed
+ * by calling ll_drop_iter for each iterator.
  */
 extern void ll_deinit(linkedlist_t *list);
 
@@ -82,6 +83,7 @@ extern int ll_index_of(linkedlist_t *list, void *value);
 
 /*
  * Removes the first list node containing the given value if such a node exists.
+ * Note that this does not free any memory allocated for the stored value itself.
  * Returns: a pointer to the value contained by the removed node, or NULL if none
  */
 extern void* ll_remove(linkedlist_t *list, void *value);
@@ -140,6 +142,7 @@ extern ll_node_t* ll_previous(ll_iter_t *iter);
 
 /*
  * Removes the node last returned by the given iterator.
+ * Note that this does not free any memory allocated for the stored value itself.
  */
 extern void ll_remove_last_returned(ll_iter_t *iter);
 

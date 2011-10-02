@@ -7,7 +7,7 @@
 #include "linkedlist.h"
 #include "debug.h"
 
-static void _remove_node(linkedlist_t *list, ll_node_t *node)
+static void _ll_remove_node(linkedlist_t *list, ll_node_t *node)
 {
     if (NULL != node) {
         if (NULL != node->previous) {
@@ -194,7 +194,7 @@ void ll_remove_last_returned(ll_iter_t *iter)
         } else {
             iter->next = iter->last_returned->next;
         }
-        _remove_node(iter->list, iter->last_returned);
+        _ll_remove_node(iter->list, iter->last_returned);
     }
 }
 

@@ -37,7 +37,7 @@ typedef struct ll_iter {
  *
  * Returns: a pointer to the initialized list.
  */
-extern linkedlist_t* ll_init();
+linkedlist_t* ll_init();
 
 /*
  * Initializes a new linked list with no nodes.
@@ -49,7 +49,7 @@ extern linkedlist_t* ll_init();
  *
  * Returns: a pointer to the initialized list.
  */
-extern linkedlist_t* ll_init_with_comparator(
+linkedlist_t* ll_init_with_comparator(
     int (*compare_function)(void *value1, void *value2)
 );
 
@@ -60,33 +60,33 @@ extern linkedlist_t* ll_init_with_comparator(
  * Also, any resources used by iterators must be separately freed
  * by calling ll_drop_iter for each iterator.
  */
-extern void ll_deinit(linkedlist_t *list);
+void ll_deinit(linkedlist_t *list);
 
 /*
  * Appends a new node with the given value at the end of the list.
  */
-extern void ll_append(linkedlist_t *list, void *value);
+void ll_append(linkedlist_t *list, void *value);
 
 /*
  * Inserts a new node with the given value at the given index in the list.
  * If the index is greater than the length of the list, the node is appended
  * at the tail of the list.
  */
-extern void ll_insert(linkedlist_t *list, void *value, size_t index);
+void ll_insert(linkedlist_t *list, void *value, size_t index);
 
 /*
  * Returns the index of the first list node containing the given value,
  * or -1 if no such node exists.
  * FIXME: should perhaps return a size_t with an error value indicating non-existence
  */
-extern int ll_index_of(linkedlist_t *list, void *value);
+int ll_index_of(linkedlist_t *list, void *value);
 
 /*
  * Removes the first list node containing the given value if such a node exists.
  * Note that this does not free any memory allocated for the stored value itself.
  * Returns: a pointer to the value contained by the removed node, or NULL if none
  */
-extern void* ll_remove(linkedlist_t *list, void *value);
+void* ll_remove(linkedlist_t *list, void *value);
 
 /*
  * Initializes a new iterator for the given list. The new iterator will point
@@ -97,7 +97,7 @@ extern void* ll_remove(linkedlist_t *list, void *value);
  *
  * Returns: a pointer to the new iterator
  */
-extern ll_iter_t* ll_get_iter(linkedlist_t *list);
+ll_iter_t* ll_get_iter(linkedlist_t *list);
 
 /*
  * Initializes a new iterator for the given list, set to point in front of
@@ -109,46 +109,46 @@ extern ll_iter_t* ll_get_iter(linkedlist_t *list);
  *
  * Returns: a pointer to the new iterator
  */
-extern ll_iter_t* ll_get_iter_at(linkedlist_t *list, size_t index);
+ll_iter_t* ll_get_iter_at(linkedlist_t *list, size_t index);
 
 /*
  * Deletes the iterator and frees the memory used by it.
  */
-extern void ll_drop_iter(ll_iter_t *iter);
+void ll_drop_iter(ll_iter_t *iter);
 
 /*
  * Returns TRUE if the given iterator has a node available for retrieving with
  * a call to ll_next, and FALSE if not.
  */
-extern char ll_has_next(ll_iter_t *iter);
+char ll_has_next(ll_iter_t *iter);
 
 /*
  * Returns TRUE if the given iterator has a node available for retrieving with
  * a call to ll_previous, and FALSE if not.
  */
-extern char ll_has_previous(ll_iter_t *iter);
+char ll_has_previous(ll_iter_t *iter);
 
 /*
  * Advances the iterator over the next node on the list.
  * Returns: the node that was passed over, or NULL if none
  */
-extern ll_node_t* ll_next(ll_iter_t *iter);
+ll_node_t* ll_next(ll_iter_t *iter);
 
 /*
  * Moves the iterator over the previous node on the list.
  * Returns: the node that was passed over, or NULL if none
  */
-extern ll_node_t* ll_previous(ll_iter_t *iter);
+ll_node_t* ll_previous(ll_iter_t *iter);
 
 /*
  * Removes the node last returned by the given iterator.
  * Note that this does not free any memory allocated for the stored value itself.
  */
-extern void ll_remove_last_returned(ll_iter_t *iter);
+void ll_remove_last_returned(ll_iter_t *iter);
 
 /*
  * Returns the current length of the given linked list.
  */
-extern size_t ll_length(linkedlist_t *list);
+size_t ll_length(linkedlist_t *list);
 
 #endif  /* LINKEDLIST_H */

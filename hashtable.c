@@ -126,6 +126,7 @@ void* ht_remove(hashtable_t *ht, void *key)
             if (ht->key_comparator_function(key, kv_pair->key) == 0) {
                 retval = kv_pair->value;
                 ll_remove_last_returned(iter);
+                ht->size--;
             }
         }
     }

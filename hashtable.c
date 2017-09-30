@@ -3,6 +3,7 @@
  */
 
 #include <stdlib.h>
+#include <stdbool.h>
 #include "hashtable.h"
 
 #define HASHTABLE_DEFAULT_INIT_SIZE     100
@@ -65,10 +66,8 @@ void ht_deinit(hashtable_t *ht)
     free(ht);
 }
 
-int ht_add(hashtable_t *ht, void *key, void *value)
-{   
-    ht_key_value_pair_t *pair;
-    
+void ht_put(hashtable_t *ht, void *key, void *value)
+{
     unsigned long key_hash = hash(ht->hash_value_function(key));
     size_t slot_index = (key_hash % ht->capacity);
     linkedlist_t *collision_list = ht->hash_slots[slot_index];
@@ -76,13 +75,32 @@ int ht_add(hashtable_t *ht, void *key, void *value)
     if (NULL == collision_list) {
         collision_list = ht->hash_slots[slot_index] = ll_init(ht->key_comparator_function);
     }
-    pair = (ht_key_value_pair_t*) malloc (sizeof(ht_key_value_pair_t));
 
-    ll_append(collision_list, pair);
+    /* check for existing entries with a matching key */
 
-    ht->size++;
+    bool exists = false;
 
-    return 0;
+    ll_iter_t *iter = ll_get_iter(collision_list);
+    while (ll_has_next(iter)) {
+        ht_key_value_pair_t *kv_pair_tmp;
+        void *key_tmp;
+
+        ll_node_t *node = ll_next(iter);
+        kv_pair_tmp = (ht_key_value_pair_t*) (node->value);
+        key_tmp = kv_pair_tmp->key;
+
+        if (ht->key_comparator_function(key, key_tmp) == 0) {
+            /* replace the existing value with the new one */
+            kv_pair_tmp->value = value;
+            exists = true;
+        }
+    }
+
+    if (!exists) {
+        ht_key_value_pair_t *new_kv_pair = (ht_key_value_pair_t*) malloc (sizeof(ht_key_value_pair_t));
+        ll_append(collision_list, new_kv_pair);
+        ht->size++;
+    }
 }
 
 void* ht_get(hashtable_t *ht, void *key)

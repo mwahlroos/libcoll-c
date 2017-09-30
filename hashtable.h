@@ -34,7 +34,7 @@ hashtable_t* ht_init_with_params(size_t init_capacity,
 
 void ht_deinit(hashtable_t *ht);
 
-int ht_add(hashtable_t *ht, void *key, void *value);
+void ht_put(hashtable_t *ht, void *key, void *value);
 
 void* ht_get(hashtable_t *ht, void *key);
 

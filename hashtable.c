@@ -8,13 +8,19 @@
 #define HASHTABLE_DEFAULT_INIT_SIZE     100
 #define HASHTABLE_DEFAULT_LOAD_FACTOR   0.75
 
+static unsigned long hash(unsigned long key_value)
+{
+    /* FIXME: stub */
+    return key_value;
+}
+
 hashtable_t* ht_init()
 {
     return ht_init_with_params(HASHTABLE_DEFAULT_INIT_SIZE, NULL, NULL, NULL);
 }
 
 hashtable_t* ht_init_with_params(size_t init_capacity,
-                                 unsigned int (*hash_value_function)(void*),
+                                 unsigned long (*hash_value_function)(void*),
                                  int (*key_comparator_function)(void *key1, void *key2),
                                  int (*value_comparator_function)(void *value1, void *value2))
 {
@@ -61,22 +67,21 @@ void ht_deinit(hashtable_t *ht)
 
 int ht_add(hashtable_t *ht, void *key, void *value)
 {   
-    /* FIXME: make up something better than plain modulo? */
     size_t slot_index;
     
     linkedlist_t *collision_list;
     ht_key_value_pair_t *pair;
-    void *list_node_value;
     
-    slot_index = (ht->hash_value_function(key) % ht->capacity);
+    unsigned long key_hash = hash(ht->hash_value_function(key));
+    slot_index = (key_hash % ht->capacity);
     collision_list = ht->hash_slots[slot_index];
 
     if (NULL == collision_list) {
         collision_list = ht->hash_slots[slot_index] = ll_init(ht->key_comparator_function);
     }
     pair = (ht_key_value_pair_t*) malloc (sizeof(ht_key_value_pair_t));
-    list_node_value = pair;
-    ll_append(collision_list, list_node_value);
+
+    ll_append(collision_list, pair);
 
     ht->size++;
 

@@ -20,7 +20,7 @@ typedef struct hashtable {
     linkedlist_t **hash_slots;
     size_t capacity;
     size_t size;
-    unsigned int (*hash_value_function)(void *key);
+    unsigned long (*hash_value_function)(void *key);
     int (*key_comparator_function)(void *key1, void *key2);
     int (*value_comparator_function)(void *value1, void *value2);
 } hashtable_t;
@@ -28,7 +28,7 @@ typedef struct hashtable {
 hashtable_t* ht_init();
 
 hashtable_t* ht_init_with_params(size_t init_capacity,
-                                 unsigned int (*hash_value_function)(void*),
+                                 unsigned long (*hash_value_function)(void*),
                                  int (*key_comparator_function)(void *key1, void *key2),
                                  int (*value_comparator_function)(void *value1, void *value2));
 

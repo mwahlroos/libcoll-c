@@ -19,7 +19,7 @@ int _node_comparator_memaddr(void *node1, void *node2)
     return cmpval;
 }
 
-unsigned int _node_hashvalue_memaddr(void *value)
+unsigned long _node_hashvalue_memaddr(void *value)
 {
-    return (unsigned int) value;
+    return (unsigned long) value;
 }

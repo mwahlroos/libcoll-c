@@ -5,8 +5,8 @@ LD=ld
 CFLAGS= -std=c99 -Wall -pedantic -g
 CFLAGS_LIB= -shared -fPIC
 LDFLAGS_LIB= -shared
-SRC= hashtable.c linkedlist.c node.c
-OBJS= hashtable.o linkedlist.o node.o
+SRC= hashtable.c linkedlist.c treemap.c node.c
+OBJS= hashtable.o linkedlist.o treemap.o node.o
 TEST_SRC= datastruct_test.c
 TEST_PROG= datastruct_test
 LIB_BASENAME= libdatastruct

@@ -49,7 +49,12 @@ hashtable_t* ht_init_with_params(size_t init_capacity,
 
 void ht_deinit(hashtable_t *ht)
 {
-    /* TODO: deinit each non-null linkedlist? */
+    for (size_t i=0; i<ht->capacity; i++) {
+        linkedlist_t *list = ht->hash_slots[i];
+        if (NULL != list) {
+            free(list);
+        }
+    }
     free(ht->hash_slots);
     free(ht);
 }

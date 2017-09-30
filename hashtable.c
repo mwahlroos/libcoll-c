@@ -15,6 +15,41 @@ static unsigned long hash(unsigned long key_value)
     return key_value;
 }
 
+static linkedlist_t* find_collision_list(hashtable_t *ht, void *key)
+{
+    unsigned long key_hash = hash(ht->hash_value_function(key));
+    size_t slot_index = (key_hash % ht->capacity);
+    linkedlist_t *collision_list = ht->hash_slots[slot_index];
+
+    return collision_list;
+}
+
+static ht_key_value_pair_t* find_entry(hashtable_t *ht, void *key)
+{
+    ht_key_value_pair_t *matching_entry = NULL;
+    linkedlist_t *collision_list = find_collision_list(ht, key);
+
+    if (NULL != collision_list) {
+        ll_iter_t *iter = ll_get_iter(collision_list);
+        while (ll_has_next(iter)) {
+            ht_key_value_pair_t *entry_tmp;
+            void *key_tmp;
+
+            ll_node_t *node = ll_next(iter);
+            entry_tmp = (ht_key_value_pair_t*) (node->value);
+            key_tmp = entry_tmp->key;
+
+            if (ht->key_comparator_function(key, key_tmp) == 0) {
+                matching_entry = entry_tmp;
+                break;
+            }
+        }
+        ll_drop_iter(iter);
+    }
+
+    return matching_entry;
+}
+
 hashtable_t* ht_init()
 {
     return ht_init_with_params(HASHTABLE_DEFAULT_INIT_SIZE, NULL, NULL, NULL);
@@ -27,7 +62,12 @@ hashtable_t* ht_init_with_params(size_t init_capacity,
 {
     hashtable_t *ht = (hashtable_t*) malloc(sizeof(hashtable_t));
 
-    linkedlist_t *first_slot = (linkedlist_t*) malloc(init_capacity * sizeof(linkedlist_t));
+    /* calloc automatically sets the entire allocated memory to zeros/NULLs,
+     * which makes it easier to keep track of which buckets contain a valid
+     * pointer to a collision list
+     */
+    linkedlist_t *first_slot = (linkedlist_t*) calloc(init_capacity, sizeof(linkedlist_t));
+
     ht->hash_slots = &first_slot;
 
     ht->capacity = init_capacity;
@@ -58,6 +98,7 @@ void ht_deinit(hashtable_t *ht)
 {
     for (size_t i=0; i<ht->capacity; i++) {
         linkedlist_t *list = ht->hash_slots[i];
+        /* FIXME: free key-value pair entries (ht_key_value_pair_t) too */
         if (NULL != list) {
             free(list);
         }
@@ -76,27 +117,12 @@ void ht_put(hashtable_t *ht, void *key, void *value)
         collision_list = ht->hash_slots[slot_index] = ll_init(ht->key_comparator_function);
     }
 
-    /* check for existing entries with a matching key */
+    ht_key_value_pair_t *existing_entry = find_entry(ht, key);
 
-    bool exists = false;
-
-    ll_iter_t *iter = ll_get_iter(collision_list);
-    while (ll_has_next(iter)) {
-        ht_key_value_pair_t *kv_pair_tmp;
-        void *key_tmp;
-
-        ll_node_t *node = ll_next(iter);
-        kv_pair_tmp = (ht_key_value_pair_t*) (node->value);
-        key_tmp = kv_pair_tmp->key;
-
-        if (ht->key_comparator_function(key, key_tmp) == 0) {
-            /* replace the existing value with the new one */
-            kv_pair_tmp->value = value;
-            exists = true;
-        }
-    }
-
-    if (!exists) {
+    if (NULL != existing_entry) {
+        /* replace the value in the existing entry with the new value */
+        existing_entry->value = value;
+    } else {
         ht_key_value_pair_t *new_kv_pair = (ht_key_value_pair_t*) malloc (sizeof(ht_key_value_pair_t));
         ll_append(collision_list, new_kv_pair);
         ht->size++;
@@ -105,26 +131,14 @@ void ht_put(hashtable_t *ht, void *key, void *value)
 
 void* ht_get(hashtable_t *ht, void *key)
 {
-    ht_key_value_pair_t *kv_pair;
-    void *retval = NULL;
+    void *value = NULL;
+    ht_key_value_pair_t *entry = find_entry(ht, key);
 
-    unsigned long key_hash = hash(ht->hash_value_function(key));
-    size_t slot_index = (key_hash % ht->capacity);
-    linkedlist_t *collision_list = ht->hash_slots[slot_index];
-
-    if (NULL != collision_list) {
-        ll_iter_t *iter = ll_get_iter(collision_list);
-        while (ll_has_next(iter)) {
-            ll_node_t *node = ll_next(iter);
-            kv_pair = (ht_key_value_pair_t*) (node->value);
-            if (ht->key_comparator_function(key, kv_pair->key) == 0) {
-                retval = kv_pair->value;
-                break;
-            }
-        }
+    if (NULL != entry) {
+        value = entry->value;
     }
 
-    return retval;
+    return value;
 }
 
 void* ht_remove(hashtable_t *ht, void *key)

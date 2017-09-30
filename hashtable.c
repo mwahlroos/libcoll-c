@@ -3,7 +3,6 @@
  */
 
 #include <stdlib.h>
-#include <stdbool.h>
 #include "hashtable.h"
 
 #define HASHTABLE_DEFAULT_INIT_SIZE     100

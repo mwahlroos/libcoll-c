@@ -1,5 +1,7 @@
-#include "linkedlist_test.c"
-#include "hashtable_test.c"
+#include <stdlib.h>
+
+#include "linkedlist_test.h"
+#include "hashtable_test.h"
 
 int main()
 {

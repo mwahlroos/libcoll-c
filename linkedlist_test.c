@@ -5,10 +5,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "linkedlist.h"
-#include "node.h"
+#include "linkedlist_test.h"
 
-int intcmp(void *value1, void *value2)
-{
+static int intcmp(void *value1, void *value2) {
     int *a = (int*) value1;
     int *b = (int*) value2;
     int cmpval;
@@ -22,8 +21,7 @@ int intcmp(void *value1, void *value2)
     return cmpval;
 }
 
-void print_node_as_int_with_index(ll_node_t *node, int index)
-{
+static void print_node_as_int_with_index(ll_node_t *node, int index) {
     int *intval = (int*) node->value;
     if (index >= 0) {
         printf("%d ", index);
@@ -31,13 +29,17 @@ void print_node_as_int_with_index(ll_node_t *node, int index)
     printf("(node at 0x%x):\t%d (at 0x%x)\n", (unsigned) node, *intval, (unsigned) intval);
 }
 
-void print_node_as_int(ll_node_t *node)
-{
+static void print_node_as_int(ll_node_t *node) {
     print_node_as_int_with_index(node, -1);
 }
 
-void print_int_list(linkedlist_t *list)
-{
+static void add_int_to_list(linkedlist_t *list, int value) {
+    int *value_ptr = (int*) malloc (sizeof(int));
+    *value_ptr = value;
+    ll_append(list, value_ptr);
+}
+
+static void print_int_list(linkedlist_t *list) {
     printf("List length: %d\n", list->length);
     printf("Head: ");
     print_node_as_int(list->head);
@@ -56,22 +58,13 @@ void print_int_list(linkedlist_t *list)
     ll_drop_iter(iter);
 }
 
-void add_int_to_list(linkedlist_t *list, int value)
-{
-    int *value_ptr = (int*) malloc (sizeof(int));
-    *value_ptr = value;
-    ll_append(list, value_ptr);
-}
-
-void insert_int_at_index(linkedlist_t *list, int value, size_t index)
-{
+static void insert_int_at_index(linkedlist_t *list, int value, size_t index) {
     int *value_ptr = (int*) malloc (sizeof(int));
     *value_ptr = value;
     ll_insert(list, value_ptr, index);
 }
 
-void test_iter_at(linkedlist_t *list, size_t init_index)
-{
+static void test_iter_at(linkedlist_t *list, size_t init_index) {
     ll_iter_t *iter = ll_get_iter_at(list, init_index);
     printf("Iterating forward from index %d\n", init_index);
     ll_node_t *node;
@@ -142,8 +135,7 @@ void test_iter_at(linkedlist_t *list, size_t init_index)
 
 }
 
-int ll_test_main()
-{
+int ll_test_main() {
     linkedlist_t *list1 = ll_init(&intcmp);
 
     int arrlen = 5;

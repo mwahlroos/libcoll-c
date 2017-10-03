@@ -124,11 +124,11 @@ static void test_iter_at(linkedlist_t *list, size_t init_index) {
             free(node->value);
             ll_remove_last_returned(removal_iter);
         }
-        printf("The iterator should have no previous node now... ");
+        printf("Checking that the iterator has no previous node now... ");
         if (ll_has_previous(removal_iter)) {
-            printf("but it does!\n");
+            printf("FAIL\n");
         } else {
-            printf("and it doesn't\n");
+            printf("OK\n");
         }
         ll_drop_iter(removal_iter);
     }
@@ -136,7 +136,7 @@ static void test_iter_at(linkedlist_t *list, size_t init_index) {
 }
 
 int ll_test_main() {
-    linkedlist_t *list1 = ll_init(&intcmp);
+    linkedlist_t *list1 = ll_init();
 
     int arrlen = 5;
     int intarr[] = { 2, 3, 5, 7, 11 };
@@ -147,7 +147,7 @@ int ll_test_main() {
     }
     int insert_test_val = 314;
     size_t insert_test_index = 3U;
-    printf("Trying to insert %d at %d\n", insert_test_val, insert_test_index);
+    printf("Trying to insert %d at %lu\n", insert_test_val, insert_test_index);
     insert_int_at_index(list1, insert_test_val, insert_test_index);
     print_int_list(list1);
 

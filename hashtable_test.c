@@ -4,6 +4,7 @@
 #include "hashtable_test.h"
 
 int ht_test_main() {
+    hashtable_t *ht = ht_init();
     return EXIT_SUCCESS;
 }
 

@@ -28,6 +28,9 @@ debug:
 test: so
 	$(CC) $(CFLAGS) $(TEST_SRC) -o $(TEST_PROG) -L. -ldatastruct -lcheck
 
+debugtest: debug
+	$(CC) $(CFLAGS) $(TEST_SRC) -o $(TEST_PROG) -L. -ldatastruct -lcheck
+
 clean:
 	rm -f $(OBJS) $(LIB_SONAME) $(LIB_FILENAME) $(LIB_BASENAME) $(TEST_PROG)
 

@@ -23,18 +23,26 @@ END_TEST
 
 START_TEST(linkedlist_populate_and_iterate)
 {
-    printf("starting test linkedlist_populate_and_iterate");
     linkedlist_t *list = ll_init();
 
     int *testint1 = (int*) malloc(sizeof(int));
     int *testint2 = (int*) malloc(sizeof(int));
+    int *testint3 = (int*) malloc(sizeof(int));
+    int *testint4 = (int*) malloc(sizeof(int));
 
-    *testint1 = 3;
-    *testint2 = 5;
+    *testint1 = 2;
+    *testint2 = 3;
+    *testint3 = 5;
+    *testint4 = 8;
 
+    /* populate the list */
     ll_append(list, testint1);
     ll_append(list, testint2);
+    ll_append(list, testint3);
+    ll_append(list, testint4);
+    ck_assert_int_eq(ll_length(list), 4);
 
+    /* test iteration and retrieval */
     ll_iter_t *iter = ll_get_iter(list);
     ck_assert(ll_has_next(iter));
     ck_assert_int_eq(*testint1, *((int*) ll_next(iter)->value));
@@ -43,6 +51,30 @@ START_TEST(linkedlist_populate_and_iterate)
     ck_assert_int_eq(*testint2, *((int*) ll_next(iter)->value));
 
     ll_drop_iter(iter);
+
+    /* test removal */
+    char success = ll_remove(list, (void*) testint1);
+    ck_assert_int_eq(success, 1);
+    ck_assert_int_eq(ll_length(list), 3);
+
+    /* test iterator at */
+    iter = ll_get_iter_at(list, 1);
+    ck_assert(ll_has_next(iter));
+    ck_assert_int_eq(*testint3, *((int*) ll_next(iter)->value));
+
+    /* test removal through iterator */
+    ll_remove_last_returned(iter);
+    ck_assert_int_eq(ll_length(list), 2);
+
+    /* check that the last entry on the list is still accessible */
+    ck_assert(ll_has_next(iter));
+    ck_assert_int_eq(*testint4, *((int*) ll_next(iter)->value));
+
+    /* should  be at the end of the list */
+    ck_assert(!ll_has_next(iter));
+
+    ll_drop_iter(iter);
+
     ll_deinit(list);
 }
 END_TEST
@@ -67,6 +99,10 @@ Suite *datastruct_suite(void)
 
 int main(void)
 {
+    /* basic non-interactive test runner, code adapted from the
+     * check library documentation
+     */
+
     int number_failed;
     Suite *s;
     SRunner *sr;

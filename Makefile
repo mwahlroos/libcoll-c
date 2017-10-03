@@ -25,10 +25,10 @@ debug:
 	ln -fs $(LIB_FILENAME) $(LIB_SONAME)
 	ln -fs $(LIB_SONAME) $(LIB_BASENAME)
 
-test: so
+tests: so
 	$(CC) $(CFLAGS) $(TEST_SRC) -o $(TEST_PROG) -L. -ldatastruct -lcheck
 
-debugtest: debug
+debugtests: debug
 	$(CC) $(CFLAGS) $(TEST_SRC) -o $(TEST_PROG) -L. -ldatastruct -lcheck
 
 clean:

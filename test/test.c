@@ -40,7 +40,7 @@ START_TEST(linkedlist_populate_and_iterate)
     ll_append(list, testint2);
     ll_append(list, testint3);
     ll_append(list, testint4);
-    ck_assert_int_eq(ll_length(list), 4);
+    ck_assert_uint_eq(ll_length(list), 4);
     ck_assert_int_eq(ll_index_of(list, testint3), 2);
     ck_assert(ll_contains(list, testint4));
 
@@ -57,7 +57,7 @@ START_TEST(linkedlist_populate_and_iterate)
     /* test removal */
     char success = ll_remove(list, (void*) testint1);
     ck_assert_int_eq(success, 1);
-    ck_assert_int_eq(ll_length(list), 3);
+    ck_assert_uint_eq(ll_length(list), 3);
 
     /* test iterator at */
     iter = ll_get_iter_at(list, 1);
@@ -66,7 +66,7 @@ START_TEST(linkedlist_populate_and_iterate)
 
     /* test removal through iterator */
     ll_remove_last_returned(iter);
-    ck_assert_int_eq(ll_length(list), 2);
+    ck_assert_uint_eq(ll_length(list), 2);
 
     /* check that the last entry on the list is still accessible */
     ck_assert(ll_has_next(iter));

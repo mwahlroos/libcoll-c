@@ -120,33 +120,33 @@ void ll_drop_iter(ll_iter_t *iter);
 
 /*
  * Returns TRUE if the given iterator has a node available for retrieving with
- * a call to ll_next, and FALSE if not.
+ * a call to ll_iter_next, and FALSE if not.
  */
-char ll_has_next(ll_iter_t *iter);
+char ll_iter_has_next(ll_iter_t *iter);
 
 /*
  * Returns TRUE if the given iterator has a node available for retrieving with
- * a call to ll_previous, and FALSE if not.
+ * a call to ll_iter_previous, and FALSE if not.
  */
-char ll_has_previous(ll_iter_t *iter);
+char ll_iter_has_previous(ll_iter_t *iter);
 
 /*
  * Advances the iterator over the next node on the list.
  * Returns: the node that was passed over, or NULL if none
  */
-ll_node_t* ll_next(ll_iter_t *iter);
+ll_node_t* ll_iter_next(ll_iter_t *iter);
 
 /*
  * Moves the iterator over the previous node on the list.
  * Returns: the node that was passed over, or NULL if none
  */
-ll_node_t* ll_previous(ll_iter_t *iter);
+ll_node_t* ll_iter_previous(ll_iter_t *iter);
 
 /*
  * Removes the node last returned by the given iterator.
  * Note that this does not free any memory allocated for the stored value itself.
  */
-void ll_remove_last_returned(ll_iter_t *iter);
+void ll_iter_remove(ll_iter_t *iter);
 
 /*
  * Returns the current length of the given linked list.

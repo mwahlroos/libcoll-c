@@ -49,8 +49,8 @@ static void print_int_list(linkedlist_t *list) {
     ll_iter_t *iter = ll_get_iter(list);
     ll_node_t *node;
     int counter = 0;
-    while (ll_has_next(iter)) {
-        node = ll_next(iter);
+    while (ll_iter_has_next(iter)) {
+        node = ll_iter_next(iter);
         print_node_as_int_with_index(node, counter);
         counter++;
     }
@@ -68,14 +68,14 @@ static void test_iter_at(linkedlist_t *list, size_t init_index) {
     ll_iter_t *iter = ll_get_iter_at(list, init_index);
     printf("Iterating forward from index %d\n", init_index);
     ll_node_t *node;
-    while (ll_has_next(iter)) {
-        node = ll_next(iter);
+    while (ll_iter_has_next(iter)) {
+        node = ll_iter_next(iter);
         print_node_as_int(node);
     }
     printf("\n");
     printf("Iterating backwards\n");
-    while (ll_has_previous(iter)) {
-        node = ll_previous(iter);
+    while (ll_iter_has_previous(iter)) {
+        node = ll_iter_previous(iter);
         print_node_as_int(node);
     }
     ll_drop_iter(iter);
@@ -83,34 +83,34 @@ static void test_iter_at(linkedlist_t *list, size_t init_index) {
 
     printf("Testing node removal\n");
     iter = ll_get_iter_at(list, init_index);
-    if (ll_has_next(iter)) {
-        node = ll_next(iter);
+    if (ll_iter_has_next(iter)) {
+        node = ll_iter_next(iter);
         printf("Retrieved node: ");
         print_node_as_int(node);
         printf("Removing...\n");
         free(node->value);
-        ll_remove_last_returned(iter);
+        ll_iter_remove(iter);
         printf("\n");
 
         print_int_list(list);
 
         printf("Trying to remove the first node...\n");
-        while (ll_has_previous(iter)) {
-            node = ll_previous(iter);
+        while (ll_iter_has_previous(iter)) {
+            node = ll_iter_previous(iter);
         }
         free(node->value);
-        ll_remove_last_returned(iter);
+        ll_iter_remove(iter);
 
         print_int_list(list);
 
         printf("Trying to remove the last node...\n");
-        while (ll_has_next(iter)) {
-            node = ll_next(iter);
+        while (ll_iter_has_next(iter)) {
+            node = ll_iter_next(iter);
         }
         printf("Iteration finished\n");
         print_node_as_int(node->previous);
         free(node->value);
-        ll_remove_last_returned(iter);
+        ll_iter_remove(iter);
 
         print_int_list(list);
 
@@ -118,14 +118,14 @@ static void test_iter_at(linkedlist_t *list, size_t init_index) {
 
         printf("Trying to remove all remaining nodes using a new iterator...\n");
         ll_iter_t *removal_iter = ll_get_iter(list);
-        while (ll_has_next(removal_iter)) {
-            node = ll_next(removal_iter);
+        while (ll_iter_has_next(removal_iter)) {
+            node = ll_iter_next(removal_iter);
             print_node_as_int(node);
             free(node->value);
-            ll_remove_last_returned(removal_iter);
+            ll_iter_remove(removal_iter);
         }
         printf("Checking that the iterator has no previous node now... ");
-        if (ll_has_previous(removal_iter)) {
+        if (ll_iter_has_previous(removal_iter)) {
             printf("FAIL\n");
         } else {
             printf("OK\n");

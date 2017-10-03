@@ -30,11 +30,11 @@ static ht_key_value_pair_t* find_entry(hashtable_t *ht, void *key)
 
     if (NULL != collision_list) {
         ll_iter_t *iter = ll_get_iter(collision_list);
-        while (ll_has_next(iter)) {
+        while (ll_iter_has_next(iter)) {
             ht_key_value_pair_t *entry_tmp;
             void *key_tmp;
 
-            ll_node_t *node = ll_next(iter);
+            ll_node_t *node = ll_iter_next(iter);
             entry_tmp = (ht_key_value_pair_t*) (node->value);
             key_tmp = entry_tmp->key;
 
@@ -165,12 +165,12 @@ void* ht_remove(hashtable_t *ht, void *key)
 
     if (NULL != collision_list) {
         ll_iter_t *iter = ll_get_iter(collision_list);
-        while (ll_has_next(iter)) {
-            ll_node_t *node = ll_next(iter);
+        while (ll_iter_has_next(iter)) {
+            ll_node_t *node = ll_iter_next(iter);
             kv_pair = (ht_key_value_pair_t*) (node->value);
             if (ht->key_comparator_function(key, kv_pair->key) == 0) {
                 retval = kv_pair->value;
-                ll_remove_last_returned(iter);
+                ll_iter_remove(iter);
                 ht->total_entries--;
             }
         }

@@ -46,11 +46,11 @@ START_TEST(linkedlist_populate_and_iterate)
 
     /* test iteration and retrieval */
     ll_iter_t *iter = ll_get_iter(list);
-    ck_assert(ll_has_next(iter));
-    ck_assert_int_eq(*testint1, *((int*) ll_next(iter)->value));
+    ck_assert(ll_iter_has_next(iter));
+    ck_assert_int_eq(*testint1, *((int*) ll_iter_next(iter)->value));
 
-    ck_assert(ll_has_next(iter));
-    ck_assert_int_eq(*testint2, *((int*) ll_next(iter)->value));
+    ck_assert(ll_iter_has_next(iter));
+    ck_assert_int_eq(*testint2, *((int*) ll_iter_next(iter)->value));
 
     ll_drop_iter(iter);
 
@@ -61,19 +61,19 @@ START_TEST(linkedlist_populate_and_iterate)
 
     /* test iterator at */
     iter = ll_get_iter_at(list, 1);
-    ck_assert(ll_has_next(iter));
-    ck_assert_int_eq(*testint3, *((int*) ll_next(iter)->value));
+    ck_assert(ll_iter_has_next(iter));
+    ck_assert_int_eq(*testint3, *((int*) ll_iter_next(iter)->value));
 
     /* test removal through iterator */
-    ll_remove_last_returned(iter);
+    ll_iter_remove(iter);
     ck_assert_uint_eq(ll_length(list), 2);
 
     /* check that the last entry on the list is still accessible */
-    ck_assert(ll_has_next(iter));
-    ck_assert_int_eq(*testint4, *((int*) ll_next(iter)->value));
+    ck_assert(ll_iter_has_next(iter));
+    ck_assert_int_eq(*testint4, *((int*) ll_iter_next(iter)->value));
 
     /* should  be at the end of the list */
-    ck_assert(!ll_has_next(iter));
+    ck_assert(!ll_iter_has_next(iter));
 
     ll_drop_iter(iter);
 

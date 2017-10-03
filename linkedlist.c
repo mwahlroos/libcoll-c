@@ -49,9 +49,9 @@ void ll_deinit(linkedlist_t *list)
 {
     /* remove all nodes first to make sure the memory gets freed */
     ll_iter_t *iter = ll_get_iter(list);
-    while (ll_has_next(iter)) {
-        ll_next(iter);
-        ll_remove_last_returned(iter);
+    while (ll_iter_has_next(iter)) {
+        ll_iter_next(iter);
+        ll_iter_remove(iter);
     }
     ll_drop_iter(iter);
 
@@ -139,10 +139,10 @@ char ll_remove(linkedlist_t *list, void *value)
     char success = 0;
     ll_iter_t *iter = ll_get_iter(list);
 
-    while (ll_has_next(iter) && !success) {
-        void *entry_value = ll_next(iter)->value;
+    while (ll_iter_has_next(iter) && !success) {
+        void *entry_value = ll_iter_next(iter)->value;
         if (list->compare_function(value, entry_value) == 0) {
-            ll_remove_last_returned(iter);
+            ll_iter_remove(iter);
             success = 1;
         }
     }
@@ -171,7 +171,7 @@ ll_iter_t* ll_get_iter_at(linkedlist_t *list, size_t index)
     } else {
         size_t counter = 0;
         while (counter < index) {
-            ll_next(iter);
+            ll_iter_next(iter);
             counter++;
         }
     }
@@ -183,17 +183,17 @@ void ll_drop_iter(ll_iter_t *iter)
     free(iter);
 }
 
-char ll_has_next(ll_iter_t *iter)
+char ll_iter_has_next(ll_iter_t *iter)
 {
     return (NULL != iter->next);
 }
 
-char ll_has_previous(ll_iter_t *iter)
+char ll_iter_has_previous(ll_iter_t *iter)
 {
     return (NULL != iter->previous);
 }
 
-ll_node_t* ll_next(ll_iter_t *iter)
+ll_node_t* ll_iter_next(ll_iter_t *iter)
 {
     ll_node_t *node = iter->next;
     if (NULL != node) {
@@ -205,7 +205,7 @@ ll_node_t* ll_next(ll_iter_t *iter)
     return node;
 }
 
-ll_node_t* ll_previous(ll_iter_t *iter)
+ll_node_t* ll_iter_previous(ll_iter_t *iter)
 {
     ll_node_t *node = iter->previous;
     if (NULL != node) {
@@ -217,7 +217,7 @@ ll_node_t* ll_previous(ll_iter_t *iter)
     return node;
 }
 
-void ll_remove_last_returned(ll_iter_t *iter)
+void ll_iter_remove(ll_iter_t *iter)
 {
     if (NULL != iter->last_returned) {
         if (iter->last_skip_forward) {

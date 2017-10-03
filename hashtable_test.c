@@ -14,8 +14,8 @@ void print_hashtable(hashtable_t *ht) {
         ll_iter_t *iter = ll_get_iter(collision_list);
 
         printf("%lu -> \t", i);
-        while (ll_has_next(iter)) {
-            ll_node_t *node = ll_next(iter);
+        while (ll_iter_has_next(iter)) {
+            ll_node_t *node = ll_iter_next(iter);
             ht_key_value_pair_t *pair = (ht_key_value_pair_t*) node->value;
             printf("%p: %p\n", (void*) pair->key, pair->value);
         }

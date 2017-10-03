@@ -148,6 +148,12 @@ void* ht_get(hashtable_t *ht, void *key)
     return value;
 }
 
+char ht_contains(hashtable_t *ht, void *key)
+{
+    ht_key_value_pair_t *entry = find_entry(ht, key);
+    return NULL != entry;
+}
+
 void* ht_remove(hashtable_t *ht, void *key)
 {
     ht_key_value_pair_t *kv_pair;

@@ -81,6 +81,8 @@ void ll_insert(linkedlist_t *list, void *value, size_t index);
  */
 int ll_index_of(linkedlist_t *list, void *value);
 
+char ll_contains(linkedlist_t *list, void *value);
+
 /*
  * Removes the first list node containing the given value if such a node exists.
  * Note that this does not free any memory allocated for the stored value itself.

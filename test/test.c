@@ -41,6 +41,8 @@ START_TEST(linkedlist_populate_and_iterate)
     ll_append(list, testint3);
     ll_append(list, testint4);
     ck_assert_int_eq(ll_length(list), 4);
+    ck_assert_int_eq(ll_index_of(list, testint3), 2);
+    ck_assert(ll_contains(list, testint4));
 
     /* test iteration and retrieval */
     ll_iter_t *iter = ll_get_iter(list);

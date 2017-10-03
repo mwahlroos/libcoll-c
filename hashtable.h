@@ -41,6 +41,8 @@ void ht_put(hashtable_t *ht, void *key, void *value);
 
 void* ht_get(hashtable_t *ht, void *key);
 
+char ht_contains(hashtable_t *ht, void *key);
+
 void* ht_remove(hashtable_t *ht, void *key);
 
 size_t ht_get_capacity(hashtable_t *ht);

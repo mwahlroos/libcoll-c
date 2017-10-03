@@ -129,6 +129,11 @@ int ll_index_of(linkedlist_t *list, void *value)
     return retval;
 }
 
+char ll_contains(linkedlist_t *list, void *value)
+{
+    return ll_index_of(list, value) != -1;
+}
+
 char ll_remove(linkedlist_t *list, void *value)
 {
     char success = 0;

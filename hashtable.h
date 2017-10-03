@@ -18,8 +18,10 @@ typedef struct ht_key_value_pair {
 
 typedef struct hashtable {
     linkedlist_t **hash_slots;
+    size_t load;
     size_t capacity;
-    size_t size;
+    size_t total_entries;
+    double max_load_factor;
     unsigned long (*hash_value_function)(void *key);
     int (*key_comparator_function)(void *key1, void *key2);
     int (*value_comparator_function)(void *value1, void *value2);
@@ -28,6 +30,7 @@ typedef struct hashtable {
 hashtable_t* ht_init();
 
 hashtable_t* ht_init_with_params(size_t init_capacity,
+                                 double max_load_factor,
                                  unsigned long (*hash_value_function)(void*),
                                  int (*key_comparator_function)(void *key1, void *key2),
                                  int (*value_comparator_function)(void *value1, void *value2));

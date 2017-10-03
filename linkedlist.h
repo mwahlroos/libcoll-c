@@ -84,9 +84,9 @@ int ll_index_of(linkedlist_t *list, void *value);
 /*
  * Removes the first list node containing the given value if such a node exists.
  * Note that this does not free any memory allocated for the stored value itself.
- * Returns: a pointer to the value contained by the removed node, or NULL if none
+ * Returns: true if removal was successful, false if no matching node was found
  */
-void* ll_remove(linkedlist_t *list, void *value);
+char ll_remove(linkedlist_t *list, void *value);
 
 /*
  * Initializes a new iterator for the given list. The new iterator will point

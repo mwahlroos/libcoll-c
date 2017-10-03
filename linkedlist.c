@@ -111,14 +111,40 @@ void ll_insert(linkedlist_t *list, void *value, size_t index)
 
 int ll_index_of(linkedlist_t *list, void *value)
 {
-    /* FIXME: stub */
-    return -1;
+    int retval = -1;
+    int counter = 0;
+
+    ll_node_t *node = list->head;
+
+    while(NULL != node) {
+        if (list->compare_function(value, node->value) == 0) {
+            retval = counter;
+            break;
+        } else {
+            node = node->next;
+            counter++;
+        }
+    }
+
+    return retval;
 }
 
-void* ll_remove(linkedlist_t *list, void *value)
+char ll_remove(linkedlist_t *list, void *value)
 {
-    /* FIXME: stub */
-    return NULL;
+    char success = 0;
+    ll_iter_t *iter = ll_get_iter(list);
+
+    while (ll_has_next(iter) && !success) {
+        void *entry_value = ll_next(iter)->value;
+        if (list->compare_function(value, entry_value) == 0) {
+            ll_remove_last_returned(iter);
+            success = 1;
+        }
+    }
+
+    ll_drop_iter(iter);
+
+    return success;
 }
 
 

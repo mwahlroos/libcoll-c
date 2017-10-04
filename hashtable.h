@@ -11,10 +11,10 @@
 #ifndef HASHTABLE_H
 #define HASHTABLE_H
 
-typedef struct ht_key_value_pair {
+typedef struct ht_entry {
     void *key;
     void *value;
-} ht_key_value_pair_t;
+} ht_entry_t;
 
 typedef struct hashtable {
     linkedlist_t **hash_slots;

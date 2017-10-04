@@ -23,19 +23,19 @@ static linkedlist_t* find_collision_list(hashtable_t *ht, void *key)
     return collision_list;
 }
 
-static ht_key_value_pair_t* find_entry(hashtable_t *ht, void *key)
+static ht_entry_t* find_entry(hashtable_t *ht, void *key)
 {
-    ht_key_value_pair_t *matching_entry = NULL;
+    ht_entry_t *matching_entry = NULL;
     linkedlist_t *collision_list = find_collision_list(ht, key);
 
     if (NULL != collision_list) {
         ll_iter_t *iter = ll_get_iter(collision_list);
         while (ll_iter_has_next(iter)) {
-            ht_key_value_pair_t *entry_tmp;
+            ht_entry_t *entry_tmp;
             void *key_tmp;
 
             ll_node_t *node = ll_iter_next(iter);
-            entry_tmp = (ht_key_value_pair_t*) (node->value);
+            entry_tmp = (ht_entry_t*) (node->value);
             key_tmp = entry_tmp->key;
 
             if (ht->key_comparator_function(key, key_tmp) == 0) {
@@ -103,7 +103,7 @@ void ht_deinit(hashtable_t *ht)
 {
     for (size_t i=0; i<ht->capacity; i++) {
         linkedlist_t *list = ht->hash_slots[i];
-        /* FIXME: free key-value pair entries (ht_key_value_pair_t) too */
+        /* FIXME: free key-value pair entries (ht_entry_t) too */
         if (NULL != list) {
             free(list);
         }
@@ -124,13 +124,13 @@ void ht_put(hashtable_t *ht, void *key, void *value)
         ht->load++;
     }
 
-    ht_key_value_pair_t *existing_entry = find_entry(ht, key);
+    ht_entry_t *existing_entry = find_entry(ht, key);
 
     if (NULL != existing_entry) {
         /* replace the value in the existing entry with the new value */
         existing_entry->value = value;
     } else {
-        ht_key_value_pair_t *new_kv_pair = (ht_key_value_pair_t*) malloc (sizeof(ht_key_value_pair_t));
+        ht_entry_t *new_kv_pair = (ht_entry_t*) malloc (sizeof(ht_entry_t));
         ll_append(collision_list, new_kv_pair);
         ht->total_entries++;
     }
@@ -139,7 +139,7 @@ void ht_put(hashtable_t *ht, void *key, void *value)
 void* ht_get(hashtable_t *ht, void *key)
 {
     void *value = NULL;
-    ht_key_value_pair_t *entry = find_entry(ht, key);
+    ht_entry_t *entry = find_entry(ht, key);
 
     if (NULL != entry) {
         value = entry->value;
@@ -150,13 +150,13 @@ void* ht_get(hashtable_t *ht, void *key)
 
 char ht_contains(hashtable_t *ht, void *key)
 {
-    ht_key_value_pair_t *entry = find_entry(ht, key);
+    ht_entry_t *entry = find_entry(ht, key);
     return NULL != entry;
 }
 
 void* ht_remove(hashtable_t *ht, void *key)
 {
-    ht_key_value_pair_t *kv_pair;
+    ht_entry_t *kv_pair;
     void *retval = NULL;
 
     unsigned long key_hash = hash(ht->hash_value_function(key));
@@ -167,7 +167,7 @@ void* ht_remove(hashtable_t *ht, void *key)
         ll_iter_t *iter = ll_get_iter(collision_list);
         while (ll_iter_has_next(iter)) {
             ll_node_t *node = ll_iter_next(iter);
-            kv_pair = (ht_key_value_pair_t*) (node->value);
+            kv_pair = (ht_entry_t*) (node->value);
             if (ht->key_comparator_function(key, kv_pair->key) == 0) {
                 retval = kv_pair->value;
                 ll_iter_remove(iter);

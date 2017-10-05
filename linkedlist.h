@@ -8,12 +8,19 @@
 #ifndef LINKEDLIST_H
 #define LINKEDLIST_H
 
+/*
+ * Data type for nodes stored in the list.
+ * The nodes contain the stored value as a member.
+ */
 typedef struct ll_node {
     struct ll_node *next;
     struct ll_node *previous;
     void *value;
 } ll_node_t;
 
+/*
+ * Data type for a linked lists.
+ */
 typedef struct linkedlist {
     size_t length;
     ll_node_t *head;
@@ -21,6 +28,12 @@ typedef struct linkedlist {
     int (*compare_function)(void *value1, void *value2);
 } linkedlist_t;
 
+/*
+ * Data type for an iterator over a linked list.
+ * There is no need to access the members of an iterator directly
+ * from code using an iterator; rather, iterator-related functions
+ * should be used for all access.
+ */
 typedef struct ll_iter {
     ll_node_t *next;
     ll_node_t *previous;
@@ -81,6 +94,10 @@ void ll_insert(linkedlist_t *list, void *value, size_t index);
  */
 int ll_index_of(linkedlist_t *list, void *value);
 
+/*
+ * Checks whether the given list contains the given value.
+ * Returns true (nonzero) if the list contains the value, false (zero) if not.
+ */
 char ll_contains(linkedlist_t *list, void *value);
 
 /*

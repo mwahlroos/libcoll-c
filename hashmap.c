@@ -103,8 +103,12 @@ void ccoll_ll_hm_deinit(ccoll_ll_hashmap_t *hm)
 {
     for (size_t i=0; i<hm->capacity; i++) {
         ccoll_linkedlist_t *list = hm->hash_slots[i];
-        /* FIXME: free key-value pair entries (hm_entry_t) too */
         if (NULL != list) {
+            ccoll_ll_iter_t *iter = ccoll_ll_get_iter(list);
+            while (ccoll_ll_iter_has_next(iter)) {
+                ccoll_ll_hm_entry_t *entry = (ccoll_ll_hm_entry_t*) ccoll_ll_iter_next(iter);
+                free(entry);
+            }
             free(list);
         }
     }

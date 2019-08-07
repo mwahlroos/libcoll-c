@@ -65,9 +65,9 @@ static int  _verify_black_height_of_subtree(ccoll_treemap_node_t *subtree_root);
  *
  * Returns: a pointer to the newly allocated tree
  */
-ccoll_treemap_t* ccoll_tm_init()
+ccoll_treemap_t* ccoll_treemap_init()
 {
-    return ccoll_tm_init_with_comparator(NULL);
+    return ccoll_treemap_init_with_comparator(NULL);
 }
 
 /*
@@ -77,7 +77,7 @@ ccoll_treemap_t* ccoll_tm_init()
  *
  * Returns: a pointer to the newly allocated tree
  */
-ccoll_treemap_t* ccoll_tm_init_with_comparator (int (*key_comparator)(void *key1, void *key2))
+ccoll_treemap_t* ccoll_treemap_init_with_comparator (int (*key_comparator)(void *key1, void *key2))
 {
     DEBUG("treemap initializing\n");
     ccoll_treemap_t *tree = (ccoll_treemap_t*) malloc(sizeof(ccoll_treemap_t));
@@ -106,7 +106,7 @@ ccoll_treemap_t* ccoll_tm_init_with_comparator (int (*key_comparator)(void *key1
  * Params:
  *      tree -- the binary tree to be deinitialized
  */
-void ccoll_tm_deinit(ccoll_treemap_t *tree)
+void ccoll_treemap_deinit(ccoll_treemap_t *tree)
 {
     /* deallocate all nodes first to make sure their memory gets freed */
     deinit_subtree(tree->root, false);
@@ -123,7 +123,7 @@ void ccoll_tm_deinit(ccoll_treemap_t *tree)
  * Params:
  *      tree -- the binary tree to be deinitialized
  */
-void ccoll_tm_deinit_and_delete_contents(ccoll_treemap_t *tree)
+void ccoll_treemap_deinit_and_delete_contents(ccoll_treemap_t *tree)
 {
     deinit_subtree(tree->root, true);
     free(tree);
@@ -142,7 +142,7 @@ void ccoll_tm_deinit_and_delete_contents(ccoll_treemap_t *tree)
  * Returns: a pointer to the newly created node, or NULL if adding the node
  *          failed due to an already existing key or due to malloc failing
  */
-ccoll_treemap_node_t* ccoll_tm_add(ccoll_treemap_t *tree, void *key, void *value)
+ccoll_treemap_node_t* ccoll_treemap_add(ccoll_treemap_t *tree, void *key, void *value)
 {
     DEBUG("Adding new key\n");
     ccoll_treemap_node_t *new_node;
@@ -205,7 +205,7 @@ ccoll_treemap_node_t* ccoll_tm_add(ccoll_treemap_t *tree, void *key, void *value
  *
  * Returns: a pointer to the node with the given key, or NULL if none
  */
-ccoll_treemap_node_t* ccoll_tm_get(ccoll_treemap_t *tree, void *key)
+ccoll_treemap_node_t* ccoll_treemap_get(ccoll_treemap_t *tree, void *key)
 {
     ccoll_treemap_node_t *node = tree->root;
     while (NULL_NODE != node) {
@@ -237,9 +237,9 @@ ccoll_treemap_node_t* ccoll_tm_get(ccoll_treemap_t *tree, void *key)
  *
  * Returns: true if a node with the given key exists, false if not
  */
-bool ccoll_tm_contains(ccoll_treemap_t *tree, void *key)
+bool ccoll_treemap_contains(ccoll_treemap_t *tree, void *key)
 {
-    return (NULL != ccoll_tm_get(tree, key));
+    return (NULL != ccoll_treemap_get(tree, key));
 }
 
 /*
@@ -254,10 +254,10 @@ bool ccoll_tm_contains(ccoll_treemap_t *tree, void *key)
  *          The key in the struct will be set to NULL if no node with a
  *          matching key was found in the tree.
  */
-ccoll_treemap_entry_t ccoll_tm_remove(ccoll_treemap_t *tree, void *key)
+ccoll_treemap_entry_t ccoll_treemap_remove(ccoll_treemap_t *tree, void *key)
 {
     ccoll_treemap_entry_t entry;
-    ccoll_treemap_node_t *node = ccoll_tm_get(tree, key);
+    ccoll_treemap_node_t *node = ccoll_treemap_get(tree, key);
     if (NULL_NODE != node) {
         entry.key = node->key;
         entry.value = node->value;
@@ -279,7 +279,7 @@ ccoll_treemap_entry_t ccoll_tm_remove(ccoll_treemap_t *tree, void *key)
  *
  * Returns: the successor of the node, or NULL if the node has no successor
  */
-ccoll_treemap_node_t* ccoll_tm_get_successor(ccoll_treemap_node_t *node)
+ccoll_treemap_node_t* ccoll_treemap_get_successor(ccoll_treemap_node_t *node)
 {
     // algorithm adapted from CLRS
     DEBUGF("Finding successor for node @ %p\n", (void*) node);
@@ -303,14 +303,14 @@ ccoll_treemap_node_t* ccoll_tm_get_successor(ccoll_treemap_node_t *node)
 
 /*
  * Finds the predecessor of the given node in the tree.
- * This function is symmetrical to ccoll_tm_get_successor.
+ * This function is symmetrical to ccoll_treemap_get_successor.
  *
  * Params:
  *      node -- the node whose predecessor is being sought
  *
  * Returns: the predecessor of the node, or NULL if the node has no predecessor
  */
-ccoll_treemap_node_t* ccoll_tm_get_predecessor(ccoll_treemap_node_t *node)
+ccoll_treemap_node_t* ccoll_treemap_get_predecessor(ccoll_treemap_node_t *node)
 {
     // algorithm adapted from CLRS
     DEBUGF("Finding predecessor for node @ %p\n", (void*) node);
@@ -341,7 +341,7 @@ ccoll_treemap_node_t* ccoll_tm_get_predecessor(ccoll_treemap_node_t *node)
  *
  * Returns: the depth of the node
  */
-int ccoll_tm_depth_of(ccoll_treemap_t *tree, void *key)
+int ccoll_treemap_depth_of(ccoll_treemap_t *tree, void *key)
 {
     ccoll_treemap_node_t *node = tree->root;
     int depth = 0;
@@ -384,7 +384,7 @@ int ccoll_tm_depth_of(ccoll_treemap_t *tree, void *key)
  *
  * Returns: a pointer to the new iterator
  */
-ccoll_treemap_iter_t* ccoll_tm_get_iterator(ccoll_treemap_t *tree)
+ccoll_treemap_iter_t* ccoll_treemap_get_iterator(ccoll_treemap_t *tree)
 {
     ccoll_treemap_iter_t *iter = (ccoll_treemap_iter_t*) malloc (sizeof(ccoll_treemap_iter_t));
     if (NULL != iter) {
@@ -406,7 +406,7 @@ ccoll_treemap_iter_t* ccoll_tm_get_iterator(ccoll_treemap_t *tree)
  * Params:
  *      iterator -- the iterator to deinitialize
  */
-void ccoll_tm_drop_iterator(ccoll_treemap_iter_t *iterator)
+void ccoll_treemap_drop_iterator(ccoll_treemap_iter_t *iterator)
 {
     free(iterator);
 }
@@ -420,7 +420,7 @@ void ccoll_tm_drop_iterator(ccoll_treemap_iter_t *iterator)
  *
  * Returns: true if there are more nodes to iterate over, false if not
  */
-bool ccoll_tm_has_next(ccoll_treemap_iter_t *iterator)
+bool ccoll_treemap_has_next(ccoll_treemap_iter_t *iterator)
 {
     return (NULL_NODE != iterator->next);
 }
@@ -433,11 +433,11 @@ bool ccoll_tm_has_next(ccoll_treemap_iter_t *iterator)
  *
  * Returns: the next node in the tree
  */
-ccoll_treemap_node_t* ccoll_tm_next(ccoll_treemap_iter_t *iterator)
+ccoll_treemap_node_t* ccoll_treemap_next(ccoll_treemap_iter_t *iterator)
 {
     ccoll_treemap_node_t *traversed_node = iterator->next;
     iterator->previous = traversed_node;
-    iterator->next = ccoll_tm_get_successor(traversed_node);
+    iterator->next = ccoll_treemap_get_successor(traversed_node);
     iterator->last_traversed_node = traversed_node;
 
     return traversed_node;
@@ -452,7 +452,7 @@ ccoll_treemap_node_t* ccoll_tm_next(ccoll_treemap_iter_t *iterator)
  *
  * Returns: true of there are more nodes to iterate over, false if not
  */
-bool ccoll_tm_has_previous(ccoll_treemap_iter_t *iterator)
+bool ccoll_treemap_has_previous(ccoll_treemap_iter_t *iterator)
 {
     return (NULL_NODE != iterator->previous);
 }
@@ -465,11 +465,11 @@ bool ccoll_tm_has_previous(ccoll_treemap_iter_t *iterator)
  *
  * Returns: the previous node in the tree
  */
-ccoll_treemap_node_t* ccoll_tm_previous(ccoll_treemap_iter_t *iterator)
+ccoll_treemap_node_t* ccoll_treemap_previous(ccoll_treemap_iter_t *iterator)
 {
     ccoll_treemap_node_t *traversed_node = iterator->previous;
     iterator->next = traversed_node;
-    iterator->previous = ccoll_tm_get_predecessor(traversed_node);
+    iterator->previous = ccoll_treemap_get_predecessor(traversed_node);
     iterator->last_traversed_node = traversed_node;
 
     return traversed_node;
@@ -487,16 +487,16 @@ ccoll_treemap_node_t* ccoll_tm_previous(ccoll_treemap_iter_t *iterator)
  * Params:
  *      iterator -- the iterator whose last traversed node is to be removed
  */
-void ccoll_tm_remove_last_traversed(ccoll_treemap_iter_t *iterator)
+void ccoll_treemap_remove_last_traversed(ccoll_treemap_iter_t *iterator)
 {
     if (NULL_NODE != iterator->last_traversed_node) {
         ccoll_treemap_node_t *to_be_removed = iterator->last_traversed_node;
 
         if (iterator->last_traversed_node == iterator->previous) {
-            iterator->previous = ccoll_tm_get_predecessor(iterator->previous);
+            iterator->previous = ccoll_treemap_get_predecessor(iterator->previous);
             iterator->last_traversed_node = NULL_NODE;
         } else {
-            iterator->next = ccoll_tm_get_successor(iterator->next);
+            iterator->next = ccoll_treemap_get_successor(iterator->next);
             iterator->last_traversed_node = NULL_NODE;
         }
         remove_node(iterator->tree, to_be_removed);
@@ -521,7 +521,7 @@ void ccoll_tm_remove_last_traversed(ccoll_treemap_iter_t *iterator)
  *
  * This function is for testing purposes.
  */
-bool _ccoll_tm_verify_red_black_conditions(ccoll_treemap_t *tree)
+bool _ccoll_treemap_verify_red_black_conditions(ccoll_treemap_t *tree)
 {
     bool tree_valid = true;
     if (NULL_NODE != tree->root && COLOR_RED == tree->root->color) {
@@ -577,7 +577,7 @@ static void remove_node(ccoll_treemap_t *tree, ccoll_treemap_node_t *node)
     if (NULL_NODE == node->left || NULL_NODE == node->right) {
         spliced_out_node = node;
     } else {
-        spliced_out_node = ccoll_tm_get_successor(node);
+        spliced_out_node = ccoll_treemap_get_successor(node);
     }
 
     DEBUGF("Actual node to splice out from the tree is @ %p\n",

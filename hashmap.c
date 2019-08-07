@@ -29,12 +29,12 @@ static ccoll_hashmap_entry_t* find_entry(ccoll_hashmap_t *hm, void *key)
     ccoll_linkedlist_t *collision_list = find_collision_list(hm, key);
 
     if (NULL != collision_list) {
-        ccoll_ll_iter_t *iter = ccoll_ll_get_iter(collision_list);
-        while (ccoll_ll_iter_has_next(iter)) {
+        ccoll_linkedlist_iter_t *iter = ccoll_linkedlist_get_iter(collision_list);
+        while (ccoll_linkedlist_iter_has_next(iter)) {
             ccoll_hashmap_entry_t *entry_tmp;
             void *key_tmp;
 
-            ccoll_ll_node_t *node = ccoll_ll_iter_next(iter);
+            ccoll_linkedlist_node_t *node = ccoll_linkedlist_iter_next(iter);
             entry_tmp = (ccoll_hashmap_entry_t*) (node->value);
             key_tmp = entry_tmp->key;
 
@@ -43,21 +43,21 @@ static ccoll_hashmap_entry_t* find_entry(ccoll_hashmap_t *hm, void *key)
                 break;
             }
         }
-        ccoll_ll_drop_iter(iter);
+        ccoll_linkedlist_drop_iter(iter);
     }
 
     return matching_entry;
 }
 
 
-ccoll_hashmap_t* ccoll_hm_init()
+ccoll_hashmap_t* ccoll_hashmap_init()
 {
-    return ccoll_hm_init_with_params(HASHMAP_DEFAULT_INIT_SIZE,
+    return ccoll_hashmap_init_with_params(HASHMAP_DEFAULT_INIT_SIZE,
                                      HASHMAP_DEFAULT_MAX_LOAD_FACTOR,
                                      NULL, NULL, NULL);
 }
 
-ccoll_hashmap_t* ccoll_hm_init_with_params(size_t init_capacity,
+ccoll_hashmap_t* ccoll_hashmap_init_with_params(size_t init_capacity,
                                            double max_load_factor,
                                            unsigned long (*hash_value_function)(void*),
                                            int (*key_comparator_function)(void *key1, void *key2),
@@ -99,14 +99,14 @@ ccoll_hashmap_t* ccoll_hm_init_with_params(size_t init_capacity,
     return hm;
 }
 
-void ccoll_hm_deinit(ccoll_hashmap_t *hm)
+void ccoll_hashmap_deinit(ccoll_hashmap_t *hm)
 {
     for (size_t i=0; i<hm->capacity; i++) {
         ccoll_linkedlist_t *list = hm->hash_slots[i];
         if (NULL != list) {
-            ccoll_ll_iter_t *iter = ccoll_ll_get_iter(list);
-            while (ccoll_ll_iter_has_next(iter)) {
-                ccoll_hashmap_entry_t *entry = (ccoll_hashmap_entry_t*) ccoll_ll_iter_next(iter);
+            ccoll_linkedlist_iter_t *iter = ccoll_linkedlist_get_iter(list);
+            while (ccoll_linkedlist_iter_has_next(iter)) {
+                ccoll_hashmap_entry_t *entry = (ccoll_hashmap_entry_t*) ccoll_linkedlist_iter_next(iter);
                 free(entry);
             }
             free(list);
@@ -116,7 +116,7 @@ void ccoll_hm_deinit(ccoll_hashmap_t *hm)
     free(hm);
 }
 
-void ccoll_hm_put(ccoll_hashmap_t *hm, void *key, void *value)
+void ccoll_hashmap_put(ccoll_hashmap_t *hm, void *key, void *value)
 {
     unsigned long key_hash = hash(hm->hash_value_function(key));
     size_t slot_index = (key_hash % hm->capacity);
@@ -124,7 +124,7 @@ void ccoll_hm_put(ccoll_hashmap_t *hm, void *key, void *value)
 
     if (NULL == collision_list) {
         collision_list = hm->hash_slots[slot_index]
-                       = ccoll_ll_init_with_comparator(hm->key_comparator_function);
+                       = ccoll_linkedlist_init_with_comparator(hm->key_comparator_function);
         hm->load++;
     }
 
@@ -135,12 +135,12 @@ void ccoll_hm_put(ccoll_hashmap_t *hm, void *key, void *value)
         existing_entry->value = value;
     } else {
         ccoll_hashmap_entry_t *new_kv_pair = (ccoll_hashmap_entry_t*) malloc (sizeof(ccoll_hashmap_entry_t));
-        ccoll_ll_append(collision_list, new_kv_pair);
+        ccoll_linkedlist_append(collision_list, new_kv_pair);
         hm->total_entries++;
     }
 }
 
-void* ccoll_hm_get(ccoll_hashmap_t *hm, void *key)
+void* ccoll_hashmap_get(ccoll_hashmap_t *hm, void *key)
 {
     void *value = NULL;
     ccoll_hashmap_entry_t *entry = find_entry(hm, key);
@@ -152,13 +152,13 @@ void* ccoll_hm_get(ccoll_hashmap_t *hm, void *key)
     return value;
 }
 
-char ccoll_hm_contains(ccoll_hashmap_t *hm, void *key)
+char ccoll_hashmap_contains(ccoll_hashmap_t *hm, void *key)
 {
     ccoll_hashmap_entry_t *entry = find_entry(hm, key);
     return NULL != entry;
 }
 
-void* ccoll_hm_remove(ccoll_hashmap_t *hm, void *key)
+void* ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key)
 {
     ccoll_hashmap_entry_t *kv_pair;
     void *retval = NULL;
@@ -168,13 +168,13 @@ void* ccoll_hm_remove(ccoll_hashmap_t *hm, void *key)
     ccoll_linkedlist_t *collision_list = hm->hash_slots[slot_index];
 
     if (NULL != collision_list) {
-        ccoll_ll_iter_t *iter = ccoll_ll_get_iter(collision_list);
-        while (ccoll_ll_iter_has_next(iter)) {
-            ccoll_ll_node_t *node = ccoll_ll_iter_next(iter);
+        ccoll_linkedlist_iter_t *iter = ccoll_linkedlist_get_iter(collision_list);
+        while (ccoll_linkedlist_iter_has_next(iter)) {
+            ccoll_linkedlist_node_t *node = ccoll_linkedlist_iter_next(iter);
             kv_pair = (ccoll_hashmap_entry_t*) (node->value);
             if (hm->key_comparator_function(key, kv_pair->key) == 0) {
                 retval = kv_pair->value;
-                ccoll_ll_iter_remove(iter);
+                ccoll_linkedlist_iter_remove(iter);
                 hm->total_entries--;
             }
         }
@@ -187,12 +187,12 @@ void* ccoll_hm_remove(ccoll_hashmap_t *hm, void *key)
     return retval;
 }
 
-size_t ccoll_hm_get_capacity(ccoll_hashmap_t *hm)
+size_t ccoll_hashmap_get_capacity(ccoll_hashmap_t *hm)
 {
     return hm->capacity;
 }
 
-size_t ccoll_hm_get_size(ccoll_hashmap_t *hm)
+size_t ccoll_hashmap_get_size(ccoll_hashmap_t *hm)
 {
     return hm->total_entries;
 }

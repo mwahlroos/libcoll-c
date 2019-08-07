@@ -52,43 +52,43 @@ typedef struct ccoll_treemap_iter {
 
 /* external functions */
 
-ccoll_treemap_t* ccoll_tm_init();
+ccoll_treemap_t* ccoll_treemap_init();
 
-ccoll_treemap_t* ccoll_tm_init_with_comparator(int (*key_comparator_func)(void *key1, void *key2));
+ccoll_treemap_t* ccoll_treemap_init_with_comparator(int (*key_comparator_func)(void *key1, void *key2));
 
-void ccoll_tm_deinit(ccoll_treemap_t *tree);
+void ccoll_treemap_deinit(ccoll_treemap_t *tree);
 
-void ccoll_tm_deinit_and_delete_contents(ccoll_treemap_t *tree);
+void ccoll_treemap_deinit_and_delete_contents(ccoll_treemap_t *tree);
 
-ccoll_treemap_node_t* ccoll_tm_add(ccoll_treemap_t *tree, void *key, void *value);
+ccoll_treemap_node_t* ccoll_treemap_add(ccoll_treemap_t *tree, void *key, void *value);
 
-ccoll_treemap_node_t* ccoll_tm_get(ccoll_treemap_t *tree, void *key);
+ccoll_treemap_node_t* ccoll_treemap_get(ccoll_treemap_t *tree, void *key);
 
-bool ccoll_tm_contains(ccoll_treemap_t *tree, void *key);
+bool ccoll_treemap_contains(ccoll_treemap_t *tree, void *key);
 
-ccoll_treemap_entry_t ccoll_tm_remove(ccoll_treemap_t *tree, void *key);
+ccoll_treemap_entry_t ccoll_treemap_remove(ccoll_treemap_t *tree, void *key);
 
-ccoll_treemap_node_t* ccoll_tm_get_successor(ccoll_treemap_node_t *node);
+ccoll_treemap_node_t* ccoll_treemap_get_successor(ccoll_treemap_node_t *node);
 
-ccoll_treemap_node_t* ccoll_tm_get_predecessor(ccoll_treemap_node_t *node);
+ccoll_treemap_node_t* ccoll_treemap_get_predecessor(ccoll_treemap_node_t *node);
 
-int ccoll_tm_depth_of(ccoll_treemap_t *tree, void *key);
+int ccoll_treemap_depth_of(ccoll_treemap_t *tree, void *key);
 
-ccoll_treemap_iter_t* ccoll_tm_get_iterator(ccoll_treemap_t *tree);
+ccoll_treemap_iter_t* ccoll_treemap_get_iterator(ccoll_treemap_t *tree);
 
-void ccoll_tm_drop_iterator(ccoll_treemap_iter_t *iterator);
+void ccoll_treemap_drop_iterator(ccoll_treemap_iter_t *iterator);
 
-bool ccoll_tm_has_next(ccoll_treemap_iter_t *iterator);
+bool ccoll_treemap_has_next(ccoll_treemap_iter_t *iterator);
 
-ccoll_treemap_node_t* ccoll_tm_next(ccoll_treemap_iter_t *iterator);
+ccoll_treemap_node_t* ccoll_treemap_next(ccoll_treemap_iter_t *iterator);
 
-bool ccoll_tm_has_previous(ccoll_treemap_iter_t *iterator);
+bool ccoll_treemap_has_previous(ccoll_treemap_iter_t *iterator);
 
-ccoll_treemap_node_t* ccoll_tm_previous(ccoll_treemap_iter_t *iterator);
+ccoll_treemap_node_t* ccoll_treemap_previous(ccoll_treemap_iter_t *iterator);
 
-void ccoll_tm_remove_last_traversed(ccoll_treemap_iter_t *iterator);
+void ccoll_treemap_remove_last_traversed(ccoll_treemap_iter_t *iterator);
 
-bool _ccoll_tm_verify_red_black_conditions(ccoll_treemap_t *tree);
+bool _ccoll_treemap_verify_red_black_conditions(ccoll_treemap_t *tree);
 
 
 

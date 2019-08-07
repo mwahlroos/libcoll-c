@@ -27,26 +27,26 @@ typedef struct ccoll_hashmap {
     int (*value_comparator_function)(void *value1, void *value2);
 } ccoll_hashmap_t;
 
-ccoll_hashmap_t* ccoll_hm_init();
+ccoll_hashmap_t* ccoll_hashmap_init();
 
-ccoll_hashmap_t* ccoll_hm_init_with_params(size_t init_capacity,
+ccoll_hashmap_t* ccoll_hashmap_init_with_params(size_t init_capacity,
                                  double max_load_factor,
                                  unsigned long (*hash_value_function)(void*),
                                  int (*key_comparator_function)(void *key1, void *key2),
                                  int (*value_comparator_function)(void *value1, void *value2));
 
-void ccoll_hm_deinit(ccoll_hashmap_t *hm);
+void ccoll_hashmap_deinit(ccoll_hashmap_t *hm);
 
-void ccoll_hm_put(ccoll_hashmap_t *hm, void *key, void *value);
+void ccoll_hashmap_put(ccoll_hashmap_t *hm, void *key, void *value);
 
-void* ccoll_hm_get(ccoll_hashmap_t *hm, void *key);
+void* ccoll_hashmap_get(ccoll_hashmap_t *hm, void *key);
 
-char ccoll_hm_contains(ccoll_hashmap_t *hm, void *key);
+char ccoll_hashmap_contains(ccoll_hashmap_t *hm, void *key);
 
-void* ccoll_hm_remove(ccoll_hashmap_t *hm, void *key);
+void* ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key);
 
-size_t ccoll_hm_get_capacity(ccoll_hashmap_t *hm);
+size_t ccoll_hashmap_get_capacity(ccoll_hashmap_t *hm);
 
-size_t ccoll_hm_get_size(ccoll_hashmap_t *hm);
+size_t ccoll_hashmap_get_size(ccoll_hashmap_t *hm);
 
 #endif  /* CCOLL_HASHMAP_H */

@@ -1,22 +1,22 @@
 /*
- * hashtable.h
+ * hashmap.h
  *
- * a basic implementation of a hashtable (or rather a hashmap)
+ * a basic implementation of a hashmap
  */
 
 #include <stdlib.h>
 #include "linkedlist.h"
 #include "node.h"
 
-#ifndef HASHTABLE_H
-#define HASHTABLE_H
+#ifndef HASHMAP_H
+#define HASHMAP_H
 
-typedef struct ht_entry {
+typedef struct hm_entry {
     void *key;
     void *value;
-} ht_entry_t;
+} hm_entry_t;
 
-typedef struct hashtable {
+typedef struct hashmap {
     linkedlist_t **hash_slots;
     size_t load;
     size_t capacity;
@@ -25,28 +25,28 @@ typedef struct hashtable {
     unsigned long (*hash_value_function)(void *key);
     int (*key_comparator_function)(void *key1, void *key2);
     int (*value_comparator_function)(void *value1, void *value2);
-} hashtable_t;
+} hashmap_t;
 
-hashtable_t* ht_init();
+hashmap_t* hm_init();
 
-hashtable_t* ht_init_with_params(size_t init_capacity,
+hashmap_t* hm_init_with_params(size_t init_capacity,
                                  double max_load_factor,
                                  unsigned long (*hash_value_function)(void*),
                                  int (*key_comparator_function)(void *key1, void *key2),
                                  int (*value_comparator_function)(void *value1, void *value2));
 
-void ht_deinit(hashtable_t *ht);
+void hm_deinit(hashmap_t *hm);
 
-void ht_put(hashtable_t *ht, void *key, void *value);
+void hm_put(hashmap_t *hm, void *key, void *value);
 
-void* ht_get(hashtable_t *ht, void *key);
+void* hm_get(hashmap_t *hm, void *key);
 
-char ht_contains(hashtable_t *ht, void *key);
+char hm_contains(hashmap_t *hm, void *key);
 
-void* ht_remove(hashtable_t *ht, void *key);
+void* hm_remove(hashmap_t *hm, void *key);
 
-size_t ht_get_capacity(hashtable_t *ht);
+size_t hm_get_capacity(hashmap_t *hm);
 
-size_t ht_get_size(hashtable_t *ht);
+size_t hm_get_size(hashmap_t *hm);
 
-#endif  /* HASHTABLE_H */
+#endif  /* HASHMAP_H */

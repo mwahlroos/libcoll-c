@@ -5,8 +5,8 @@ LD=ld
 CFLAGS= -std=c99 -Wall -pedantic
 CFLAGS_LIB= -shared -fPIC
 LDFLAGS_LIB= -shared
-SRC= hashtable.c linkedlist.c treemap.c node.c
-OBJS= hashtable.o linkedlist.o treemap.o node.o
+SRC= hashmap.c linkedlist.c treemap.c node.c
+OBJS= hashmap.o linkedlist.o treemap.o node.o
 TEST_SRC= test/test.c
 TEST_PROG= ccoll_test
 LIB_BASENAME= libccoll.so

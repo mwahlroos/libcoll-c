@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "../linkedlist.h"
-#include "../hashtable.h"
+#include "../hashmap.h"
 #include "../treemap.h"
 
 

@@ -9,8 +9,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#ifndef TREEMAP_H
-#define TREEMAP_H
+#ifndef CCOLL_TREEMAP_H
+#define CCOLL_TREEMAP_H
 
 #define BT_COLOR_RED   0
 #define BT_COLOR_BLACK 1
@@ -18,82 +18,82 @@
 /* data types */
 
 /* A type for representing single nodes in the tree */
-typedef struct treemap_node {
-    struct treemap_node *left;
-    struct treemap_node *right;
-    struct treemap_node *parent;
+typedef struct ccoll_treemap_node {
+    struct ccoll_treemap_node *left;
+    struct ccoll_treemap_node *right;
+    struct ccoll_treemap_node *parent;
     void *key;
     void *value;
     char color;
-} treemap_node_t;
+} ccoll_treemap_node_t;
 
 /* A type for representing a key-value pair.
  * Used for passing stuff around without having to pass actual nodes.
  */
-typedef struct treemap_entry {
+typedef struct ccoll_treemap_entry {
     void *key;
     void *value;
-} treemap_entry_t;
+} ccoll_treemap_entry_t;
 
 /* A type for representing the tree itself, for holding useful metadata */
-typedef struct {
+typedef struct ccoll_treemap {
     size_t size;
-    treemap_node_t *root;
+    ccoll_treemap_node_t *root;
     int (*key_comparator)(void *key1, void *key2);
-} treemap_t;
+} ccoll_treemap_t;
 
 /* An iterator for iterating through the nodes of a tree in the order of
  * keys as defined by the comparator function (e.g. alphabetical order).
  */
-typedef struct {
-    treemap_t *tree;
-    treemap_node_t *previous;
-    treemap_node_t *next;
-    treemap_node_t *last_traversed_node;
-} treemap_iter_t;
+typedef struct ccoll_treemap_iter {
+    ccoll_treemap_t *tree;
+    ccoll_treemap_node_t *previous;
+    ccoll_treemap_node_t *next;
+    ccoll_treemap_node_t *last_traversed_node;
+} ccoll_treemap_iter_t;
 
 
 /* external functions */
 
-treemap_t* bt_init();
+ccoll_treemap_t* ccoll_tm_init();
 
-treemap_t* bt_init_with_comparator(int (*key_comparator_func)(void *key1, void *key2));
+ccoll_treemap_t* ccoll_tm_init_with_comparator(int (*key_comparator_func)(void *key1, void *key2));
 
-void bt_deinit(treemap_t *tree);
+void ccoll_tm_deinit(ccoll_treemap_t *tree);
 
-void bt_deinit_and_delete_contents(treemap_t *tree);
+void ccoll_tm_deinit_and_delete_contents(ccoll_treemap_t *tree);
 
-treemap_node_t* bt_add(treemap_t *tree, void *key, void *value);
+ccoll_treemap_node_t* ccoll_tm_add(ccoll_treemap_t *tree, void *key, void *value);
 
-treemap_node_t* bt_get(treemap_t *tree, void *key);
+ccoll_treemap_node_t* ccoll_tm_get(ccoll_treemap_t *tree, void *key);
 
-bool bt_contains(treemap_t *tree, void *key);
+bool ccoll_tm_contains(ccoll_treemap_t *tree, void *key);
 
-treemap_entry_t bt_remove(treemap_t *tree, void *key);
+ccoll_treemap_entry_t ccoll_tm_remove(ccoll_treemap_t *tree, void *key);
 
-treemap_node_t* bt_get_successor(treemap_node_t *node);
+ccoll_treemap_node_t* ccoll_tm_get_successor(ccoll_treemap_node_t *node);
 
-treemap_node_t* bt_get_predecessor(treemap_node_t *node);
+ccoll_treemap_node_t* ccoll_tm_get_predecessor(ccoll_treemap_node_t *node);
 
-int bt_depth_of(treemap_t *tree, void *key);
+int ccoll_tm_depth_of(ccoll_treemap_t *tree, void *key);
 
-treemap_iter_t* bt_get_iterator(treemap_t *tree);
+ccoll_treemap_iter_t* ccoll_tm_get_iterator(ccoll_treemap_t *tree);
 
-void bt_drop_iterator(treemap_iter_t *iterator);
+void ccoll_tm_drop_iterator(ccoll_treemap_iter_t *iterator);
 
-bool bt_has_next(treemap_iter_t *iterator);
+bool ccoll_tm_has_next(ccoll_treemap_iter_t *iterator);
 
-treemap_node_t* bt_next(treemap_iter_t *iterator);
+ccoll_treemap_node_t* ccoll_tm_next(ccoll_treemap_iter_t *iterator);
 
-bool bt_has_previous(treemap_iter_t *iterator);
+bool ccoll_tm_has_previous(ccoll_treemap_iter_t *iterator);
 
-treemap_node_t* bt_previous(treemap_iter_t *iterator);
+ccoll_treemap_node_t* ccoll_tm_previous(ccoll_treemap_iter_t *iterator);
 
-void bt_remove_last_traversed(treemap_iter_t *iterator);
+void ccoll_tm_remove_last_traversed(ccoll_treemap_iter_t *iterator);
 
-bool _bt_verify_red_black_conditions(treemap_t *tree);
+bool _ccoll_tm_verify_red_black_conditions(ccoll_treemap_t *tree);
 
 
 
-#endif /* TREEMAP_H */
+#endif /* CCOLL_TREEMAP_H */
 

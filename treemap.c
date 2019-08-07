@@ -32,23 +32,23 @@
 extern int _ccoll_node_comparator_memaddr(void *key1, void *key2);
 
 /* define a null node for use as black leaf nodes in the red-black tree */
-static treemap_node_t null_node_struct = {
+static ccoll_treemap_node_t null_node_struct = {
     NULL, NULL, NULL, NULL, NULL, BT_COLOR_BLACK
 };
-static treemap_node_t *NULL_NODE = &null_node_struct;
+static ccoll_treemap_node_t *NULL_NODE = &null_node_struct;
 
 /* declarations of static helper functions for internal use */
-static treemap_node_t* create_node(void *key, void *value);
-static void remove_node(treemap_t *tree, treemap_node_t *node);
-static void deinit_subtree(treemap_node_t *node, bool free_contents);
-static void left_rotate(treemap_t *tree, treemap_node_t *subtree_orig_root);
-static void right_rotate(treemap_t *tree, treemap_node_t *subtree_orig_root);
-static void fix_after_addition(treemap_t *tree, treemap_node_t *added_node);
-static void fix_after_removal(treemap_t *tree, treemap_node_t *removed_node);
+static ccoll_treemap_node_t* create_node(void *key, void *value);
+static void remove_node(ccoll_treemap_t *tree, ccoll_treemap_node_t *node);
+static void deinit_subtree(ccoll_treemap_node_t *node, bool free_contents);
+static void left_rotate(ccoll_treemap_t *tree, ccoll_treemap_node_t *subtree_orig_root);
+static void right_rotate(ccoll_treemap_t *tree, ccoll_treemap_node_t *subtree_orig_root);
+static void fix_after_addition(ccoll_treemap_t *tree, ccoll_treemap_node_t *added_node);
+static void fix_after_removal(ccoll_treemap_t *tree, ccoll_treemap_node_t *removed_node);
 
 /* declarations of helpers used for testing */
-static bool _verify_child_color_in_subtree(treemap_node_t *subtree_root);
-static int  _verify_black_height_of_subtree(treemap_node_t *subtree_root);
+static bool _verify_child_color_in_subtree(ccoll_treemap_node_t *subtree_root);
+static int  _verify_black_height_of_subtree(ccoll_treemap_node_t *subtree_root);
 
 
 /* external API functions */
@@ -62,9 +62,9 @@ static int  _verify_black_height_of_subtree(treemap_node_t *subtree_root);
  *
  * Returns: a pointer to the newly allocated tree
  */
-treemap_t* bt_init()
+ccoll_treemap_t* ccoll_tm_init()
 {
-    return bt_init_with_comparator(NULL);
+    return ccoll_tm_init_with_comparator(NULL);
 }
 
 /*
@@ -74,10 +74,10 @@ treemap_t* bt_init()
  *
  * Returns: a pointer to the newly allocated tree
  */
-treemap_t* bt_init_with_comparator (int (*key_comparator)(void *key1, void *key2))
+ccoll_treemap_t* ccoll_tm_init_with_comparator (int (*key_comparator)(void *key1, void *key2))
 {
     DEBUG("treemap initializing\n");
-    treemap_t *tree = (treemap_t*) malloc(sizeof(treemap_t));
+    ccoll_treemap_t *tree = (ccoll_treemap_t*) malloc(sizeof(ccoll_treemap_t));
     if (NULL != tree) {
         tree->root = NULL_NODE;
         tree->size = 0;
@@ -103,7 +103,7 @@ treemap_t* bt_init_with_comparator (int (*key_comparator)(void *key1, void *key2
  * Params:
  *      tree -- the binary tree to be deinitialized
  */
-void bt_deinit(treemap_t *tree)
+void ccoll_tm_deinit(ccoll_treemap_t *tree)
 {
     /* deallocate all nodes first to make sure their memory gets freed */
     deinit_subtree(tree->root, false);
@@ -120,7 +120,7 @@ void bt_deinit(treemap_t *tree)
  * Params:
  *      tree -- the binary tree to be deinitialized
  */
-void bt_deinit_and_delete_contents(treemap_t *tree)
+void ccoll_tm_deinit_and_delete_contents(ccoll_treemap_t *tree)
 {
     deinit_subtree(tree->root, true);
     free(tree);
@@ -139,12 +139,12 @@ void bt_deinit_and_delete_contents(treemap_t *tree)
  * Returns: a pointer to the newly created node, or NULL if adding the node
  *          failed due to an already existing key or due to malloc failing
  */
-treemap_node_t* bt_add(treemap_t *tree, void *key, void *value)
+ccoll_treemap_node_t* ccoll_tm_add(ccoll_treemap_t *tree, void *key, void *value)
 {
     DEBUG("Adding new key\n");
-    treemap_node_t *new_node;
+    ccoll_treemap_node_t *new_node;
 
-    treemap_node_t *parent = tree->root;
+    ccoll_treemap_node_t *parent = tree->root;
     if (NULL_NODE == parent) {
         new_node = create_node(key, value);
         if (NULL == new_node)  return NULL;
@@ -202,9 +202,9 @@ treemap_node_t* bt_add(treemap_t *tree, void *key, void *value)
  *
  * Returns: a pointer to the node with the given key, or NULL if none
  */
-treemap_node_t* bt_get(treemap_t *tree, void *key)
+ccoll_treemap_node_t* ccoll_tm_get(ccoll_treemap_t *tree, void *key)
 {
-    treemap_node_t *node = tree->root;
+    ccoll_treemap_node_t *node = tree->root;
     while (NULL_NODE != node) {
         int cmpval = tree->key_comparator(key, node->key);
         if (cmpval < 0) {
@@ -234,9 +234,9 @@ treemap_node_t* bt_get(treemap_t *tree, void *key)
  *
  * Returns: true if a node with the given key exists, false if not
  */
-bool bt_contains(treemap_t *tree, void *key)
+bool ccoll_tm_contains(ccoll_treemap_t *tree, void *key)
 {
-    return (NULL != bt_get(tree, key));
+    return (NULL != ccoll_tm_get(tree, key));
 }
 
 /*
@@ -251,10 +251,10 @@ bool bt_contains(treemap_t *tree, void *key)
  *          The key in the struct will be set to NULL if no node with a
  *          matching key was found in the tree.
  */
-treemap_entry_t bt_remove(treemap_t *tree, void *key)
+ccoll_treemap_entry_t ccoll_tm_remove(ccoll_treemap_t *tree, void *key)
 {
-    treemap_entry_t entry;
-    treemap_node_t *node = bt_get(tree, key);
+    ccoll_treemap_entry_t entry;
+    ccoll_treemap_node_t *node = ccoll_tm_get(tree, key);
     if (NULL_NODE != node) {
         entry.key = node->key;
         entry.value = node->value;
@@ -276,18 +276,18 @@ treemap_entry_t bt_remove(treemap_t *tree, void *key)
  *
  * Returns: the successor of the node, or NULL if the node has no successor
  */
-treemap_node_t* bt_get_successor(treemap_node_t *node)
+ccoll_treemap_node_t* ccoll_tm_get_successor(ccoll_treemap_node_t *node)
 {
     // algorithm adapted from CLRS
     DEBUGF("Finding successor for node @ %p\n", (void*) node);
-    treemap_node_t *candidate;
+    ccoll_treemap_node_t *candidate;
     if (NULL_NODE != node->right) {
         candidate = node->right;
         while (NULL_NODE != candidate->left) {
             candidate = candidate->left;
         }
     } else {
-        treemap_node_t *parent = node->parent;
+        ccoll_treemap_node_t *parent = node->parent;
         candidate = node;
         while (NULL_NODE != parent && candidate == parent->right) {
             candidate = parent;
@@ -300,25 +300,25 @@ treemap_node_t* bt_get_successor(treemap_node_t *node)
 
 /*
  * Finds the predecessor of the given node in the tree.
- * This function is symmetrical to bt_get_successor.
+ * This function is symmetrical to ccoll_tm_get_successor.
  *
  * Params:
  *      node -- the node whose predecessor is being sought
  *
  * Returns: the predecessor of the node, or NULL if the node has no predecessor
  */
-treemap_node_t* bt_get_predecessor(treemap_node_t *node)
+ccoll_treemap_node_t* ccoll_tm_get_predecessor(ccoll_treemap_node_t *node)
 {
     // algorithm adapted from CLRS
     DEBUGF("Finding predecessor for node @ %p\n", (void*) node);
-    treemap_node_t *candidate;
+    ccoll_treemap_node_t *candidate;
     if (NULL_NODE != node->left) {
         candidate = node->left;
         while (NULL_NODE != candidate->right) {
             candidate = candidate->right;
         }
     } else {
-        treemap_node_t *parent = node->parent;
+        ccoll_treemap_node_t *parent = node->parent;
         candidate = node;
         while (NULL_NODE != parent && candidate == parent->left) {
             candidate = parent;
@@ -338,9 +338,9 @@ treemap_node_t* bt_get_predecessor(treemap_node_t *node)
  *
  * Returns: the depth of the node
  */
-int bt_depth_of(treemap_t *tree, void *key)
+int ccoll_tm_depth_of(ccoll_treemap_t *tree, void *key)
 {
-    treemap_node_t *node = tree->root;
+    ccoll_treemap_node_t *node = tree->root;
     int depth = 0;
     bool found = false;
     while (NULL_NODE != node && !found) {
@@ -369,9 +369,9 @@ int bt_depth_of(treemap_t *tree, void *key)
  * anything can happen.  Since the iterator does not guard against or notice
  * external modification, care must be taken not to modify the tree during
  * iteration.  It is safe to modify the tree through the iterator itself,
- * though, for example by calling bt_remove_last_traversed.
+ * though, for example by calling tm_remove_last_traversed.
  *
- * The bt_drop_iter function must be called when the iterator is no longer used
+ * The tm_drop_iter function must be called when the iterator is no longer used
  * in order to free the memory allocated for the iterator.
  *
  * If allocating memory for the iterator fails, NULL is returned.
@@ -381,12 +381,12 @@ int bt_depth_of(treemap_t *tree, void *key)
  *
  * Returns: a pointer to the new iterator
  */
-treemap_iter_t* bt_get_iterator(treemap_t *tree)
+ccoll_treemap_iter_t* ccoll_tm_get_iterator(ccoll_treemap_t *tree)
 {
-    treemap_iter_t *iter = (treemap_iter_t*) malloc (sizeof(treemap_iter_t));
+    ccoll_treemap_iter_t *iter = (ccoll_treemap_iter_t*) malloc (sizeof(ccoll_treemap_iter_t));
     if (NULL != iter) {
         iter->tree = tree;
-        treemap_node_t *first = tree->root;
+        ccoll_treemap_node_t *first = tree->root;
         if (NULL_NODE != first) {
             while (NULL_NODE != first->left) {
                 first = first->left;
@@ -403,21 +403,21 @@ treemap_iter_t* bt_get_iterator(treemap_t *tree)
  * Params:
  *      iterator -- the iterator to deinitialize
  */
-void bt_drop_iterator(treemap_iter_t *iterator)
+void ccoll_tm_drop_iterator(ccoll_treemap_iter_t *iterator)
 {
     free(iterator);
 }
 
 /*
  * Checks whether the given iterator has more nodes left that can be retrieved
- * by calling bt_next.
+ * by calling tm_next.
  *
  * Params:
  *      iterator -- the iterator to check
  *
  * Returns: true if there are more nodes to iterate over, false if not
  */
-bool bt_has_next(treemap_iter_t *iterator)
+bool ccoll_tm_has_next(ccoll_treemap_iter_t *iterator)
 {
     return (NULL_NODE != iterator->next);
 }
@@ -430,11 +430,11 @@ bool bt_has_next(treemap_iter_t *iterator)
  *
  * Returns: the next node in the tree
  */
-treemap_node_t* bt_next(treemap_iter_t *iterator)
+ccoll_treemap_node_t* ccoll_tm_next(ccoll_treemap_iter_t *iterator)
 {
-    treemap_node_t *traversed_node = iterator->next;
+    ccoll_treemap_node_t *traversed_node = iterator->next;
     iterator->previous = traversed_node;
-    iterator->next = bt_get_successor(traversed_node);
+    iterator->next = ccoll_tm_get_successor(traversed_node);
     iterator->last_traversed_node = traversed_node;
 
     return traversed_node;
@@ -442,14 +442,14 @@ treemap_node_t* bt_next(treemap_iter_t *iterator)
 
 /*
  * Checks whether the given iterator has mode nodes left that can be retrieved
- * by calling bt_previous (i.e. iterating in reverse order of keys).
+ * by calling tm_previous (i.e. iterating in reverse order of keys).
  *
  * Params:
  *      iterator -- the iterator to check
  *
  * Returns: true of there are more nodes to iterate over, false if not
  */
-bool bt_has_previous(treemap_iter_t *iterator)
+bool ccoll_tm_has_previous(ccoll_treemap_iter_t *iterator)
 {
     return (NULL_NODE != iterator->previous);
 }
@@ -462,11 +462,11 @@ bool bt_has_previous(treemap_iter_t *iterator)
  *
  * Returns: the previous node in the tree
  */
-treemap_node_t* bt_previous(treemap_iter_t *iterator)
+ccoll_treemap_node_t* ccoll_tm_previous(ccoll_treemap_iter_t *iterator)
 {
-    treemap_node_t *traversed_node = iterator->previous;
+    ccoll_treemap_node_t *traversed_node = iterator->previous;
     iterator->next = traversed_node;
-    iterator->previous = bt_get_predecessor(traversed_node);
+    iterator->previous = ccoll_tm_get_predecessor(traversed_node);
     iterator->last_traversed_node = traversed_node;
 
     return traversed_node;
@@ -484,16 +484,16 @@ treemap_node_t* bt_previous(treemap_iter_t *iterator)
  * Params:
  *      iterator -- the iterator whose last traversed node is to be removed
  */
-void bt_remove_last_traversed(treemap_iter_t *iterator)
+void ccoll_tm_remove_last_traversed(ccoll_treemap_iter_t *iterator)
 {
     if (NULL_NODE != iterator->last_traversed_node) {
-        treemap_node_t *to_be_removed = iterator->last_traversed_node;
+        ccoll_treemap_node_t *to_be_removed = iterator->last_traversed_node;
 
         if (iterator->last_traversed_node == iterator->previous) {
-            iterator->previous = bt_get_predecessor(iterator->previous);
+            iterator->previous = ccoll_tm_get_predecessor(iterator->previous);
             iterator->last_traversed_node = NULL_NODE;
         } else {
-            iterator->next = bt_get_successor(iterator->next);
+            iterator->next = ccoll_tm_get_successor(iterator->next);
             iterator->last_traversed_node = NULL_NODE;
         }
         remove_node(iterator->tree, to_be_removed);
@@ -518,7 +518,7 @@ void bt_remove_last_traversed(treemap_iter_t *iterator)
  *
  * This function is for testing purposes.
  */
-bool _bt_verify_red_black_conditions(treemap_t *tree)
+bool _ccoll_tm_verify_red_black_conditions(ccoll_treemap_t *tree)
 {
     bool tree_valid = true;
     if (NULL_NODE != tree->root && BT_COLOR_RED == tree->root->color) {
@@ -545,9 +545,9 @@ bool _bt_verify_red_black_conditions(treemap_t *tree)
 /*
  * Allocates and initializes a new node in the tree.
  */
-static treemap_node_t* create_node(void *key, void *value)
+static ccoll_treemap_node_t* create_node(void *key, void *value)
 {
-    treemap_node_t *new_node = (treemap_node_t*) malloc(sizeof(treemap_node_t));
+    ccoll_treemap_node_t *new_node = (ccoll_treemap_node_t*) malloc(sizeof(ccoll_treemap_node_t));
     if (NULL != new_node) {
         new_node->key = key;
         new_node->value = value;
@@ -564,17 +564,17 @@ static treemap_node_t* create_node(void *key, void *value)
  *
  * Algorithm adapted from CLRS.
  */
-static void remove_node(treemap_t *tree, treemap_node_t *node)
+static void remove_node(ccoll_treemap_t *tree, ccoll_treemap_node_t *node)
 {
-    treemap_node_t *spliced_out_node;
-    treemap_node_t *replacement_node;
+    ccoll_treemap_node_t *spliced_out_node;
+    ccoll_treemap_node_t *replacement_node;
 
     DEBUGF("Got request to remove node @ %p\n", (void*) node);
 
     if (NULL_NODE == node->left || NULL_NODE == node->right) {
         spliced_out_node = node;
     } else {
-        spliced_out_node = bt_get_successor(node);
+        spliced_out_node = ccoll_tm_get_successor(node);
     }
 
     DEBUGF("Actual node to splice out from the tree is @ %p\n",
@@ -600,7 +600,7 @@ static void remove_node(treemap_t *tree, treemap_node_t *node)
     if (NULL_NODE == spliced_out_node->parent) {
         tree->root = replacement_node;
     } else {
-        treemap_node_t *parent = spliced_out_node->parent;
+        ccoll_treemap_node_t *parent = spliced_out_node->parent;
         if (spliced_out_node == parent->left) {
             parent->left = replacement_node;
         } else {
@@ -629,7 +629,7 @@ static void remove_node(treemap_t *tree, treemap_node_t *node)
  * If free_contents is true, keys and values are also freed.
  * Used for bulk removal of nodes when deinitializing a tree.
  */
-static void deinit_subtree(treemap_node_t *node, bool free_contents)
+static void deinit_subtree(ccoll_treemap_node_t *node, bool free_contents)
 {
     if (NULL_NODE != node) {
         deinit_subtree(node->left, free_contents);
@@ -649,16 +649,16 @@ static void deinit_subtree(treemap_node_t *node, bool free_contents)
  *
  * Algorithm adapted from CLRS.
  */
-static void left_rotate(treemap_t *tree, treemap_node_t *subtree_orig_root)
+static void left_rotate(ccoll_treemap_t *tree, ccoll_treemap_node_t *subtree_orig_root)
 {
-    treemap_node_t *pivot = subtree_orig_root->right;
+    ccoll_treemap_node_t *pivot = subtree_orig_root->right;
     subtree_orig_root->right = pivot->left;
 
     if (NULL_NODE != subtree_orig_root->right) {
         subtree_orig_root->right->parent = subtree_orig_root;
     }
 
-    treemap_node_t *parent_of_subtree = subtree_orig_root->parent;
+    ccoll_treemap_node_t *parent_of_subtree = subtree_orig_root->parent;
     pivot->parent = parent_of_subtree;
     if (NULL_NODE == parent_of_subtree) {
         tree->root = pivot;
@@ -679,16 +679,16 @@ static void left_rotate(treemap_t *tree, treemap_node_t *subtree_orig_root)
  *
  * Algorithm adapted from CLRS.
  */
-static void right_rotate(treemap_t *tree, treemap_node_t *subtree_orig_root)
+static void right_rotate(ccoll_treemap_t *tree, ccoll_treemap_node_t *subtree_orig_root)
 {
-    treemap_node_t *pivot = subtree_orig_root->left;
+    ccoll_treemap_node_t *pivot = subtree_orig_root->left;
     subtree_orig_root->left = pivot->right;
 
     if (NULL_NODE != subtree_orig_root->left) {
         subtree_orig_root->left->parent = subtree_orig_root;
     }
 
-    treemap_node_t *parent_of_subtree = subtree_orig_root->parent;
+    ccoll_treemap_node_t *parent_of_subtree = subtree_orig_root->parent;
     pivot->parent = parent_of_subtree;
     if (NULL_NODE == parent_of_subtree) {
         tree->root = pivot;
@@ -709,11 +709,11 @@ static void right_rotate(treemap_t *tree, treemap_node_t *subtree_orig_root)
  *
  * Algorithm adapted from CLRS.
  */
-static void fix_after_addition(treemap_t *tree, treemap_node_t *node_added)
+static void fix_after_addition(ccoll_treemap_t *tree, ccoll_treemap_node_t *node_added)
 {
-    treemap_node_t *node = node_added;
-    treemap_node_t *parent;
-    treemap_node_t *uncle;
+    ccoll_treemap_node_t *node = node_added;
+    ccoll_treemap_node_t *parent;
+    ccoll_treemap_node_t *uncle;
     while (BT_COLOR_RED == node->parent->color) {
         // parent can't be the null node at this point since it's red
         parent = node->parent;
@@ -770,10 +770,10 @@ static void fix_after_addition(treemap_t *tree, treemap_node_t *node_added)
  *
  * Algorithm adapted from CLRS.
  */
-static void fix_after_removal(treemap_t *tree, treemap_node_t *replacement)
+static void fix_after_removal(ccoll_treemap_t *tree, ccoll_treemap_node_t *replacement)
 {
-    treemap_node_t *node = replacement;
-    treemap_node_t *sibling;
+    ccoll_treemap_node_t *node = replacement;
+    ccoll_treemap_node_t *sibling;
     while (node != tree->root && BT_COLOR_BLACK == node->color) {
         if (node == node->parent->left) {
             sibling = node->parent->right;
@@ -851,7 +851,7 @@ static void fix_after_removal(treemap_t *tree, treemap_node_t *replacement)
  *
  * For internal use in testing.
  */
-static bool _verify_child_color_in_subtree(treemap_node_t *subtree_root)
+static bool _verify_child_color_in_subtree(ccoll_treemap_node_t *subtree_root)
 {
     bool left_subtree_valid;
     bool right_subtree_valid;
@@ -890,7 +890,7 @@ static bool _verify_child_color_in_subtree(treemap_node_t *subtree_root)
  *
  * For internal use in testing.
  */
-static int _verify_black_height_of_subtree(treemap_node_t *subtree_root)
+static int _verify_black_height_of_subtree(ccoll_treemap_node_t *subtree_root)
 {
     int subtree_black_height;
     int left_black_height;

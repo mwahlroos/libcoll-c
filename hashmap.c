@@ -4,6 +4,7 @@
 
 #include <stdlib.h>
 #include "hashmap.h"
+#include "debug.h"
 
 #define HASHMAP_DEFAULT_INIT_SIZE         100
 #define HASHMAP_DEFAULT_MAX_LOAD_FACTOR   0.75
@@ -18,7 +19,7 @@ static ccoll_linkedlist_t* find_collision_list(ccoll_hashmap_t *hm, void *key)
 {
     unsigned long key_hash = hash(hm->hash_value_function(key));
     size_t slot_index = (key_hash % hm->capacity);
-    ccoll_linkedlist_t *collision_list = (*hm->hash_slots) + slot_index;
+    ccoll_linkedlist_t *collision_list = hm->hash_slots[slot_index];
 
     return collision_list;
 }
@@ -75,7 +76,6 @@ ccoll_hashmap_t* ccoll_hashmap_init_with_params(size_t init_capacity,
     hm->hash_slots = buckets;
     hm->max_load_factor = max_load_factor;
     hm->capacity = init_capacity;
-    hm->load = 0;
     hm->total_entries = 0;
 
     if (NULL != hash_value_function) {
@@ -123,9 +123,8 @@ void ccoll_hashmap_put(ccoll_hashmap_t *hm, void *key, void *value)
     ccoll_linkedlist_t *collision_list = hm->hash_slots[slot_index];
 
     if (NULL == collision_list) {
-        collision_list = hm->hash_slots[slot_index]
-                       = ccoll_linkedlist_init_with_comparator(hm->key_comparator_function);
-        hm->load++;
+        collision_list = ccoll_linkedlist_init_with_comparator(hm->key_comparator_function);
+        hm->hash_slots[slot_index] = collision_list;
     }
 
     ccoll_hashmap_entry_t *existing_entry = find_entry(hm, key);
@@ -135,6 +134,9 @@ void ccoll_hashmap_put(ccoll_hashmap_t *hm, void *key, void *value)
         existing_entry->value = value;
     } else {
         ccoll_hashmap_entry_t *new_kv_pair = (ccoll_hashmap_entry_t*) malloc (sizeof(ccoll_hashmap_entry_t));
+        new_kv_pair->key = key;
+        new_kv_pair->value = value;
+
         ccoll_linkedlist_append(collision_list, new_kv_pair);
         hm->total_entries++;
     }

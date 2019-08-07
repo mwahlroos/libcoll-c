@@ -18,7 +18,6 @@ typedef struct ccoll_hashmap_entry {
 
 typedef struct ccoll_hashmap {
     ccoll_linkedlist_t **hash_slots;
-    size_t load;
     size_t capacity;
     size_t total_entries;
     double max_load_factor;

@@ -5,10 +5,27 @@
 #include <check.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 #include "../linkedlist.h"
 #include "../hashmap.h"
 #include "../treemap.h"
+#include "../node.h"
 
+/* Compares two pointers by the integer value they point to.
+ * Utility function for unit tests.
+ */
+int intptrcmp(void *value1, void *value2)
+{
+    int *a = (int*) value1;
+    int *b = (int*) value2;
+    return *a - *b;
+}
+
+unsigned long hashcode_int(void *value)
+{
+    unsigned long *ulptr = (unsigned long*) value;
+    return *ulptr;
+}
 
 START_TEST(linkedlist_create)
 {
@@ -95,6 +112,57 @@ START_TEST(hashmap_create)
 }
 END_TEST
 
+START_TEST(hashmap_put_and_retrieve)
+{
+    ccoll_hashmap_t *strcounts = ccoll_hashmap_init();
+    strcounts->hash_value_function = hashcode_int;
+    strcounts->key_comparator_function = intptrcmp;
+
+    char *identifiers[] = { "identifier_1" };
+    int counts[] = { 7 };
+
+    for (int i=0; i<1; i++) {
+        char *key = malloc((strlen(identifiers[i]) + 1) * sizeof(char));
+        strcpy(key, identifiers[i]);
+        int *value = malloc(sizeof(int));
+
+        *value = counts[i];
+        ccoll_hashmap_put(strcounts, key, value);
+    }
+
+    char *testkey = identifiers[0];
+    int testval = counts[0];
+
+    ck_assert_uint_eq(ccoll_hashmap_get_size(strcounts), 1);
+    ck_assert(ccoll_hashmap_contains(strcounts, testkey));
+
+    int *retrieved_value = (int*) ccoll_hashmap_get(strcounts, testkey);
+    ck_assert_ptr_nonnull(retrieved_value);
+
+    ck_assert_int_eq(testval, *retrieved_value);
+
+    ccoll_hashmap_deinit(strcounts);
+}
+END_TEST
+
+START_TEST(comparator_self_sanity_check)
+{
+    int a, b, c;
+    a = b = 1;
+    c = 2;
+
+    ck_assert_int_eq(intptrcmp(&a, &b), 0);
+    ck_assert_int_lt(intptrcmp(&a, &c), 0);
+}
+END_TEST
+
+TCase* create_self_sanity_test(void)
+{
+    TCase *tc_core;
+    tc_core = tcase_create("self_sanity_core");
+    tcase_add_test(tc_core, comparator_self_sanity_check);
+    return tc_core;
+}
 
 TCase* create_linkedlist_tests(void)
 {
@@ -113,9 +181,10 @@ TCase* create_hashmap_tests(void)
 {
     TCase *tc_core;    
     tc_core = tcase_create("hashmap_core");
-    
+
     tcase_add_test(tc_core, hashmap_create);
-    
+    tcase_add_test(tc_core, hashmap_put_and_retrieve);
+
     return tc_core;
 }
 
@@ -124,14 +193,17 @@ Suite* create_ccoll_test_suite(void)
     Suite *s;
     TCase *linkedlist_tests;
     TCase *hashmap_tests;
-    
+    TCase *self_sanity_test;
+
     s = suite_create("libccoll");
     linkedlist_tests = create_linkedlist_tests();
     hashmap_tests = create_hashmap_tests();
-    
+    self_sanity_test = create_self_sanity_test();
+
+    suite_add_tcase(s, self_sanity_test);
     suite_add_tcase(s, linkedlist_tests);
     suite_add_tcase(s, hashmap_tests);
-    
+
     return s;
 }
 

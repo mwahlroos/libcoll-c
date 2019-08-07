@@ -28,12 +28,15 @@
 #include "node.h"
 #include "debug.h"
 
+#define COLOR_RED   0
+#define COLOR_BLACK 1
+
 /* the default function for comparing stored keys, defined in comparator.c */
 extern int _ccoll_node_comparator_memaddr(void *key1, void *key2);
 
 /* define a null node for use as black leaf nodes in the red-black tree */
 static ccoll_treemap_node_t null_node_struct = {
-    NULL, NULL, NULL, NULL, NULL, BT_COLOR_BLACK
+    NULL, NULL, NULL, NULL, NULL, COLOR_BLACK
 };
 static ccoll_treemap_node_t *NULL_NODE = &null_node_struct;
 
@@ -521,7 +524,7 @@ void ccoll_tm_remove_last_traversed(ccoll_treemap_iter_t *iterator)
 bool _ccoll_tm_verify_red_black_conditions(ccoll_treemap_t *tree)
 {
     bool tree_valid = true;
-    if (NULL_NODE != tree->root && BT_COLOR_RED == tree->root->color) {
+    if (NULL_NODE != tree->root && COLOR_RED == tree->root->color) {
         DEBUGF("Tree @ %p is not a valid R-B tree: root node is red\n", (void*) tree);
         tree_valid = false;
     }
@@ -552,7 +555,7 @@ static ccoll_treemap_node_t* create_node(void *key, void *value)
         new_node->key = key;
         new_node->value = value;
         new_node->left = new_node->right = new_node->parent = NULL_NODE;
-        new_node->color = BT_COLOR_RED;
+        new_node->color = COLOR_RED;
     }
     return new_node;
 }
@@ -617,7 +620,7 @@ static void remove_node(ccoll_treemap_t *tree, ccoll_treemap_node_t *node)
         node->value = spliced_out_node->value;
     }
 
-    if (BT_COLOR_BLACK == spliced_out_node->color) {
+    if (COLOR_BLACK == spliced_out_node->color) {
         fix_after_removal(tree, replacement_node);
     }
     free(spliced_out_node);
@@ -714,16 +717,16 @@ static void fix_after_addition(ccoll_treemap_t *tree, ccoll_treemap_node_t *node
     ccoll_treemap_node_t *node = node_added;
     ccoll_treemap_node_t *parent;
     ccoll_treemap_node_t *uncle;
-    while (BT_COLOR_RED == node->parent->color) {
+    while (COLOR_RED == node->parent->color) {
         // parent can't be the null node at this point since it's red
         parent = node->parent;
         if (parent == parent->parent->left) {
             uncle = parent->parent->right;
-            if (BT_COLOR_RED == uncle->color) {
+            if (COLOR_RED == uncle->color) {
                 // CLRS case 1, uncle is red
-                parent->color = BT_COLOR_BLACK;
-                uncle->color = BT_COLOR_BLACK;
-                parent->parent->color = BT_COLOR_RED;
+                parent->color = COLOR_BLACK;
+                uncle->color = COLOR_BLACK;
+                parent->parent->color = COLOR_RED;
                 node = parent->parent;
             } else {
                 if (node == parent->right) {
@@ -732,18 +735,18 @@ static void fix_after_addition(ccoll_treemap_t *tree, ccoll_treemap_node_t *node
                     left_rotate(tree, node);
                 }
                 // CLRS case 3
-                node->parent->color = BT_COLOR_BLACK;
-                node->parent->parent->color = BT_COLOR_RED;
+                node->parent->color = COLOR_BLACK;
+                node->parent->parent->color = COLOR_RED;
                 right_rotate(tree, node->parent->parent);
             }
         } else {
             // symmetric to the if (...) branch
             uncle = parent->parent->left;
-            if (BT_COLOR_RED == uncle->color) {
+            if (COLOR_RED == uncle->color) {
                 // case 1
-                parent->color = BT_COLOR_BLACK;
-                uncle->color = BT_COLOR_BLACK;
-                parent->parent->color = BT_COLOR_RED;
+                parent->color = COLOR_BLACK;
+                uncle->color = COLOR_BLACK;
+                parent->parent->color = COLOR_RED;
                 node = parent->parent;
             } else {
                 if (node == parent->left) {
@@ -752,13 +755,13 @@ static void fix_after_addition(ccoll_treemap_t *tree, ccoll_treemap_node_t *node
                     right_rotate(tree, node);
                 }
                 // case 3
-                node->parent->color = BT_COLOR_BLACK;
-                node->parent->parent->color = BT_COLOR_RED;
+                node->parent->color = COLOR_BLACK;
+                node->parent->parent->color = COLOR_RED;
                 left_rotate(tree, node->parent->parent);
             }
         }
     }
-    tree->root->color = BT_COLOR_BLACK;
+    tree->root->color = COLOR_BLACK;
 }
 
 /*
@@ -774,69 +777,69 @@ static void fix_after_removal(ccoll_treemap_t *tree, ccoll_treemap_node_t *repla
 {
     ccoll_treemap_node_t *node = replacement;
     ccoll_treemap_node_t *sibling;
-    while (node != tree->root && BT_COLOR_BLACK == node->color) {
+    while (node != tree->root && COLOR_BLACK == node->color) {
         if (node == node->parent->left) {
             sibling = node->parent->right;
-            if (BT_COLOR_RED == sibling->color) {
+            if (COLOR_RED == sibling->color) {
                 // CLRS case 1
-                sibling->color = BT_COLOR_BLACK;
-                node->parent->color = BT_COLOR_RED;
+                sibling->color = COLOR_BLACK;
+                node->parent->color = COLOR_RED;
                 left_rotate(tree, node->parent);
                 sibling = node->parent->right;
             }
-            if (BT_COLOR_BLACK == sibling->left->color  &&
-                BT_COLOR_BLACK == sibling->right->color)
+            if (COLOR_BLACK == sibling->left->color  &&
+                COLOR_BLACK == sibling->right->color)
             {
                 // CLRS case 2
-                sibling->color = BT_COLOR_RED;
+                sibling->color = COLOR_RED;
                 node = node->parent;
             } else {
-                if (BT_COLOR_BLACK == sibling->right->color) {
+                if (COLOR_BLACK == sibling->right->color) {
                     // CLRS case 3
-                    sibling->left->color = BT_COLOR_BLACK;
-                    sibling->color = BT_COLOR_RED;
+                    sibling->left->color = COLOR_BLACK;
+                    sibling->color = COLOR_RED;
                     right_rotate(tree, sibling);
                     sibling = node->parent->right;
                 }
                 sibling->color = node->parent->color;
-                node->parent->color = BT_COLOR_BLACK;
-                sibling->right->color = BT_COLOR_BLACK;
+                node->parent->color = COLOR_BLACK;
+                sibling->right->color = COLOR_BLACK;
                 left_rotate(tree, node->parent);
                 node = tree->root;
             }
         } else {
             // symmetric to the if (...) branch
             sibling = node->parent->left;
-            if (BT_COLOR_RED == sibling->color) {
+            if (COLOR_RED == sibling->color) {
                 // case 1
-                sibling->color = BT_COLOR_BLACK;
-                node->parent->color = BT_COLOR_RED;
+                sibling->color = COLOR_BLACK;
+                node->parent->color = COLOR_RED;
                 right_rotate(tree, node->parent);
                 sibling = node->parent->left;
             }
-            if (BT_COLOR_BLACK == sibling->right->color  &&
-                BT_COLOR_BLACK == sibling->left->color)
+            if (COLOR_BLACK == sibling->right->color  &&
+                COLOR_BLACK == sibling->left->color)
             {
                 // case 2
-                sibling->color = BT_COLOR_RED;
+                sibling->color = COLOR_RED;
                 node = node->parent;
             } else {
-                if (BT_COLOR_BLACK == sibling->left->color) {
+                if (COLOR_BLACK == sibling->left->color) {
                     // case 3
-                    sibling->right->color = BT_COLOR_BLACK;
-                    sibling->color = BT_COLOR_RED;
+                    sibling->right->color = COLOR_BLACK;
+                    sibling->color = COLOR_RED;
                     left_rotate(tree, sibling);
                     sibling = node->parent->left;
                 }
                 sibling->color = node->parent->color;
-                node->parent->color = BT_COLOR_BLACK;
-                sibling->left->color = BT_COLOR_BLACK;
+                node->parent->color = COLOR_BLACK;
+                sibling->left->color = COLOR_BLACK;
                 right_rotate(tree, node->parent);
                 node = tree->root;
             }
         }
     }
-    node->color = BT_COLOR_BLACK;
+    node->color = COLOR_BLACK;
 }
 
 
@@ -861,9 +864,9 @@ static bool _verify_child_color_in_subtree(ccoll_treemap_node_t *subtree_root)
     if (NULL_NODE != subtree_root) {
         left_subtree_valid = _verify_child_color_in_subtree(subtree_root->left);
         root_valid = true;
-        if (BT_COLOR_RED == subtree_root->color) {
-            if (BT_COLOR_RED == subtree_root->left->color  ||
-                BT_COLOR_RED == subtree_root->right->color)
+        if (COLOR_RED == subtree_root->color) {
+            if (COLOR_RED == subtree_root->left->color  ||
+                COLOR_RED == subtree_root->right->color)
             {
                 DEBUGF("R-B violation: red node @ %p has a red child\n",
                        (void*) subtree_root);
@@ -906,7 +909,7 @@ static int _verify_black_height_of_subtree(ccoll_treemap_node_t *subtree_root)
         if (left_black_height != -1) {
             if (left_black_height == right_black_height) {
                 subtree_black_height = left_black_height;
-                if (BT_COLOR_BLACK == subtree_root->color) {
+                if (COLOR_BLACK == subtree_root->color) {
                     subtree_black_height++;
                 }
             } else {

@@ -12,9 +12,6 @@
 #ifndef CCOLL_TREEMAP_H
 #define CCOLL_TREEMAP_H
 
-#define BT_COLOR_RED   0
-#define BT_COLOR_BLACK 1
-
 /* data types */
 
 /* A type for representing single nodes in the tree */

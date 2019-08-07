@@ -8,15 +8,15 @@
 #include "linkedlist.h"
 #include "node.h"
 
-#ifndef HASHMAP_H
-#define HASHMAP_H
+#ifndef CCOLL_HASHMAP_H
+#define CCOLL_HASHMAP_H
 
-typedef struct hm_entry {
+typedef struct ccoll_hm_entry {
     void *key;
     void *value;
-} hm_entry_t;
+} ccoll_hm_entry_t;
 
-typedef struct hashmap {
+typedef struct ccoll_hashmap {
     linkedlist_t **hash_slots;
     size_t load;
     size_t capacity;
@@ -25,28 +25,28 @@ typedef struct hashmap {
     unsigned long (*hash_value_function)(void *key);
     int (*key_comparator_function)(void *key1, void *key2);
     int (*value_comparator_function)(void *value1, void *value2);
-} hashmap_t;
+} ccoll_hashmap_t;
 
-hashmap_t* hm_init();
+ccoll_hashmap_t* ccoll_hm_init();
 
-hashmap_t* hm_init_with_params(size_t init_capacity,
+ccoll_hashmap_t* ccoll_hm_init_with_params(size_t init_capacity,
                                  double max_load_factor,
                                  unsigned long (*hash_value_function)(void*),
                                  int (*key_comparator_function)(void *key1, void *key2),
                                  int (*value_comparator_function)(void *value1, void *value2));
 
-void hm_deinit(hashmap_t *hm);
+void ccoll_hm_deinit(ccoll_hashmap_t *hm);
 
-void hm_put(hashmap_t *hm, void *key, void *value);
+void ccoll_hm_put(ccoll_hashmap_t *hm, void *key, void *value);
 
-void* hm_get(hashmap_t *hm, void *key);
+void* ccoll_hm_get(ccoll_hashmap_t *hm, void *key);
 
-char hm_contains(hashmap_t *hm, void *key);
+char ccoll_hm_contains(ccoll_hashmap_t *hm, void *key);
 
-void* hm_remove(hashmap_t *hm, void *key);
+void* ccoll_hm_remove(ccoll_hashmap_t *hm, void *key);
 
-size_t hm_get_capacity(hashmap_t *hm);
+size_t ccoll_hm_get_capacity(ccoll_hashmap_t *hm);
 
-size_t hm_get_size(hashmap_t *hm);
+size_t ccoll_hm_get_size(ccoll_hashmap_t *hm);
 
-#endif  /* HASHMAP_H */
+#endif  /* CCOLL_HASHMAP_H */

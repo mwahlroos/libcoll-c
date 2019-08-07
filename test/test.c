@@ -81,21 +81,57 @@ START_TEST(linkedlist_populate_and_iterate)
 }
 END_TEST
 
-
-Suite *ccoll_linkedlist_suite(void)
+START_TEST(hashmap_create)
 {
-    Suite *s;
+    ccoll_hashmap_t *hashmap = ccoll_hashmap_init();
+    ck_assert_ptr_nonnull(hashmap);
+    ck_assert_ptr_nonnull(hashmap->hash_slots);
+    ck_assert_ptr_nonnull(hashmap->key_comparator_function);
+    ck_assert_ptr_nonnull(hashmap->hash_value_function);
+    ck_assert_uint_ge(hashmap->capacity, 0);
+    ck_assert_uint_eq(hashmap->total_entries, 0);
+    
+    ccoll_hashmap_deinit(hashmap);
+}
+END_TEST
+
+
+TCase* create_linkedlist_tests(void)
+{
     TCase *tc_core;
 
-    s = suite_create("ccoll");
-
     /* Core test case */
-    tc_core = tcase_create("Core");
+    tc_core = tcase_create("linkedlist_core");
 
     tcase_add_test(tc_core, linkedlist_create);
     tcase_add_test(tc_core, linkedlist_populate_and_iterate);
-    suite_add_tcase(s, tc_core);
 
+    return tc_core;
+}
+
+TCase* create_hashmap_tests(void)
+{
+    TCase *tc_core;    
+    tc_core = tcase_create("hashmap_core");
+    
+    tcase_add_test(tc_core, hashmap_create);
+    
+    return tc_core;
+}
+
+Suite* create_ccoll_test_suite(void)
+{
+    Suite *s;
+    TCase *linkedlist_tests;
+    TCase *hashmap_tests;
+    
+    s = suite_create("libccoll");
+    linkedlist_tests = create_linkedlist_tests();
+    hashmap_tests = create_hashmap_tests();
+    
+    suite_add_tcase(s, linkedlist_tests);
+    suite_add_tcase(s, hashmap_tests);
+    
     return s;
 }
 
@@ -109,7 +145,7 @@ int main(void)
     Suite *s;
     SRunner *sr;
 
-    s = ccoll_linkedlist_suite();
+    s = create_ccoll_test_suite();
     sr = srunner_create(s);
 
     srunner_run_all(sr, CK_NORMAL);

@@ -82,7 +82,7 @@ START_TEST(linkedlist_populate_and_iterate)
 END_TEST
 
 
-Suite *ccoccoll_ll_suite(void)
+Suite *ccoll_ll_suite(void)
 {
     Suite *s;
     TCase *tc_core;
@@ -109,7 +109,7 @@ int main(void)
     Suite *s;
     SRunner *sr;
 
-    s = ccoccoll_ll_suite();
+    s = ccoll_ll_suite();
     sr = srunner_create(s);
 
     srunner_run_all(sr, CK_NORMAL);

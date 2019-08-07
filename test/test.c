@@ -1,5 +1,5 @@
 /*
- * Unit tests for the libdatastruct library.
+ * Unit tests for the libccoll library.
  */
 
 #include <check.h>
@@ -82,12 +82,12 @@ START_TEST(linkedlist_populate_and_iterate)
 END_TEST
 
 
-Suite *datastruct_suite(void)
+Suite *ccoll_suite(void)
 {
     Suite *s;
     TCase *tc_core;
 
-    s = suite_create("datastruct");
+    s = suite_create("ccoll");
 
     /* Core test case */
     tc_core = tcase_create("Core");
@@ -109,7 +109,7 @@ int main(void)
     Suite *s;
     SRunner *sr;
 
-    s = datastruct_suite();
+    s = ccoll_suite();
     sr = srunner_create(s);
 
     srunner_run_all(sr, CK_NORMAL);

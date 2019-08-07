@@ -8,8 +8,8 @@ LDFLAGS_LIB= -shared
 SRC= hashtable.c linkedlist.c treemap.c node.c
 OBJS= hashtable.o linkedlist.o treemap.o node.o
 TEST_SRC= test/test.c
-TEST_PROG= datastruct_test
-LIB_BASENAME= libdatastruct.so
+TEST_PROG= ccoll_test
+LIB_BASENAME= libccoll.so
 LIB_SONAME= $(LIB_BASENAME).$(VER_MAJOR)
 LIB_FILENAME= $(LIB_SONAME).$(VER_MINOR)
 
@@ -26,10 +26,10 @@ debug:
 	ln -fs $(LIB_SONAME) $(LIB_BASENAME)
 
 tests: so
-	$(CC) $(CFLAGS) $(TEST_SRC) -o $(TEST_PROG) -L. -ldatastruct -lcheck
+	$(CC) $(CFLAGS) $(TEST_SRC) -o $(TEST_PROG) -L. -lccoll -lcheck
 
 debugtests: debug
-	$(CC) $(CFLAGS) $(TEST_SRC) -o $(TEST_PROG) -L. -ldatastruct -lcheck
+	$(CC) $(CFLAGS) $(TEST_SRC) -o $(TEST_PROG) -L. -lccoll -lcheck
 
 clean:
 	rm -f $(OBJS) $(LIB_SONAME) $(LIB_FILENAME) $(LIB_BASENAME) $(TEST_PROG)

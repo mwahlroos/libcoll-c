@@ -1,2 +1,8 @@
 syntax: glob
 *~
+*.orig
+.idea
+*.gcov
+
+*.o
+ccoll_test

@@ -14,7 +14,7 @@ static unsigned long hash(unsigned long key_value)
     return key_value;
 }
 
-static ccoll_linkedlist_t* find_collision_list(ccoll_ll_hashmap_t *hm, void *key)
+static ccoll_linkedlist_t* find_collision_list(ccoll_hashmap_t *hm, void *key)
 {
     unsigned long key_hash = hash(hm->hash_value_function(key));
     size_t slot_index = (key_hash % hm->capacity);
@@ -23,19 +23,19 @@ static ccoll_linkedlist_t* find_collision_list(ccoll_ll_hashmap_t *hm, void *key
     return collision_list;
 }
 
-static ccoll_ll_hm_entry_t* find_entry(ccoll_ll_hashmap_t *hm, void *key)
+static ccoll_hashmap_entry_t* find_entry(ccoll_hashmap_t *hm, void *key)
 {
-    ccoll_ll_hm_entry_t *matching_entry = NULL;
+    ccoll_hashmap_entry_t *matching_entry = NULL;
     ccoll_linkedlist_t *collision_list = find_collision_list(hm, key);
 
     if (NULL != collision_list) {
         ccoll_ll_iter_t *iter = ccoll_ll_get_iter(collision_list);
         while (ccoll_ll_iter_has_next(iter)) {
-            ccoll_ll_hm_entry_t *entry_tmp;
+            ccoll_hashmap_entry_t *entry_tmp;
             void *key_tmp;
 
             ccoll_ll_node_t *node = ccoll_ll_iter_next(iter);
-            entry_tmp = (ccoll_ll_hm_entry_t*) (node->value);
+            entry_tmp = (ccoll_hashmap_entry_t*) (node->value);
             key_tmp = entry_tmp->key;
 
             if (hm->key_comparator_function(key, key_tmp) == 0) {
@@ -50,20 +50,20 @@ static ccoll_ll_hm_entry_t* find_entry(ccoll_ll_hashmap_t *hm, void *key)
 }
 
 
-ccoll_ll_hashmap_t* ccoll_ll_hm_init()
+ccoll_hashmap_t* ccoll_hm_init()
 {
-    return ccoll_ll_hm_init_with_params(HASHMAP_DEFAULT_INIT_SIZE,
+    return ccoll_hm_init_with_params(HASHMAP_DEFAULT_INIT_SIZE,
                                      HASHMAP_DEFAULT_MAX_LOAD_FACTOR,
                                      NULL, NULL, NULL);
 }
 
-ccoll_ll_hashmap_t* ccoll_ll_hm_init_with_params(size_t init_capacity,
+ccoll_hashmap_t* ccoll_hm_init_with_params(size_t init_capacity,
                                            double max_load_factor,
                                            unsigned long (*hash_value_function)(void*),
                                            int (*key_comparator_function)(void *key1, void *key2),
                                            int (*value_comparator_function)(void *value1, void *value2))
 {
-    ccoll_ll_hashmap_t *hm = (ccoll_ll_hashmap_t*) malloc(sizeof(ccoll_ll_hashmap_t));
+    ccoll_hashmap_t *hm = (ccoll_hashmap_t*) malloc(sizeof(ccoll_hashmap_t));
 
     /* calloc automatically sets the entire allocated memory to zeros/NULLs,
      * which is useful in this case since it means unused buckets are
@@ -99,14 +99,14 @@ ccoll_ll_hashmap_t* ccoll_ll_hm_init_with_params(size_t init_capacity,
     return hm;
 }
 
-void ccoll_ll_hm_deinit(ccoll_ll_hashmap_t *hm)
+void ccoll_hm_deinit(ccoll_hashmap_t *hm)
 {
     for (size_t i=0; i<hm->capacity; i++) {
         ccoll_linkedlist_t *list = hm->hash_slots[i];
         if (NULL != list) {
             ccoll_ll_iter_t *iter = ccoll_ll_get_iter(list);
             while (ccoll_ll_iter_has_next(iter)) {
-                ccoll_ll_hm_entry_t *entry = (ccoll_ll_hm_entry_t*) ccoll_ll_iter_next(iter);
+                ccoll_hashmap_entry_t *entry = (ccoll_hashmap_entry_t*) ccoll_ll_iter_next(iter);
                 free(entry);
             }
             free(list);
@@ -116,7 +116,7 @@ void ccoll_ll_hm_deinit(ccoll_ll_hashmap_t *hm)
     free(hm);
 }
 
-void ccoll_ll_hm_put(ccoll_ll_hashmap_t *hm, void *key, void *value)
+void ccoll_hm_put(ccoll_hashmap_t *hm, void *key, void *value)
 {
     unsigned long key_hash = hash(hm->hash_value_function(key));
     size_t slot_index = (key_hash % hm->capacity);
@@ -128,22 +128,22 @@ void ccoll_ll_hm_put(ccoll_ll_hashmap_t *hm, void *key, void *value)
         hm->load++;
     }
 
-    ccoll_ll_hm_entry_t *existing_entry = find_entry(hm, key);
+    ccoll_hashmap_entry_t *existing_entry = find_entry(hm, key);
 
     if (NULL != existing_entry) {
         /* replace the value in the existing entry with the new value */
         existing_entry->value = value;
     } else {
-        ccoll_ll_hm_entry_t *new_kv_pair = (ccoll_ll_hm_entry_t*) malloc (sizeof(ccoll_ll_hm_entry_t));
+        ccoll_hashmap_entry_t *new_kv_pair = (ccoll_hashmap_entry_t*) malloc (sizeof(ccoll_hashmap_entry_t));
         ccoll_ll_append(collision_list, new_kv_pair);
         hm->total_entries++;
     }
 }
 
-void* ccoll_ll_hm_get(ccoll_ll_hashmap_t *hm, void *key)
+void* ccoll_hm_get(ccoll_hashmap_t *hm, void *key)
 {
     void *value = NULL;
-    ccoll_ll_hm_entry_t *entry = find_entry(hm, key);
+    ccoll_hashmap_entry_t *entry = find_entry(hm, key);
 
     if (NULL != entry) {
         value = entry->value;
@@ -152,15 +152,15 @@ void* ccoll_ll_hm_get(ccoll_ll_hashmap_t *hm, void *key)
     return value;
 }
 
-char ccoll_ll_hm_contains(ccoll_ll_hashmap_t *hm, void *key)
+char ccoll_hm_contains(ccoll_hashmap_t *hm, void *key)
 {
-    ccoll_ll_hm_entry_t *entry = find_entry(hm, key);
+    ccoll_hashmap_entry_t *entry = find_entry(hm, key);
     return NULL != entry;
 }
 
-void* ccoll_ll_hm_remove(ccoll_ll_hashmap_t *hm, void *key)
+void* ccoll_hm_remove(ccoll_hashmap_t *hm, void *key)
 {
-    ccoll_ll_hm_entry_t *kv_pair;
+    ccoll_hashmap_entry_t *kv_pair;
     void *retval = NULL;
 
     unsigned long key_hash = hash(hm->hash_value_function(key));
@@ -171,7 +171,7 @@ void* ccoll_ll_hm_remove(ccoll_ll_hashmap_t *hm, void *key)
         ccoll_ll_iter_t *iter = ccoll_ll_get_iter(collision_list);
         while (ccoll_ll_iter_has_next(iter)) {
             ccoll_ll_node_t *node = ccoll_ll_iter_next(iter);
-            kv_pair = (ccoll_ll_hm_entry_t*) (node->value);
+            kv_pair = (ccoll_hashmap_entry_t*) (node->value);
             if (hm->key_comparator_function(key, kv_pair->key) == 0) {
                 retval = kv_pair->value;
                 ccoll_ll_iter_remove(iter);
@@ -187,12 +187,12 @@ void* ccoll_ll_hm_remove(ccoll_ll_hashmap_t *hm, void *key)
     return retval;
 }
 
-size_t ccoll_ll_hm_get_capacity(ccoll_ll_hashmap_t *hm)
+size_t ccoll_hm_get_capacity(ccoll_hashmap_t *hm)
 {
     return hm->capacity;
 }
 
-size_t ccoll_ll_hm_get_size(ccoll_ll_hashmap_t *hm)
+size_t ccoll_hm_get_size(ccoll_hashmap_t *hm)
 {
     return hm->total_entries;
 }

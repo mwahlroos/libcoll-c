@@ -29,7 +29,7 @@
 #include "debug.h"
 
 /* the default function for comparing stored keys, defined in comparator.c */
-extern int _node_comparator_memaddr(void *key1, void *key2);
+extern int _ccoll_node_comparator_memaddr(void *key1, void *key2);
 
 /* define a null node for use as black leaf nodes in the red-black tree */
 static treemap_node_t null_node_struct = {
@@ -85,7 +85,7 @@ treemap_t* bt_init_with_comparator (int (*key_comparator)(void *key1, void *key2
             tree->key_comparator = key_comparator;
         } else {
             // fall back to the default behaviour of comparison by memory address
-            tree->key_comparator = &_node_comparator_memaddr;
+            tree->key_comparator = &_ccoll_node_comparator_memaddr;
         }
     }
     return tree;

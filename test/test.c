@@ -12,18 +12,18 @@
 
 START_TEST(linkedlist_create)
 {
-    linkedlist_t *ll = ll_init();
+    ccoll_linkedlist_t *ll = ccoll_ll_init();
     ck_assert_ptr_nonnull(ll);
     ck_assert_uint_eq(ll->length, 0);
     ck_assert_ptr_null(ll->head);
     ck_assert_ptr_null(ll->tail);
-    ll_deinit(ll);
+    ccoll_ll_deinit(ll);
 }
 END_TEST
 
 START_TEST(linkedlist_populate_and_iterate)
 {
-    linkedlist_t *list = ll_init();
+    ccoll_linkedlist_t *list = ccoll_ll_init();
 
     int *testint1 = (int*) malloc(sizeof(int));
     int *testint2 = (int*) malloc(sizeof(int));
@@ -36,53 +36,53 @@ START_TEST(linkedlist_populate_and_iterate)
     *testint4 = 8;
 
     /* populate the list */
-    ll_append(list, testint1);
-    ll_append(list, testint2);
-    ll_append(list, testint3);
-    ll_append(list, testint4);
-    ck_assert_uint_eq(ll_length(list), 4);
-    ck_assert_int_eq(ll_index_of(list, testint3), 2);
-    ck_assert(ll_contains(list, testint4));
+    ccoll_ll_append(list, testint1);
+    ccoll_ll_append(list, testint2);
+    ccoll_ll_append(list, testint3);
+    ccoll_ll_append(list, testint4);
+    ck_assert_uint_eq(ccoll_ll_length(list), 4);
+    ck_assert_int_eq(ccoll_ll_index_of(list, testint3), 2);
+    ck_assert(ccoll_ll_contains(list, testint4));
 
     /* test iteration and retrieval */
-    ll_iter_t *iter = ll_get_iter(list);
-    ck_assert(ll_iter_has_next(iter));
-    ck_assert_int_eq(*testint1, *((int*) ll_iter_next(iter)->value));
+    ccoll_ll_iter_t *iter = ccoll_ll_get_iter(list);
+    ck_assert(ccoll_ll_iter_has_next(iter));
+    ck_assert_int_eq(*testint1, *((int*) ccoll_ll_iter_next(iter)->value));
 
-    ck_assert(ll_iter_has_next(iter));
-    ck_assert_int_eq(*testint2, *((int*) ll_iter_next(iter)->value));
+    ck_assert(ccoll_ll_iter_has_next(iter));
+    ck_assert_int_eq(*testint2, *((int*) ccoll_ll_iter_next(iter)->value));
 
-    ll_drop_iter(iter);
+    ccoll_ll_drop_iter(iter);
 
     /* test removal */
-    char success = ll_remove(list, (void*) testint1);
+    char success = ccoll_ll_remove(list, (void*) testint1);
     ck_assert_int_eq(success, 1);
-    ck_assert_uint_eq(ll_length(list), 3);
+    ck_assert_uint_eq(ccoll_ll_length(list), 3);
 
     /* test iterator at */
-    iter = ll_get_iter_at(list, 1);
-    ck_assert(ll_iter_has_next(iter));
-    ck_assert_int_eq(*testint3, *((int*) ll_iter_next(iter)->value));
+    iter = ccoll_ll_get_iter_at(list, 1);
+    ck_assert(ccoll_ll_iter_has_next(iter));
+    ck_assert_int_eq(*testint3, *((int*) ccoll_ll_iter_next(iter)->value));
 
     /* test removal through iterator */
-    ll_iter_remove(iter);
-    ck_assert_uint_eq(ll_length(list), 2);
+    ccoll_ll_iter_remove(iter);
+    ck_assert_uint_eq(ccoll_ll_length(list), 2);
 
     /* check that the last entry on the list is still accessible */
-    ck_assert(ll_iter_has_next(iter));
-    ck_assert_int_eq(*testint4, *((int*) ll_iter_next(iter)->value));
+    ck_assert(ccoll_ll_iter_has_next(iter));
+    ck_assert_int_eq(*testint4, *((int*) ccoll_ll_iter_next(iter)->value));
 
     /* should  be at the end of the list */
-    ck_assert(!ll_iter_has_next(iter));
+    ck_assert(!ccoll_ll_iter_has_next(iter));
 
-    ll_drop_iter(iter);
+    ccoll_ll_drop_iter(iter);
 
-    ll_deinit(list);
+    ccoll_ll_deinit(list);
 }
 END_TEST
 
 
-Suite *ccoll_suite(void)
+Suite *ccoccoll_ll_suite(void)
 {
     Suite *s;
     TCase *tc_core;
@@ -109,7 +109,7 @@ int main(void)
     Suite *s;
     SRunner *sr;
 
-    s = ccoll_suite();
+    s = ccoccoll_ll_suite();
     sr = srunner_create(s);
 
     srunner_run_all(sr, CK_NORMAL);

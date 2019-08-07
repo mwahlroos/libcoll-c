@@ -7,7 +7,7 @@
 #include "linkedlist.h"
 #include "debug.h"
 
-static void _ll_remove_node(linkedlist_t *list, ll_node_t *node)
+static void _ccoll_ll_remove_node(ccoll_linkedlist_t *list, ccoll_ll_node_t *node)
 {
     if (NULL != node) {
         if (NULL != node->previous) {
@@ -27,41 +27,41 @@ static void _ll_remove_node(linkedlist_t *list, ll_node_t *node)
     }
 }
 
-linkedlist_t* ll_init()
+ccoll_linkedlist_t* ccoll_ll_init()
 {
-    return ll_init_with_comparator(NULL);
+    return ccoll_ll_init_with_comparator(NULL);
 }
 
-linkedlist_t* ll_init_with_comparator(int (*compare_function)(void *value1, void *value2))
+ccoll_linkedlist_t* ccoll_ll_init_with_comparator(int (*compare_function)(void *value1, void *value2))
 {
-    linkedlist_t *list = (linkedlist_t*) malloc(sizeof(linkedlist_t));
+    ccoll_linkedlist_t *list = (ccoll_linkedlist_t*) malloc(sizeof(ccoll_linkedlist_t));
     list->length = 0;
     list->head = list->tail = NULL;
     if (NULL != compare_function) {
         list->compare_function = compare_function;
     } else {
-        list->compare_function = &_node_comparator_memaddr;
+        list->compare_function = &_ccoll_node_comparator_memaddr;
     }
     return list;
 }
 
-void ll_deinit(linkedlist_t *list)
+void ccoll_ll_deinit(ccoll_linkedlist_t *list)
 {
     /* remove all nodes first to make sure the memory gets freed */
-    ll_iter_t *iter = ll_get_iter(list);
-    while (ll_iter_has_next(iter)) {
-        ll_iter_next(iter);
-        ll_iter_remove(iter);
+    ccoll_ll_iter_t *iter = ccoll_ll_get_iter(list);
+    while (ccoll_ll_iter_has_next(iter)) {
+        ccoll_ll_iter_next(iter);
+        ccoll_ll_iter_remove(iter);
     }
-    ll_drop_iter(iter);
+    ccoll_ll_drop_iter(iter);
 
     free(list);
 }
 
-void ll_append(linkedlist_t *list, void *value)
+void ccoll_ll_append(ccoll_linkedlist_t *list, void *value)
 {
     DEBUGF("New node: %d\n", *(int*)(value));
-    ll_node_t *new_node = (ll_node_t*) malloc(sizeof(ll_node_t));
+    ccoll_ll_node_t *new_node = (ccoll_ll_node_t*) malloc(sizeof(ccoll_ll_node_t));
     new_node->next = NULL;
     new_node->value = value;
     if (NULL == list->head) {
@@ -80,15 +80,15 @@ void ll_append(linkedlist_t *list, void *value)
                                           *(int*)(list->tail->value));
 }
 
-void ll_insert(linkedlist_t *list, void *value, size_t index)
+void ccoll_ll_insert(ccoll_linkedlist_t *list, void *value, size_t index)
 {
     if (index >= list->length) {
-        ll_append(list, value);
+        ccoll_ll_append(list, value);
     } else {
-        ll_node_t *new_node = (ll_node_t*) malloc(sizeof(ll_node_t));
+        ccoll_ll_node_t *new_node = (ccoll_ll_node_t*) malloc(sizeof(ccoll_ll_node_t));
         new_node->value = value;
         
-        ll_node_t *insert_before = list->head;
+        ccoll_ll_node_t *insert_before = list->head;
         size_t counter = 0;
         while (counter < index) {
             insert_before = insert_before->next;
@@ -109,12 +109,12 @@ void ll_insert(linkedlist_t *list, void *value, size_t index)
     }
 }
 
-int ll_index_of(linkedlist_t *list, void *value)
+int ccoll_ll_index_of(ccoll_linkedlist_t *list, void *value)
 {
     int retval = -1;
     int counter = 0;
 
-    ll_node_t *node = list->head;
+    ccoll_ll_node_t *node = list->head;
 
     while(NULL != node) {
         if (list->compare_function(value, node->value) == 0) {
@@ -129,33 +129,33 @@ int ll_index_of(linkedlist_t *list, void *value)
     return retval;
 }
 
-char ll_contains(linkedlist_t *list, void *value)
+char ccoll_ll_contains(ccoll_linkedlist_t *list, void *value)
 {
-    return ll_index_of(list, value) != -1;
+    return ccoll_ll_index_of(list, value) != -1;
 }
 
-char ll_remove(linkedlist_t *list, void *value)
+char ccoll_ll_remove(ccoll_linkedlist_t *list, void *value)
 {
     char success = 0;
-    ll_iter_t *iter = ll_get_iter(list);
+    ccoll_ll_iter_t *iter = ccoll_ll_get_iter(list);
 
-    while (ll_iter_has_next(iter) && !success) {
-        void *entry_value = ll_iter_next(iter)->value;
+    while (ccoll_ll_iter_has_next(iter) && !success) {
+        void *entry_value = ccoll_ll_iter_next(iter)->value;
         if (list->compare_function(value, entry_value) == 0) {
-            ll_iter_remove(iter);
+            ccoll_ll_iter_remove(iter);
             success = 1;
         }
     }
 
-    ll_drop_iter(iter);
+    ccoll_ll_drop_iter(iter);
 
     return success;
 }
 
 
-ll_iter_t* ll_get_iter(linkedlist_t *list)
+ccoll_ll_iter_t* ccoll_ll_get_iter(ccoll_linkedlist_t *list)
 {
-    ll_iter_t *iter = (ll_iter_t*) malloc(sizeof(ll_iter_t));
+    ccoll_ll_iter_t *iter = (ccoll_ll_iter_t*) malloc(sizeof(ccoll_ll_iter_t));
     iter->next = list->head;
     iter->previous = NULL;
     iter->list = list;
@@ -163,39 +163,39 @@ ll_iter_t* ll_get_iter(linkedlist_t *list)
     return iter;
 }
 
-ll_iter_t* ll_get_iter_at(linkedlist_t *list, size_t index)
+ccoll_ll_iter_t* ccoll_ll_get_iter_at(ccoll_linkedlist_t *list, size_t index)
 {
-    ll_iter_t *iter = ll_get_iter(list);
+    ccoll_ll_iter_t *iter = ccoll_ll_get_iter(list);
     if (index >= list->length) {
         index = list->length - 1;
     } else {
         size_t counter = 0;
         while (counter < index) {
-            ll_iter_next(iter);
+            ccoll_ll_iter_next(iter);
             counter++;
         }
     }
     return iter;
 }
 
-void ll_drop_iter(ll_iter_t *iter)
+void ccoll_ll_drop_iter(ccoll_ll_iter_t *iter)
 {
     free(iter);
 }
 
-char ll_iter_has_next(ll_iter_t *iter)
+char ccoll_ll_iter_has_next(ccoll_ll_iter_t *iter)
 {
     return (NULL != iter->next);
 }
 
-char ll_iter_has_previous(ll_iter_t *iter)
+char ccoll_ll_iter_has_previous(ccoll_ll_iter_t *iter)
 {
     return (NULL != iter->previous);
 }
 
-ll_node_t* ll_iter_next(ll_iter_t *iter)
+ccoll_ll_node_t* ccoll_ll_iter_next(ccoll_ll_iter_t *iter)
 {
-    ll_node_t *node = iter->next;
+    ccoll_ll_node_t *node = iter->next;
     if (NULL != node) {
         iter->next = node->next;
         iter->previous = node;
@@ -205,9 +205,9 @@ ll_node_t* ll_iter_next(ll_iter_t *iter)
     return node;
 }
 
-ll_node_t* ll_iter_previous(ll_iter_t *iter)
+ccoll_ll_node_t* ccoll_ll_iter_previous(ccoll_ll_iter_t *iter)
 {
-    ll_node_t *node = iter->previous;
+    ccoll_ll_node_t *node = iter->previous;
     if (NULL != node) {
         iter->previous = node->previous;
         iter->next = node;
@@ -217,7 +217,7 @@ ll_node_t* ll_iter_previous(ll_iter_t *iter)
     return node;
 }
 
-void ll_iter_remove(ll_iter_t *iter)
+void ccoll_ll_iter_remove(ccoll_ll_iter_t *iter)
 {
     if (NULL != iter->last_returned) {
         if (iter->last_skip_forward) {
@@ -225,11 +225,11 @@ void ll_iter_remove(ll_iter_t *iter)
         } else {
             iter->next = iter->last_returned->next;
         }
-        _ll_remove_node(iter->list, iter->last_returned);
+        _ccoll_ll_remove_node(iter->list, iter->last_returned);
     }
 }
 
-size_t ll_length(linkedlist_t *list)
+size_t ccoll_ll_length(ccoll_linkedlist_t *list)
 {
     return list->length;
 }

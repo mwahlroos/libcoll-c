@@ -107,41 +107,61 @@ START_TEST(hashmap_create)
     ck_assert_ptr_nonnull(hashmap->hash_value_function);
     ck_assert_uint_ge(hashmap->capacity, 0);
     ck_assert_uint_eq(hashmap->total_entries, 0);
-    
+
     ccoll_hashmap_deinit(hashmap);
 }
 END_TEST
 
-START_TEST(hashmap_put_and_retrieve)
+START_TEST(hashmap_populate_and_retrieve)
 {
-    ccoll_hashmap_t *strcounts = ccoll_hashmap_init();
-    strcounts->hash_value_function = hashcode_int;
-    strcounts->key_comparator_function = intptrcmp;
+    ccoll_hashmap_t *counts = ccoll_hashmap_init();
+    counts->hash_value_function = hashcode_int;
+    counts->key_comparator_function = intptrcmp;
 
-    char *identifiers[] = { "identifier_1" };
-    int counts[] = { 7 };
+    char *identifiers[] = { "identifier_1", "identifier_2" };
+    int values[] = { 7, -34 };
 
+    /* test inserting values */
     for (int i=0; i<1; i++) {
         char *key = malloc((strlen(identifiers[i]) + 1) * sizeof(char));
         strcpy(key, identifiers[i]);
         int *value = malloc(sizeof(int));
 
-        *value = counts[i];
-        ccoll_hashmap_put(strcounts, key, value);
+        *value = values[i];
+        ccoll_hashmap_put(counts, key, value);
     }
 
-    char *testkey = identifiers[0];
-    int testval = counts[0];
+    ck_assert_uint_eq(ccoll_hashmap_get_size(counts), 1);
+    ck_assert(ccoll_hashmap_contains(counts, identifiers[0]));
 
-    ck_assert_uint_eq(ccoll_hashmap_get_size(strcounts), 1);
-    ck_assert(ccoll_hashmap_contains(strcounts, testkey));
+    size_t member_count = ccoll_hashmap_get_size(counts);
 
-    int *retrieved_value = (int*) ccoll_hashmap_get(strcounts, testkey);
-    ck_assert_ptr_nonnull(retrieved_value);
+    /* test retrieving a nonexisting value */
+    char *invalid_key = "asdf";
+    ck_assert_ptr_null(ccoll_hashmap_get(counts, invalid_key));
 
-    ck_assert_int_eq(testval, *retrieved_value);
+    /* test retrieving and removing valid values */
+    for (int i=0; i<1; i++) {
+        char *key = identifiers[i];
+        int expected_value = values[i];
 
-    ccoll_hashmap_deinit(strcounts);
+        ck_assert(ccoll_hashmap_contains(counts, key));
+
+        int *retrieved_value = (int*) ccoll_hashmap_get(counts, key);
+        ck_assert_ptr_nonnull(retrieved_value);
+        ck_assert_int_eq(*retrieved_value, expected_value);
+
+        ccoll_hashmap_entry_t retrieved_entry = ccoll_hashmap_remove(counts, key);
+        ck_assert_str_eq(key, (char*) retrieved_entry.key);
+        ck_assert_int_eq(expected_value, *(int*) retrieved_entry.value);
+
+        free(retrieved_entry.key);
+        free(retrieved_entry.value);
+
+        ck_assert_uint_eq(ccoll_hashmap_get_size(counts), --member_count);
+    }
+
+    ccoll_hashmap_deinit(counts);
 }
 END_TEST
 
@@ -179,11 +199,11 @@ TCase* create_linkedlist_tests(void)
 
 TCase* create_hashmap_tests(void)
 {
-    TCase *tc_core;    
+    TCase *tc_core;
     tc_core = tcase_create("hashmap_core");
 
     tcase_add_test(tc_core, hashmap_create);
-    tcase_add_test(tc_core, hashmap_put_and_retrieve);
+    tcase_add_test(tc_core, hashmap_populate_and_retrieve);
 
     return tc_core;
 }

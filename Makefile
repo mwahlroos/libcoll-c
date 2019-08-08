@@ -27,9 +27,11 @@ debug:
 
 tests: so
 	$(CC) $(CFLAGS) $(TEST_SRC) -o $(TEST_PROG) -L. -lccoll -lcheck
+	LD_LIBRARY_PATH=. ./$(TEST_PROG)
 
 debugtests: debug
 	$(CC) $(CFLAGS) $(TEST_SRC) -o $(TEST_PROG) -L. -lccoll -lcheck
+	LD_LIBRARY_PATH=. ./$(TEST_PROG)
 
 clean:
 	rm -f $(OBJS) $(LIB_SONAME) $(LIB_FILENAME) $(LIB_BASENAME) $(TEST_PROG)

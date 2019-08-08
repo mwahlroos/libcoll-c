@@ -110,7 +110,7 @@ char ccoll_linkedlist_remove(ccoll_linkedlist_t *list, void *value);
 /*
  * Initializes a new iterator for the given list. The new iterator will point
  * in front of the head of the list.
- * 
+ *
  * Remember to call ccoll_linkedlist_drop_iter on the iterator to free the memory used by
  * it when you don't need the iterator anymore.
  *

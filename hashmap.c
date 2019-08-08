@@ -83,7 +83,7 @@ ccoll_hashmap_t* ccoll_hashmap_init_with_params(size_t init_capacity,
     } else {
         hm->hash_value_function = &_ccoll_node_hashvalue_memaddr;
     }
-    
+
     if (NULL != key_comparator_function) {
         hm->key_comparator_function = key_comparator_function;
     } else {

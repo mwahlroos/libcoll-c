@@ -87,7 +87,7 @@ void ccoll_linkedlist_insert(ccoll_linkedlist_t *list, void *value, size_t index
     } else {
         ccoll_linkedlist_node_t *new_node = (ccoll_linkedlist_node_t*) malloc(sizeof(ccoll_linkedlist_node_t));
         new_node->value = value;
-        
+
         ccoll_linkedlist_node_t *insert_before = list->head;
         size_t counter = 0;
         while (counter < index) {
@@ -99,9 +99,9 @@ void ccoll_linkedlist_insert(ccoll_linkedlist_t *list, void *value, size_t index
         }
         new_node->previous = insert_before->previous;
         new_node->next = insert_before;
-        
+
         insert_before->previous = new_node;
-        
+
         list->length++;
         if (index == 0) {
             list->head = new_node;

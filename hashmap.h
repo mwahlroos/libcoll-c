@@ -48,4 +48,6 @@ size_t ccoll_hashmap_get_capacity(ccoll_hashmap_t *hm);
 
 size_t ccoll_hashmap_get_size(ccoll_hashmap_t *hm);
 
+char ccoll_hashmap_is_empty(ccoll_hashmap_t *hm);
+
 #endif  /* CCOLL_HASHMAP_H */

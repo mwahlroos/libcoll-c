@@ -170,4 +170,6 @@ void ccoll_linkedlist_iter_remove(ccoll_linkedlist_iter_t *iter);
  */
 size_t ccoll_linkedlist_length(ccoll_linkedlist_t *list);
 
+int ccoll_linkedlist_is_empty(ccoll_linkedlist_t *list);
+
 #endif  /* CCOLL_LINKEDLIST_H */

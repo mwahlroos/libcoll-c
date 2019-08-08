@@ -365,6 +365,22 @@ int ccoll_treemap_depth_of(ccoll_treemap_t *tree, void *key)
 }
 
 /*
+ * Returns the current number of elements in the treemap.
+ */
+size_t ccoll_treemap_get_size(ccoll_treemap_t *tree)
+{
+    return tree->size;
+}
+
+/*
+ * Returns true if the map currently has zero elements, false otherwise.
+ */
+char ccoll_treemap_is_empty(ccoll_treemap_t *tree)
+{
+    return tree->size == 0;
+}
+
+/*
  * Initializes a new iterator for the binary tree, set to point in front of the
  * node with the minimum key in the tree as defined by the comparator function.
  *

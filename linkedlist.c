@@ -233,3 +233,8 @@ size_t ccoll_linkedlist_length(ccoll_linkedlist_t *list)
 {
     return list->length;
 }
+
+int ccoll_linkedlist_is_empty(ccoll_linkedlist_t *list)
+{
+    return (list->length == 0);
+}

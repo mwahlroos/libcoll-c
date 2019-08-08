@@ -203,3 +203,8 @@ size_t ccoll_hashmap_get_size(ccoll_hashmap_t *hm)
 {
     return hm->total_entries;
 }
+
+char ccoll_hashmap_is_empty(ccoll_hashmap_t *hm)
+{
+    return hm->total_entries == 0;
+}

@@ -74,6 +74,10 @@ ccoll_treemap_node_t* ccoll_treemap_get_predecessor(ccoll_treemap_node_t *node);
 
 int ccoll_treemap_depth_of(ccoll_treemap_t *tree, void *key);
 
+size_t ccoll_treemap_get_size(ccoll_treemap_t *tree);
+
+char ccoll_treemap_is_empty(ccoll_treemap_t *tree);
+
 ccoll_treemap_iter_t* ccoll_treemap_get_iterator(ccoll_treemap_t *tree);
 
 void ccoll_treemap_drop_iterator(ccoll_treemap_iter_t *iterator);

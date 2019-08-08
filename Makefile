@@ -12,6 +12,8 @@ TEST_PROG= ccoll_test
 LIB_BASENAME= libccoll.so
 LIB_SONAME= $(LIB_BASENAME).$(VER_MAJOR)
 LIB_FILENAME= $(LIB_SONAME).$(VER_MINOR)
+VALGRIND=valgrind
+VALGRIND_OPTS= --leak-check=full --trace-children=yes
 
 so:
 	$(CC) $(CFLAGS) $(CFLAGS_LIB) -O2 -c $(SRC)
@@ -27,15 +29,22 @@ debug:
 
 tests: so
 	$(CC) $(CFLAGS) $(TEST_SRC) -o $(TEST_PROG) -L. -lccoll -lcheck
+
+debugtests: debug
+	$(CC) $(CFLAGS) $(TEST_SRC) -DENABLE_DEBUG=1 -o $(TEST_PROG) -L. -lccoll -lcheck
+
+runtests: tests
 	@echo
 	@echo Running unit tests...
 	LD_LIBRARY_PATH=. ./$(TEST_PROG)
 
-debugtests: debug
-	$(CC) $(CFLAGS) $(TEST_SRC) -DENABLE_DEBUG=1 -o $(TEST_PROG) -L. -lccoll -lcheck
+rundebugtests: debugtests
 	@echo
 	@echo Running unit tests...
 	LD_LIBRARY_PATH=. ./$(TEST_PROG)
+
+valgrind: debugtests
+	LD_LIBRARY_PATH=. $(VALGRIND) $(VALGRIND_OPTS) ./$(TEST_PROG)
 
 clean:
 	rm -f $(OBJS) $(LIB_SONAME) $(LIB_FILENAME) $(LIB_BASENAME) $(TEST_PROG)

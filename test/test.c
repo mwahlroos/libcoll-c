@@ -22,10 +22,25 @@ int intptrcmp(void *value1, void *value2)
     return *a - *b;
 }
 
+/* Trivial hash code function for int pointers, for unit tests. */
 unsigned long hashcode_int(void *value)
 {
     unsigned long *ulptr = (unsigned long*) value;
     return *ulptr;
+}
+
+/* Hash code function for strings, for unit tests. */
+unsigned long hashcode_str(char *str)
+{
+    /* use the djb2 algorithm for computing a hash code for a string;
+     * shamelessly copied from http://www.cse.yorku.ca/~oz/hash.html
+     */
+    unsigned long hash = 5381;
+    int c;
+    while (c = *str++) {
+        hash = ((hash << 5) + hash) + c;
+    }
+    return hash;
 }
 
 START_TEST(linkedlist_create)
@@ -105,7 +120,7 @@ START_TEST(hashmap_create)
     ck_assert_ptr_nonnull(hashmap);
     ck_assert_ptr_nonnull(hashmap->hash_slots);
     ck_assert_ptr_nonnull(hashmap->key_comparator_function);
-    ck_assert_ptr_nonnull(hashmap->hash_value_function);
+    ck_assert_ptr_nonnull(hashmap->hash_code_function);
     ck_assert_uint_ge(hashmap->capacity, 0);
     ck_assert_uint_eq(hashmap->total_entries, 0);
 
@@ -116,7 +131,7 @@ END_TEST
 START_TEST(hashmap_populate_and_retrieve)
 {
     ccoll_hashmap_t *counts = ccoll_hashmap_init();
-    counts->hash_value_function = hashcode_int;
+    counts->hash_code_function = hashcode_str;
     counts->key_comparator_function = intptrcmp;
 
     char *identifiers[] = { "identifier_1", "identifier_2" };

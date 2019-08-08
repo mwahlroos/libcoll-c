@@ -6,19 +6,18 @@
 #include "hashmap.h"
 #include "debug.h"
 
-#define HASHMAP_DEFAULT_INIT_SIZE         100
-#define HASHMAP_DEFAULT_MAX_LOAD_FACTOR   0.75
+#define HASHMAP_DEFAULT_INIT_SIZE         32
+#define HASHMAP_DEFAULT_MAX_LOAD_FACTOR   0.75f
 
-static unsigned long hash(unsigned long key_value)
+static size_t hash(ccoll_hashmap_t *hm, unsigned long hashcode)
 {
-    /* FIXME: stub */
-    return key_value;
+    /* trivial distribution for now */
+    return hashcode % hm->capacity;
 }
 
 static ccoll_linkedlist_t* find_collision_list(ccoll_hashmap_t *hm, void *key)
 {
-    unsigned long key_hash = hash(hm->hash_value_function(key));
-    size_t slot_index = (key_hash % hm->capacity);
+    size_t slot_index = hash(hm, hm->hash_code_function(key));
     ccoll_linkedlist_t *collision_list = hm->hash_slots[slot_index];
 
     return collision_list;
@@ -59,8 +58,8 @@ ccoll_hashmap_t* ccoll_hashmap_init()
 }
 
 ccoll_hashmap_t* ccoll_hashmap_init_with_params(size_t init_capacity,
-                                           double max_load_factor,
-                                           unsigned long (*hash_value_function)(void*),
+                                           float max_load_factor,
+                                           unsigned long (*hash_code_function)(void*),
                                            int (*key_comparator_function)(void *key1, void *key2),
                                            int (*value_comparator_function)(void *value1, void *value2))
 {
@@ -78,10 +77,10 @@ ccoll_hashmap_t* ccoll_hashmap_init_with_params(size_t init_capacity,
     hm->capacity = init_capacity;
     hm->total_entries = 0;
 
-    if (NULL != hash_value_function) {
-        hm->hash_value_function = hash_value_function;
+    if (NULL != hash_code_function) {
+        hm->hash_code_function = hash_code_function;
     } else {
-        hm->hash_value_function = &_ccoll_node_hashvalue_memaddr;
+        hm->hash_code_function = &_ccoll_node_hashvalue_memaddr;
     }
 
     if (NULL != key_comparator_function) {
@@ -118,8 +117,7 @@ void ccoll_hashmap_deinit(ccoll_hashmap_t *hm)
 
 void ccoll_hashmap_put(ccoll_hashmap_t *hm, void *key, void *value)
 {
-    unsigned long key_hash = hash(hm->hash_value_function(key));
-    size_t slot_index = (key_hash % hm->capacity);
+    size_t slot_index = hash(hm, hm->hash_code_function(key));
     ccoll_linkedlist_t *collision_list = hm->hash_slots[slot_index];
 
     if (NULL == collision_list) {
@@ -165,7 +163,7 @@ ccoll_pair_voidptr_t ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key)
     ccoll_hashmap_entry_t *entry;
     ccoll_pair_voidptr_t kv_pair;
 
-    unsigned long key_hash = hash(hm->hash_value_function(key));
+    unsigned long key_hash = hash(hm, hm->hash_code_function(key));
     size_t slot_index = (key_hash % hm->capacity);
     ccoll_linkedlist_t *collision_list = hm->hash_slots[slot_index];
 

@@ -21,8 +21,8 @@ typedef struct ccoll_hashmap {
     ccoll_linkedlist_t **hash_slots;
     size_t capacity;
     size_t total_entries;
-    double max_load_factor;
-    unsigned long (*hash_value_function)(void *key);
+    float max_load_factor;
+    unsigned long (*hash_code_function)(void *key);
     int (*key_comparator_function)(void *key1, void *key2);
     int (*value_comparator_function)(void *value1, void *value2);
 } ccoll_hashmap_t;
@@ -30,8 +30,8 @@ typedef struct ccoll_hashmap {
 ccoll_hashmap_t* ccoll_hashmap_init();
 
 ccoll_hashmap_t* ccoll_hashmap_init_with_params(size_t init_capacity,
-                                 double max_load_factor,
-                                 unsigned long (*hash_value_function)(void*),
+                                 float max_load_factor,
+                                 unsigned long (*hash_code_function)(void*),
                                  int (*key_comparator_function)(void *key1, void *key2),
                                  int (*value_comparator_function)(void *value1, void *value2));
 

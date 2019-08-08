@@ -23,9 +23,9 @@ int intptrcmp(void *value1, void *value2)
 }
 
 /* Trivial hash code function for int pointers, for unit tests. */
-unsigned long hashcode_int(void *value)
+unsigned long hashcode_int(void *key)
 {
-    unsigned long *ulptr = (unsigned long*) value;
+    unsigned long *ulptr = (unsigned long*) key;
     return *ulptr;
 }
 

@@ -11,6 +11,7 @@
 #include "../treemap.h"
 #include "../node.h"
 #include "../types.h"
+#include "../hash.h"
 
 /* Compares two pointers by the integer value they point to.
  * Utility function for unit tests.
@@ -20,30 +21,6 @@ int intptrcmp(void *value1, void *value2)
     int *a = (int*) value1;
     int *b = (int*) value2;
     return *a - *b;
-}
-
-/* Trivial hash code function for int pointers, for unit tests. */
-unsigned long hashcode_int(void *key)
-{
-    unsigned long *ulptr = (unsigned long*) key;
-    return *ulptr;
-}
-
-/* Hash code function for strings, for unit tests. */
-unsigned long hashcode_str(void *key)
-{
-    /* use the djb2 algorithm for computing a hash code for a string;
-     * shamelessly copied from http://www.cse.yorku.ca/~oz/hash.html
-     */
-
-    char *s = (char*) key;
-
-    unsigned long hash = 5381;
-    int c;
-    while (c = *s++) {
-        hash = ((hash << 5) + hash) + c;
-    }
-    return hash;
 }
 
 START_TEST(linkedlist_create)
@@ -134,7 +111,7 @@ END_TEST
 START_TEST(hashmap_populate_and_retrieve)
 {
     ccoll_hashmap_t *counts = ccoll_hashmap_init();
-    counts->hash_code_function = hashcode_str;
+    counts->hash_code_function = hashcode_str2;
     counts->key_comparator_function = intptrcmp;
 
     char *identifiers[] = { "identifier_1", "identifier_2" };

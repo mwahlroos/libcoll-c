@@ -27,10 +27,14 @@ debug:
 
 tests: so
 	$(CC) $(CFLAGS) $(TEST_SRC) -o $(TEST_PROG) -L. -lccoll -lcheck
+	@echo
+	@echo Running unit tests...
 	LD_LIBRARY_PATH=. ./$(TEST_PROG)
 
 debugtests: debug
 	$(CC) $(CFLAGS) $(TEST_SRC) -o $(TEST_PROG) -L. -lccoll -lcheck
+	@echo
+	@echo Running unit tests...
 	LD_LIBRARY_PATH=. ./$(TEST_PROG)
 
 clean:

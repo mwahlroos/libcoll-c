@@ -10,6 +10,7 @@
 #include "../hashmap.h"
 #include "../treemap.h"
 #include "../node.h"
+#include "../types.h"
 
 /* Compares two pointers by the integer value they point to.
  * Utility function for unit tests.
@@ -151,12 +152,12 @@ START_TEST(hashmap_populate_and_retrieve)
         ck_assert_ptr_nonnull(retrieved_value);
         ck_assert_int_eq(*retrieved_value, expected_value);
 
-        ccoll_hashmap_entry_t retrieved_entry = ccoll_hashmap_remove(counts, key);
-        ck_assert_str_eq(key, (char*) retrieved_entry.key);
-        ck_assert_int_eq(expected_value, *(int*) retrieved_entry.value);
+        ccoll_pair_voidptr_t retrieved_pair = ccoll_hashmap_remove(counts, key);
+        ck_assert_str_eq(key, (char*) retrieved_pair.a);
+        ck_assert_int_eq(expected_value, *(int*) retrieved_pair.b);
 
-        free(retrieved_entry.key);
-        free(retrieved_entry.value);
+        free(retrieved_pair.a);
+        free(retrieved_pair.b);
 
         ck_assert_uint_eq(ccoll_hashmap_get_size(counts), --member_count);
     }

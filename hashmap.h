@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include "linkedlist.h"
 #include "node.h"
+#include "types.h"
 
 #ifndef CCOLL_HASHMAP_H
 #define CCOLL_HASHMAP_H
@@ -42,7 +43,7 @@ void* ccoll_hashmap_get(ccoll_hashmap_t *hm, void *key);
 
 char ccoll_hashmap_contains(ccoll_hashmap_t *hm, void *key);
 
-ccoll_hashmap_entry_t ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key);
+ccoll_pair_voidptr_t ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key);
 
 size_t ccoll_hashmap_get_capacity(ccoll_hashmap_t *hm);
 

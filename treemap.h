@@ -8,6 +8,7 @@
 
 #include <stdlib.h>
 #include <stdbool.h>
+#include "types.h"
 
 #ifndef CCOLL_TREEMAP_H
 #define CCOLL_TREEMAP_H
@@ -23,14 +24,6 @@ typedef struct ccoll_treemap_node {
     void *value;
     char color;
 } ccoll_treemap_node_t;
-
-/* A type for representing a key-value pair.
- * Used for passing stuff around without having to pass actual nodes.
- */
-typedef struct ccoll_treemap_entry {
-    void *key;
-    void *value;
-} ccoll_treemap_entry_t;
 
 /* A type for representing the tree itself, for holding useful metadata */
 typedef struct ccoll_treemap {
@@ -66,7 +59,7 @@ ccoll_treemap_node_t* ccoll_treemap_get(ccoll_treemap_t *tree, void *key);
 
 bool ccoll_treemap_contains(ccoll_treemap_t *tree, void *key);
 
-ccoll_treemap_entry_t ccoll_treemap_remove(ccoll_treemap_t *tree, void *key);
+ccoll_pair_voidptr_t ccoll_treemap_remove(ccoll_treemap_t *tree, void *key);
 
 ccoll_treemap_node_t* ccoll_treemap_get_successor(ccoll_treemap_node_t *node);
 

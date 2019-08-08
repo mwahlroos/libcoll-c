@@ -160,14 +160,10 @@ char ccoll_hashmap_contains(ccoll_hashmap_t *hm, void *key)
     return NULL != entry;
 }
 
-ccoll_hashmap_entry_t ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key)
+ccoll_pair_voidptr_t ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key)
 {
-    ccoll_hashmap_entry_t *kv_pair;
-
-    /* make a copy of the entry struct and return it by value to avoid
-     * having to return non-payload stuff allocated from the heap
-     */
-    ccoll_hashmap_entry_t kv_pair_copy = { .key = NULL, .value = NULL };
+    ccoll_hashmap_entry_t *entry;
+    ccoll_pair_voidptr_t kv_pair;
 
     unsigned long key_hash = hash(hm->hash_value_function(key));
     size_t slot_index = (key_hash % hm->capacity);
@@ -177,10 +173,10 @@ ccoll_hashmap_entry_t ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key)
         ccoll_linkedlist_iter_t *iter = ccoll_linkedlist_get_iter(collision_list);
         while (ccoll_linkedlist_iter_has_next(iter)) {
             ccoll_linkedlist_node_t *node = ccoll_linkedlist_iter_next(iter);
-            kv_pair = (ccoll_hashmap_entry_t*) (node->value);
-            if (hm->key_comparator_function(key, kv_pair->key) == 0) {
-                kv_pair_copy.key = kv_pair->key;
-                kv_pair_copy.value = kv_pair->value;
+            entry = (ccoll_hashmap_entry_t*) (node->value);
+            if (hm->key_comparator_function(key, entry->key) == 0) {
+                kv_pair.a = entry->key;
+                kv_pair.b = entry->value;
                 ccoll_linkedlist_iter_remove(iter);
                 hm->total_entries--;
             }
@@ -191,7 +187,7 @@ ccoll_hashmap_entry_t ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key)
      * rather than just returning null pointers in the struct?
      */
 
-    return kv_pair_copy;
+    return kv_pair;
 }
 
 size_t ccoll_hashmap_get_capacity(ccoll_hashmap_t *hm)

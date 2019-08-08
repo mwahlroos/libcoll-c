@@ -254,19 +254,19 @@ bool ccoll_treemap_contains(ccoll_treemap_t *tree, void *key)
  *          The key in the struct will be set to NULL if no node with a
  *          matching key was found in the tree.
  */
-ccoll_treemap_entry_t ccoll_treemap_remove(ccoll_treemap_t *tree, void *key)
+ccoll_pair_voidptr_t ccoll_treemap_remove(ccoll_treemap_t *tree, void *key)
 {
-    ccoll_treemap_entry_t entry;
+    ccoll_pair_voidptr_t pair;
     ccoll_treemap_node_t *node = ccoll_treemap_get(tree, key);
     if (NULL_NODE != node) {
-        entry.key = node->key;
-        entry.value = node->value;
+        pair.a = node->key;
+        pair.b = node->value;
         remove_node(tree, node);
     } else {
-        entry.key = NULL;
-        entry.value = NULL;
+        pair.a = NULL;
+        pair.b = NULL;
     }
-    return entry;
+    return pair;
 }
 
 /*

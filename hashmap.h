@@ -13,6 +13,9 @@
 #ifndef CCOLL_HASHMAP_H
 #define CCOLL_HASHMAP_H
 
+#define CCOLL_HASHMAP_DEFAULT_INIT_SIZE         32
+#define CCOLL_HASHMAP_DEFAULT_MAX_LOAD_FACTOR   0.75f
+
 typedef struct ccoll_hashmap_entry {
     void *key;
     void *value;

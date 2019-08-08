@@ -6,9 +6,6 @@
 #include "hashmap.h"
 #include "debug.h"
 
-#define HASHMAP_DEFAULT_INIT_SIZE         32
-#define HASHMAP_DEFAULT_MAX_LOAD_FACTOR   0.75f
-
 static size_t hash(ccoll_hashmap_t *hm, unsigned long hashcode)
 {
     /* trivial distribution for now */
@@ -107,9 +104,10 @@ static ccoll_map_insertion_result_t insert_new(ccoll_hashmap_t *hm, void *key, v
 
 ccoll_hashmap_t* ccoll_hashmap_init()
 {
-    return ccoll_hashmap_init_with_params(HASHMAP_DEFAULT_INIT_SIZE,
-                                     HASHMAP_DEFAULT_MAX_LOAD_FACTOR,
-                                     NULL, NULL, NULL);
+    return ccoll_hashmap_init_with_params(
+        CCOLL_HASHMAP_DEFAULT_INIT_SIZE,
+        CCOLL_HASHMAP_DEFAULT_MAX_LOAD_FACTOR,
+        NULL, NULL, NULL);
 }
 
 ccoll_hashmap_t* ccoll_hashmap_init_with_params(size_t init_capacity,

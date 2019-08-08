@@ -2,7 +2,7 @@ VER_MAJOR=0
 VER_MINOR=0
 CC=gcc
 LD=ld
-CFLAGS= -std=c99 -Wall -pedantic
+CFLAGS= -std=c99 -Wall -Wextra -pedantic
 CFLAGS_LIB= -shared -fPIC
 LDFLAGS_LIB= -shared
 SRC= hashmap.c linkedlist.c treemap.c node.c

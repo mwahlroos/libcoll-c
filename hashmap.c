@@ -90,7 +90,6 @@ static ccoll_map_insertion_result_t insert_new(ccoll_hashmap_t *hm, void *key, v
             result.status = REPLACED;
 
             key_exists = 1;
-
             free(entry);
             node->value = new_entry;
             break;
@@ -159,11 +158,19 @@ void ccoll_hashmap_deinit(ccoll_hashmap_t *hm)
     for (size_t i=0; i<hm->capacity; i++) {
         ccoll_linkedlist_t *list = hm->hash_slots[i];
         if (NULL != list) {
+            DEBUGF("Hashmap deinit: clearing collision list (%lu entries) at bucket %lu\n",
+                   ccoll_linkedlist_length(list), i);
+
             ccoll_linkedlist_iter_t *iter = ccoll_linkedlist_get_iter(list);
             while (ccoll_linkedlist_iter_has_next(iter)) {
-                ccoll_hashmap_entry_t *entry = (ccoll_hashmap_entry_t*) ccoll_linkedlist_iter_next(iter);
+                DEBUG("Hashmap deinit: freeing entry\n");
+
+                ccoll_hashmap_entry_t *entry =
+                    (ccoll_hashmap_entry_t*) ccoll_linkedlist_iter_next(iter);
+
                 free(entry);
             }
+            free(iter);
             free(list);
         }
     }
@@ -227,6 +234,7 @@ ccoll_map_removal_result_t ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key)
                 result.status = REMOVED;
                 ccoll_linkedlist_iter_remove(iter);
                 hm->total_entries--;
+                free(entry);
             }
         }
         ccoll_linkedlist_drop_iter(iter);

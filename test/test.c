@@ -95,6 +95,11 @@ START_TEST(linkedlist_populate_and_iterate)
     ccoll_linkedlist_drop_iter(iter);
 
     ccoll_linkedlist_deinit(list);
+
+    free(testint1);
+    free(testint2);
+    free(testint3);
+    free(testint4);
 }
 END_TEST
 

@@ -9,9 +9,11 @@
 #include "../linkedlist.h"
 #include "../hashmap.h"
 #include "../treemap.h"
+#include "../map.h"
 #include "../node.h"
 #include "../types.h"
 #include "../hash.h"
+#include "../debug.h"
 
 /* Compares two pointers by the integer value they point to.
  * Utility function for unit tests.
@@ -25,6 +27,7 @@ int intptrcmp(void *value1, void *value2)
 
 START_TEST(linkedlist_create)
 {
+    DEBUG("*** Starting linkedlist_create\n");
     ccoll_linkedlist_t *ll = ccoll_linkedlist_init();
     ck_assert_ptr_nonnull(ll);
     ck_assert_uint_eq(ll->length, 0);
@@ -36,6 +39,7 @@ END_TEST
 
 START_TEST(linkedlist_populate_and_iterate)
 {
+    DEBUG("*** Starting linkedlist_populate_and_iterate\n");
     ccoll_linkedlist_t *list = ccoll_linkedlist_init();
 
     int *testint1 = (int*) malloc(sizeof(int));
@@ -96,6 +100,7 @@ END_TEST
 
 START_TEST(hashmap_create)
 {
+    DEBUG("*** Starting hashmap_create\n");
     ccoll_hashmap_t *hashmap = ccoll_hashmap_init();
     ck_assert_ptr_nonnull(hashmap);
     ck_assert_ptr_nonnull(hashmap->hash_slots);
@@ -110,6 +115,7 @@ END_TEST
 
 START_TEST(hashmap_populate_and_retrieve)
 {
+    DEBUG("*** Starting hashmap_populate_and_retrieve\n");
     ccoll_hashmap_t *counts = ccoll_hashmap_init();
     counts->hash_code_function = hashcode_str2;
     counts->key_comparator_function = intptrcmp;
@@ -118,7 +124,7 @@ START_TEST(hashmap_populate_and_retrieve)
     int values[] = { 7, -34 };
 
     /* test inserting values */
-    for (int i=0; i<1; i++) {
+    for (int i=0; i<2; i++) {
         char *key = malloc((strlen(identifiers[i]) + 1) * sizeof(char));
         strcpy(key, identifiers[i]);
         int *value = malloc(sizeof(int));
@@ -127,7 +133,7 @@ START_TEST(hashmap_populate_and_retrieve)
         ccoll_hashmap_put(counts, key, value);
     }
 
-    ck_assert_uint_eq(ccoll_hashmap_get_size(counts), 1);
+    ck_assert_uint_eq(ccoll_hashmap_get_size(counts), 2);
     ck_assert(ccoll_hashmap_contains(counts, identifiers[0]));
 
     size_t member_count = ccoll_hashmap_get_size(counts);
@@ -137,22 +143,27 @@ START_TEST(hashmap_populate_and_retrieve)
     ck_assert_ptr_null(ccoll_hashmap_get(counts, invalid_key));
 
     /* test retrieving and removing valid values */
-    for (int i=0; i<1; i++) {
+    for (int i=0; i<2; i++) {
         char *key = identifiers[i];
         int expected_value = values[i];
 
         ck_assert(ccoll_hashmap_contains(counts, key));
 
         int *retrieved_value = (int*) ccoll_hashmap_get(counts, key);
+
+        DEBUGF("Hashmap: retrieved %d with key %s; expected %d\n",
+               *retrieved_value, key, expected_value
+        );
+
         ck_assert_ptr_nonnull(retrieved_value);
         ck_assert_int_eq(*retrieved_value, expected_value);
 
-        ccoll_pair_voidptr_t retrieved_pair = ccoll_hashmap_remove(counts, key);
-        ck_assert_str_eq(key, (char*) retrieved_pair.a);
-        ck_assert_int_eq(expected_value, *(int*) retrieved_pair.b);
+        ccoll_map_removal_result_t result = ccoll_hashmap_remove(counts, key);
+        ck_assert_str_eq(key, (char*) result.key);
+        ck_assert_int_eq(expected_value, *(int*) result.value);
 
-        free(retrieved_pair.a);
-        free(retrieved_pair.b);
+        free(result.key);
+        free(result.value);
 
         ck_assert_uint_eq(ccoll_hashmap_get_size(counts), --member_count);
     }

@@ -49,6 +49,62 @@ static ccoll_hashmap_entry_t* find_entry(ccoll_hashmap_t *hm, void *key)
     return matching_entry;
 }
 
+/*
+ * Inserts the given key-value pair into the given collision list.
+ * If a value with the same key already exists, it is replaced.
+ *
+ * Returns: an insertion result indicating whether an existing entry was
+ * replaced or a new entry added, or whether there was an error.
+ */
+static ccoll_map_insertion_result_t insert_new(ccoll_hashmap_t *hm, void *key, void *value)
+{
+    ccoll_map_insertion_result_t result;
+
+    if (NULL == key) {
+        result.status = INSERTION_FAILED;
+        result.error = INVALID_KEY;
+        return result;
+    }
+
+    ccoll_hashmap_entry_t *new_entry = malloc(sizeof(ccoll_hashmap_entry_t));
+    new_entry->key = key;
+    new_entry->value = value;
+
+    size_t slot_index = hash(hm, hm->hash_code_function(key));
+    ccoll_linkedlist_t *collision_list = hm->hash_slots[slot_index];
+
+    if (NULL == collision_list) {
+        collision_list = ccoll_linkedlist_init_with_comparator(hm->key_comparator_function);
+        hm->hash_slots[slot_index] = collision_list;
+    }
+
+    ccoll_linkedlist_iter_t *iter = ccoll_linkedlist_get_iter(collision_list);
+    ccoll_linkedlist_node_t *node;
+    char key_exists = 0;
+
+    while ((node = ccoll_linkedlist_iter_next(iter)) != NULL) {
+        ccoll_hashmap_entry_t *entry = (ccoll_hashmap_entry_t*) node->value;
+        if (hm->key_comparator_function(key, entry->key) == 0) {
+            result.old_key = entry->key;
+            result.old_value = entry->value;
+            result.status = REPLACED;
+
+            key_exists = 1;
+
+            free(entry);
+            node->value = new_entry;
+            break;
+        }
+    }
+    ccoll_linkedlist_drop_iter(iter);
+
+    if (!key_exists) {
+        ccoll_linkedlist_append(collision_list, new_entry);
+        result.status = ADDED;
+    }
+
+    return result;
+}
 
 ccoll_hashmap_t* ccoll_hashmap_init()
 {
@@ -115,29 +171,13 @@ void ccoll_hashmap_deinit(ccoll_hashmap_t *hm)
     free(hm);
 }
 
-void ccoll_hashmap_put(ccoll_hashmap_t *hm, void *key, void *value)
+ccoll_map_insertion_result_t ccoll_hashmap_put(ccoll_hashmap_t *hm, void *key, void *value)
 {
-    size_t slot_index = hash(hm, hm->hash_code_function(key));
-    ccoll_linkedlist_t *collision_list = hm->hash_slots[slot_index];
-
-    if (NULL == collision_list) {
-        collision_list = ccoll_linkedlist_init_with_comparator(hm->key_comparator_function);
-        hm->hash_slots[slot_index] = collision_list;
-    }
-
-    ccoll_hashmap_entry_t *existing_entry = find_entry(hm, key);
-
-    if (NULL != existing_entry) {
-        /* replace the value in the existing entry with the new value */
-        existing_entry->value = value;
-    } else {
-        ccoll_hashmap_entry_t *new_kv_pair = (ccoll_hashmap_entry_t*) malloc (sizeof(ccoll_hashmap_entry_t));
-        new_kv_pair->key = key;
-        new_kv_pair->value = value;
-
-        ccoll_linkedlist_append(collision_list, new_kv_pair);
+    ccoll_map_insertion_result_t result = insert_new(hm, key, value);
+    if (result.status == ADDED) {
         hm->total_entries++;
     }
+    return result;
 }
 
 void* ccoll_hashmap_get(ccoll_hashmap_t *hm, void *key)
@@ -158,10 +198,19 @@ char ccoll_hashmap_contains(ccoll_hashmap_t *hm, void *key)
     return NULL != entry;
 }
 
-ccoll_pair_voidptr_t ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key)
+ccoll_map_removal_result_t ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key)
 {
-    ccoll_hashmap_entry_t *entry;
-    ccoll_pair_voidptr_t kv_pair;
+    ccoll_map_removal_result_t result;
+
+    if (NULL == key) {
+        result.status = REMOVAL_FAILED;
+        result.error = INVALID_KEY;
+        return result;
+    }
+
+    result.status = NOT_FOUND;
+    result.key = NULL;
+    result.value = NULL;
 
     unsigned long key_hash = hash(hm, hm->hash_code_function(key));
     size_t slot_index = (key_hash % hm->capacity);
@@ -171,21 +220,19 @@ ccoll_pair_voidptr_t ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key)
         ccoll_linkedlist_iter_t *iter = ccoll_linkedlist_get_iter(collision_list);
         while (ccoll_linkedlist_iter_has_next(iter)) {
             ccoll_linkedlist_node_t *node = ccoll_linkedlist_iter_next(iter);
-            entry = (ccoll_hashmap_entry_t*) (node->value);
+            ccoll_hashmap_entry_t *entry = (ccoll_hashmap_entry_t*) (node->value);
             if (hm->key_comparator_function(key, entry->key) == 0) {
-                kv_pair.a = entry->key;
-                kv_pair.b = entry->value;
+                result.key = entry->key;
+                result.value = entry->value;
+                result.status = REMOVED;
                 ccoll_linkedlist_iter_remove(iter);
                 hm->total_entries--;
             }
         }
+        ccoll_linkedlist_drop_iter(iter);
     }
 
-    /* FIXME: should perhaps indicate non-existence of the key somehow
-     * rather than just returning null pointers in the struct?
-     */
-
-    return kv_pair;
+    return result;
 }
 
 size_t ccoll_hashmap_get_capacity(ccoll_hashmap_t *hm)

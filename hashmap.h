@@ -6,6 +6,7 @@
 
 #include <stdlib.h>
 #include "linkedlist.h"
+#include "map.h"
 #include "node.h"
 #include "types.h"
 
@@ -37,13 +38,13 @@ ccoll_hashmap_t* ccoll_hashmap_init_with_params(size_t init_capacity,
 
 void ccoll_hashmap_deinit(ccoll_hashmap_t *hm);
 
-void ccoll_hashmap_put(ccoll_hashmap_t *hm, void *key, void *value);
+ccoll_map_insertion_result_t ccoll_hashmap_put(ccoll_hashmap_t *hm, void *key, void *value);
 
 void* ccoll_hashmap_get(ccoll_hashmap_t *hm, void *key);
 
 char ccoll_hashmap_contains(ccoll_hashmap_t *hm, void *key);
 
-ccoll_pair_voidptr_t ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key);
+ccoll_map_removal_result_t ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key);
 
 size_t ccoll_hashmap_get_capacity(ccoll_hashmap_t *hm);
 

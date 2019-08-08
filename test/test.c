@@ -30,14 +30,17 @@ unsigned long hashcode_int(void *value)
 }
 
 /* Hash code function for strings, for unit tests. */
-unsigned long hashcode_str(char *str)
+unsigned long hashcode_str(void *key)
 {
     /* use the djb2 algorithm for computing a hash code for a string;
      * shamelessly copied from http://www.cse.yorku.ca/~oz/hash.html
      */
+
+    char *s = (char*) key;
+
     unsigned long hash = 5381;
     int c;
-    while (c = *str++) {
+    while (c = *s++) {
         hash = ((hash << 5) + hash) + c;
     }
     return hash;

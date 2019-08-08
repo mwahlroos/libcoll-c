@@ -122,8 +122,8 @@ START_TEST(hashmap_create)
     ccoll_hashmap_t *hashmap = ccoll_hashmap_init();
     ck_assert_ptr_nonnull(hashmap);
     ck_assert_ptr_nonnull(hashmap->hash_slots);
-    ck_assert_ptr_nonnull(hashmap->key_comparator_function);
-    ck_assert_ptr_nonnull(hashmap->hash_code_function);
+    ck_assert(hashmap->key_comparator_function != NULL);
+    ck_assert(hashmap->hash_code_function != NULL);
     ck_assert_uint_ge(hashmap->capacity, 0);
     ck_assert_uint_eq(hashmap->total_entries, 0);
 

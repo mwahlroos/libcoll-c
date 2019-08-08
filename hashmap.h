@@ -42,7 +42,7 @@ void* ccoll_hashmap_get(ccoll_hashmap_t *hm, void *key);
 
 char ccoll_hashmap_contains(ccoll_hashmap_t *hm, void *key);
 
-void* ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key);
+ccoll_hashmap_entry_t ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key);
 
 size_t ccoll_hashmap_get_capacity(ccoll_hashmap_t *hm);
 

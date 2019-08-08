@@ -160,10 +160,14 @@ char ccoll_hashmap_contains(ccoll_hashmap_t *hm, void *key)
     return NULL != entry;
 }
 
-void* ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key)
+ccoll_hashmap_entry_t ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key)
 {
     ccoll_hashmap_entry_t *kv_pair;
-    void *retval = NULL;
+
+    /* make a copy of the entry struct and return it by value to avoid
+     * having to return non-payload stuff allocated from the heap
+     */
+    ccoll_hashmap_entry_t kv_pair_copy = { .key = NULL, .value = NULL };
 
     unsigned long key_hash = hash(hm->hash_value_function(key));
     size_t slot_index = (key_hash % hm->capacity);
@@ -175,7 +179,8 @@ void* ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key)
             ccoll_linkedlist_node_t *node = ccoll_linkedlist_iter_next(iter);
             kv_pair = (ccoll_hashmap_entry_t*) (node->value);
             if (hm->key_comparator_function(key, kv_pair->key) == 0) {
-                retval = kv_pair->value;
+                kv_pair_copy.key = kv_pair->key;
+                kv_pair_copy.value = kv_pair->value;
                 ccoll_linkedlist_iter_remove(iter);
                 hm->total_entries--;
             }
@@ -183,10 +188,10 @@ void* ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key)
     }
 
     /* FIXME: should perhaps indicate non-existence of the key somehow
-     * rather than just returning NULL?
+     * rather than just returning null pointers in the struct?
      */
 
-    return retval;
+    return kv_pair_copy;
 }
 
 size_t ccoll_hashmap_get_capacity(ccoll_hashmap_t *hm)

@@ -90,6 +90,7 @@ static ccoll_map_insertion_result_t insert_new(ccoll_hashmap_t *hm, void *key, v
             result.old_key = entry->key;
             result.old_value = entry->value;
             result.status = REPLACED;
+            result.error = NONE;
 
             key_exists = 1;
             free(entry);
@@ -102,6 +103,7 @@ static ccoll_map_insertion_result_t insert_new(ccoll_hashmap_t *hm, void *key, v
     if (!key_exists) {
         ccoll_linkedlist_append(collision_list, new_entry);
         result.status = ADDED;
+        result.error = NONE;
     }
 
     return result;
@@ -135,6 +137,7 @@ static void resize(ccoll_hashmap_t *hm, size_t capacity)
                 free(old_entry);
             }
             ccoll_linkedlist_drop_iter(iter);
+            ccoll_linkedlist_deinit(list);
         }
     }
     free(old_buckets);
@@ -225,6 +228,7 @@ ccoll_map_insertion_result_t ccoll_hashmap_put(ccoll_hashmap_t *hm, void *key, v
             resize(hm, hm->capacity * 2);
         }
     }
+
     return result;
 }
 

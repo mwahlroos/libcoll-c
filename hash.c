@@ -33,7 +33,7 @@ unsigned long hashcode_str2(void *str)
 
     unsigned long hash = 5381;
     int c;
-    while (c = *s++) {
+    while ((c = *s++)) {
         hash = ((hash << 5) + hash) + c;
     }
     return hash;

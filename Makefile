@@ -8,8 +8,8 @@ LDFLAGS_LIB= -shared
 SRC= hashmap.c linkedlist.c treemap.c node.c hash.c
 OBJS= hashmap.o linkedlist.o treemap.o node.o hash.o
 TEST_SRC= test/test.c
-TEST_PROG= ccoll_test
-LIB_BASENAME= libccoll.so
+TEST_PROG= libcoll_test
+LIB_BASENAME= libcoll.so
 LIB_SONAME= $(LIB_BASENAME).$(VER_MAJOR)
 LIB_FILENAME= $(LIB_SONAME).$(VER_MINOR)
 VALGRIND=valgrind
@@ -28,10 +28,10 @@ debug:
 	ln -fs $(LIB_SONAME) $(LIB_BASENAME)
 
 tests: so
-	$(CC) $(CFLAGS) $(TEST_SRC) -o $(TEST_PROG) -L. -lccoll -lcheck
+	$(CC) $(CFLAGS) $(TEST_SRC) -o $(TEST_PROG) -L. -lcoll -lcheck
 
 debugtests: debug
-	$(CC) $(CFLAGS) $(TEST_SRC) -DENABLE_DEBUG=1 -o $(TEST_PROG) -L. -lccoll -lcheck
+	$(CC) $(CFLAGS) $(TEST_SRC) -DENABLE_DEBUG=1 -o $(TEST_PROG) -L. -lcoll -lcheck
 
 runtests: tests
 	@echo

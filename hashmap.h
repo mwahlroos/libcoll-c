@@ -10,49 +10,49 @@
 #include "node.h"
 #include "types.h"
 
-#ifndef CCOLL_HASHMAP_H
-#define CCOLL_HASHMAP_H
+#ifndef LIBCOLL_HASHMAP_H
+#define LIBCOLL_HASHMAP_H
 
-#define CCOLL_HASHMAP_DEFAULT_INIT_SIZE         32
-#define CCOLL_HASHMAP_DEFAULT_MAX_LOAD_FACTOR   0.75f
+#define LIBCOLL_HASHMAP_DEFAULT_INIT_SIZE         32
+#define LIBCOLL_HASHMAP_DEFAULT_MAX_LOAD_FACTOR   0.75f
 
-typedef struct ccoll_hashmap_entry {
+typedef struct libcoll_hashmap_entry {
     void *key;
     void *value;
-} ccoll_hashmap_entry_t;
+} libcoll_hashmap_entry_t;
 
-typedef struct ccoll_hashmap {
-    ccoll_linkedlist_t **buckets;
+typedef struct libcoll_hashmap {
+    libcoll_linkedlist_t **buckets;
     size_t capacity;
     size_t total_entries;
     float max_load_factor;
     unsigned long (*hash_code_function)(void *key);
     int (*key_comparator_function)(void *key1, void *key2);
     int (*value_comparator_function)(void *value1, void *value2);
-} ccoll_hashmap_t;
+} libcoll_hashmap_t;
 
-ccoll_hashmap_t* ccoll_hashmap_init();
+libcoll_hashmap_t* libcoll_hashmap_init();
 
-ccoll_hashmap_t* ccoll_hashmap_init_with_params(size_t init_capacity,
+libcoll_hashmap_t* libcoll_hashmap_init_with_params(size_t init_capacity,
                                  float max_load_factor,
                                  unsigned long (*hash_code_function)(void*),
                                  int (*key_comparator_function)(void *key1, void *key2),
                                  int (*value_comparator_function)(void *value1, void *value2));
 
-void ccoll_hashmap_deinit(ccoll_hashmap_t *hm);
+void libcoll_hashmap_deinit(libcoll_hashmap_t *hm);
 
-ccoll_map_insertion_result_t ccoll_hashmap_put(ccoll_hashmap_t *hm, void *key, void *value);
+libcoll_map_insertion_result_t libcoll_hashmap_put(libcoll_hashmap_t *hm, void *key, void *value);
 
-void* ccoll_hashmap_get(ccoll_hashmap_t *hm, void *key);
+void* libcoll_hashmap_get(libcoll_hashmap_t *hm, void *key);
 
-char ccoll_hashmap_contains(ccoll_hashmap_t *hm, void *key);
+char libcoll_hashmap_contains(libcoll_hashmap_t *hm, void *key);
 
-ccoll_map_removal_result_t ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key);
+libcoll_map_removal_result_t libcoll_hashmap_remove(libcoll_hashmap_t *hm, void *key);
 
-size_t ccoll_hashmap_get_capacity(ccoll_hashmap_t *hm);
+size_t libcoll_hashmap_get_capacity(libcoll_hashmap_t *hm);
 
-size_t ccoll_hashmap_get_size(ccoll_hashmap_t *hm);
+size_t libcoll_hashmap_get_size(libcoll_hashmap_t *hm);
 
-char ccoll_hashmap_is_empty(ccoll_hashmap_t *hm);
+char libcoll_hashmap_is_empty(libcoll_hashmap_t *hm);
 
-#endif  /* CCOLL_HASHMAP_H */
+#endif  /* LIBCOLL_HASHMAP_H */

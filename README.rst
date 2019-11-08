@@ -1,7 +1,7 @@
-libccoll -- a C Collections Library
+libcoll -- a C Collections Library
 ===================================
 
-``libccoll`` is a generic collections library for the C programming language.
+``libcoll`` is a generic collections library for the C programming language.
 
 This library aims to provide a simple and minimalistic API of generic
 collections.

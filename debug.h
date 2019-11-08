@@ -2,8 +2,8 @@
 
 #include <stdio.h>
 
-#ifndef CCOLL_DEBUG_H
-#define CCOLL_DEBUG_H
+#ifndef LIBCOLL_DEBUG_H
+#define LIBCOLL_DEBUG_H
 
 /* disable debug output by default;
  * can be enabled by defining ENABLE_DEBUG=1 on the compiler command line.
@@ -15,4 +15,4 @@
 #define DEBUGF(fmt, ...)        if (ENABLE_DEBUG) printf(fmt, __VA_ARGS__)
 #define DEBUG(msg)              DEBUGF("%s", msg)
 
-#endif  /* CCOLL_DEBUG_H */
+#endif  /* LIBCOLL_DEBUG_H */

@@ -1,5 +1,5 @@
 /*
- * Unit tests for the libccoll library.
+ * Unit tests for the liblibcoll library.
  */
 
 #include <check.h>
@@ -37,23 +37,23 @@ int strcmp_wrapper(void *value1, void *value2)
     return strcmp(s1, s2);
 }
 
-static void print_hashmap(ccoll_hashmap_t *hm)
+static void print_hashmap(libcoll_hashmap_t *hm)
 {
     for (size_t i=0; i<hm->capacity; i++) {
-        ccoll_linkedlist_t *collision_list = hm->buckets[i];
+        libcoll_linkedlist_t *collision_list = hm->buckets[i];
         if (NULL == collision_list) {
             DEBUGF("[%lu] empty bucket\n", i);
         } else {
             DEBUGF("[%lu] nonempty bucket:", i);
-            ccoll_linkedlist_iter_t *iter = ccoll_linkedlist_get_iter(collision_list);
-            while (ccoll_linkedlist_iter_has_next(iter)) {
-                ccoll_linkedlist_node_t *node = ccoll_linkedlist_iter_next(iter);
-                ccoll_hashmap_entry_t *entry = (ccoll_hashmap_entry_t*) node->value;
+            libcoll_linkedlist_iter_t *iter = libcoll_linkedlist_get_iter(collision_list);
+            while (libcoll_linkedlist_iter_has_next(iter)) {
+                libcoll_linkedlist_node_t *node = libcoll_linkedlist_iter_next(iter);
+                libcoll_hashmap_entry_t *entry = (libcoll_hashmap_entry_t*) node->value;
                 DEBUGF(" (%p -> %p)", entry->key, entry->value);
                 DEBUG("\n");
             }
 
-            ccoll_linkedlist_drop_iter(iter);
+            libcoll_linkedlist_drop_iter(iter);
         }
     }
 }
@@ -61,19 +61,19 @@ static void print_hashmap(ccoll_hashmap_t *hm)
 START_TEST(linkedlist_create)
 {
     DEBUG("\n*** Starting linkedlist_create\n");
-    ccoll_linkedlist_t *ll = ccoll_linkedlist_init();
+    libcoll_linkedlist_t *ll = libcoll_linkedlist_init();
     ck_assert_ptr_nonnull(ll);
     ck_assert_uint_eq(ll->length, 0);
     ck_assert_ptr_null(ll->head);
     ck_assert_ptr_null(ll->tail);
-    ccoll_linkedlist_deinit(ll);
+    libcoll_linkedlist_deinit(ll);
 }
 END_TEST
 
 START_TEST(linkedlist_populate_and_iterate)
 {
     DEBUG("\n*** Starting linkedlist_populate_and_iterate\n");
-    ccoll_linkedlist_t *list = ccoll_linkedlist_init();
+    libcoll_linkedlist_t *list = libcoll_linkedlist_init();
 
     int *testint1 = (int*) malloc(sizeof(int));
     int *testint2 = (int*) malloc(sizeof(int));
@@ -86,48 +86,48 @@ START_TEST(linkedlist_populate_and_iterate)
     *testint4 = 8;
 
     /* populate the list */
-    ccoll_linkedlist_append(list, testint1);
-    ccoll_linkedlist_append(list, testint2);
-    ccoll_linkedlist_append(list, testint3);
-    ccoll_linkedlist_append(list, testint4);
-    ck_assert_uint_eq(ccoll_linkedlist_length(list), 4);
-    ck_assert_int_eq(ccoll_linkedlist_index_of(list, testint3), 2);
-    ck_assert(ccoll_linkedlist_contains(list, testint4));
+    libcoll_linkedlist_append(list, testint1);
+    libcoll_linkedlist_append(list, testint2);
+    libcoll_linkedlist_append(list, testint3);
+    libcoll_linkedlist_append(list, testint4);
+    ck_assert_uint_eq(libcoll_linkedlist_length(list), 4);
+    ck_assert_int_eq(libcoll_linkedlist_index_of(list, testint3), 2);
+    ck_assert(libcoll_linkedlist_contains(list, testint4));
 
     /* test iteration and retrieval */
-    ccoll_linkedlist_iter_t *iter = ccoll_linkedlist_get_iter(list);
-    ck_assert(ccoll_linkedlist_iter_has_next(iter));
-    ck_assert_int_eq(*testint1, *((int*) ccoll_linkedlist_iter_next(iter)->value));
+    libcoll_linkedlist_iter_t *iter = libcoll_linkedlist_get_iter(list);
+    ck_assert(libcoll_linkedlist_iter_has_next(iter));
+    ck_assert_int_eq(*testint1, *((int*) libcoll_linkedlist_iter_next(iter)->value));
 
-    ck_assert(ccoll_linkedlist_iter_has_next(iter));
-    ck_assert_int_eq(*testint2, *((int*) ccoll_linkedlist_iter_next(iter)->value));
+    ck_assert(libcoll_linkedlist_iter_has_next(iter));
+    ck_assert_int_eq(*testint2, *((int*) libcoll_linkedlist_iter_next(iter)->value));
 
-    ccoll_linkedlist_drop_iter(iter);
+    libcoll_linkedlist_drop_iter(iter);
 
     /* test removal */
-    char success = ccoll_linkedlist_remove(list, (void*) testint1);
+    char success = libcoll_linkedlist_remove(list, (void*) testint1);
     ck_assert_int_eq(success, 1);
-    ck_assert_uint_eq(ccoll_linkedlist_length(list), 3);
+    ck_assert_uint_eq(libcoll_linkedlist_length(list), 3);
 
     /* test iterator at */
-    iter = ccoll_linkedlist_get_iter_at(list, 1);
-    ck_assert(ccoll_linkedlist_iter_has_next(iter));
-    ck_assert_int_eq(*testint3, *((int*) ccoll_linkedlist_iter_next(iter)->value));
+    iter = libcoll_linkedlist_get_iter_at(list, 1);
+    ck_assert(libcoll_linkedlist_iter_has_next(iter));
+    ck_assert_int_eq(*testint3, *((int*) libcoll_linkedlist_iter_next(iter)->value));
 
     /* test removal through iterator */
-    ccoll_linkedlist_iter_remove(iter);
-    ck_assert_uint_eq(ccoll_linkedlist_length(list), 2);
+    libcoll_linkedlist_iter_remove(iter);
+    ck_assert_uint_eq(libcoll_linkedlist_length(list), 2);
 
     /* check that the last entry on the list is still accessible */
-    ck_assert(ccoll_linkedlist_iter_has_next(iter));
-    ck_assert_int_eq(*testint4, *((int*) ccoll_linkedlist_iter_next(iter)->value));
+    ck_assert(libcoll_linkedlist_iter_has_next(iter));
+    ck_assert_int_eq(*testint4, *((int*) libcoll_linkedlist_iter_next(iter)->value));
 
     /* should  be at the end of the list */
-    ck_assert(!ccoll_linkedlist_iter_has_next(iter));
+    ck_assert(!libcoll_linkedlist_iter_has_next(iter));
 
-    ccoll_linkedlist_drop_iter(iter);
+    libcoll_linkedlist_drop_iter(iter);
 
-    ccoll_linkedlist_deinit(list);
+    libcoll_linkedlist_deinit(list);
 
     free(testint1);
     free(testint2);
@@ -139,7 +139,7 @@ END_TEST
 START_TEST(hashmap_create)
 {
     DEBUG("\n*** Starting hashmap_create\n");
-    ccoll_hashmap_t *hashmap = ccoll_hashmap_init();
+    libcoll_hashmap_t *hashmap = libcoll_hashmap_init();
     ck_assert_ptr_nonnull(hashmap);
     ck_assert_ptr_nonnull(hashmap->buckets);
     ck_assert(hashmap->key_comparator_function != NULL);
@@ -147,14 +147,14 @@ START_TEST(hashmap_create)
     ck_assert_uint_ge(hashmap->capacity, 0);
     ck_assert_uint_eq(hashmap->total_entries, 0);
 
-    ccoll_hashmap_deinit(hashmap);
+    libcoll_hashmap_deinit(hashmap);
 }
 END_TEST
 
 START_TEST(hashmap_populate_and_retrieve)
 {
     DEBUG("\n*** Starting hashmap_populate_and_retrieve\n");
-    ccoll_hashmap_t *counts = ccoll_hashmap_init();
+    libcoll_hashmap_t *counts = libcoll_hashmap_init();
     counts->hash_code_function = hashcode_str2;
     counts->key_comparator_function = strcmp_wrapper;
 
@@ -168,26 +168,26 @@ START_TEST(hashmap_populate_and_retrieve)
         int *value = malloc(sizeof(int));
 
         *value = values[i];
-        ccoll_hashmap_put(counts, key, value);
+        libcoll_hashmap_put(counts, key, value);
     }
 
-    ck_assert_uint_eq(ccoll_hashmap_get_size(counts), 2);
-    ck_assert(ccoll_hashmap_contains(counts, identifiers[0]));
+    ck_assert_uint_eq(libcoll_hashmap_get_size(counts), 2);
+    ck_assert(libcoll_hashmap_contains(counts, identifiers[0]));
 
-    size_t member_count = ccoll_hashmap_get_size(counts);
+    size_t member_count = libcoll_hashmap_get_size(counts);
 
     /* test retrieving a nonexisting value */
     char *invalid_key = "asdf";
-    ck_assert_ptr_null(ccoll_hashmap_get(counts, invalid_key));
+    ck_assert_ptr_null(libcoll_hashmap_get(counts, invalid_key));
 
     /* test retrieving and removing valid values */
     for (int i=0; i<2; i++) {
         char *key = identifiers[i];
         int expected_value = values[i];
 
-        ck_assert(ccoll_hashmap_contains(counts, key));
+        ck_assert(libcoll_hashmap_contains(counts, key));
 
-        int *retrieved_value = (int*) ccoll_hashmap_get(counts, key);
+        int *retrieved_value = (int*) libcoll_hashmap_get(counts, key);
 
         DEBUGF("Hashmap: retrieved %d with key %s; expected %d\n",
                *retrieved_value, key, expected_value
@@ -196,17 +196,17 @@ START_TEST(hashmap_populate_and_retrieve)
         ck_assert_ptr_nonnull(retrieved_value);
         ck_assert_int_eq(*retrieved_value, expected_value);
 
-        ccoll_map_removal_result_t result = ccoll_hashmap_remove(counts, key);
+        libcoll_map_removal_result_t result = libcoll_hashmap_remove(counts, key);
         ck_assert_str_eq(key, (char*) result.key);
         ck_assert_int_eq(expected_value, *(int*) result.value);
 
         free(result.key);
         free(result.value);
 
-        ck_assert_uint_eq(ccoll_hashmap_get_size(counts), --member_count);
+        ck_assert_uint_eq(libcoll_hashmap_get_size(counts), --member_count);
     }
 
-    ccoll_hashmap_deinit(counts);
+    libcoll_hashmap_deinit(counts);
 }
 END_TEST
 
@@ -221,7 +221,7 @@ START_TEST(hashmap_resize)
     DEBUGF("Initializing hashmap with a capacity=%lu, max_load_factor=%f\n",
           init_capacity, max_load_factor
     );
-    ccoll_hashmap_t *hm = ccoll_hashmap_init_with_params(
+    libcoll_hashmap_t *hm = libcoll_hashmap_init_with_params(
             init_capacity,
             max_load_factor,
             hashcode_int,
@@ -245,8 +245,8 @@ START_TEST(hashmap_resize)
     char *testval4 = "quux";
 
     DEBUGF("Hashmap contents/capacity: %lu/%lu\n",
-          ccoll_hashmap_get_size(hm),
-          ccoll_hashmap_get_capacity(hm)
+          libcoll_hashmap_get_size(hm),
+          libcoll_hashmap_get_capacity(hm)
     );
     DEBUG("Hashmap contents after insertion:\n");
     print_hashmap(hm);
@@ -256,10 +256,10 @@ START_TEST(hashmap_resize)
     DEBUGF("Inserting key-value pair #1 ([%p] %d -> [%p] %s)...\n",
            (void*) testkey1, *testkey1, (void*) testval1, testval1
     );
-    ccoll_hashmap_put(hm, testkey1, testval1);
+    libcoll_hashmap_put(hm, testkey1, testval1);
     DEBUGF("Hashmap contents/capacity: %lu/%lu\n",
-          ccoll_hashmap_get_size(hm),
-          ccoll_hashmap_get_capacity(hm)
+          libcoll_hashmap_get_size(hm),
+          libcoll_hashmap_get_capacity(hm)
     );
     DEBUG("Hashmap contents after insertion:\n");
     print_hashmap(hm);
@@ -270,24 +270,24 @@ START_TEST(hashmap_resize)
           (void*) testkey1, *testkey1, (void*) testval2, testval2
     );
 
-    ccoll_hashmap_put(hm, testkey1, testval2);
+    libcoll_hashmap_put(hm, testkey1, testval2);
     DEBUGF("Hashmap contents/capacity: %lu/%lu\n",
-          ccoll_hashmap_get_size(hm),
-          ccoll_hashmap_get_capacity(hm)
+          libcoll_hashmap_get_size(hm),
+          libcoll_hashmap_get_capacity(hm)
     );
     DEBUG("Hashmap contents after insertion:\n");
     print_hashmap(hm);
 
     ck_assert_uint_eq(hm->capacity, init_capacity);
-    ck_assert_str_eq(testval2, (char*) ccoll_hashmap_get(hm, testkey1));
+    ck_assert_str_eq(testval2, (char*) libcoll_hashmap_get(hm, testkey1));
 
     DEBUGF("Inserting key-value pair #2 ([%p] %d -> [%p] %s)...\n",
            (void*) testkey2, *testkey2, (void*) testval2, testval2
     );
-    ccoll_hashmap_put(hm, testkey2, testval2);
+    libcoll_hashmap_put(hm, testkey2, testval2);
     DEBUGF("Hashmap contents/capacity: %lu/%lu\n",
-          ccoll_hashmap_get_size(hm),
-          ccoll_hashmap_get_capacity(hm)
+          libcoll_hashmap_get_size(hm),
+          libcoll_hashmap_get_capacity(hm)
     );
     DEBUG("Hashmap contents after insertion:\n");
     print_hashmap(hm);
@@ -295,30 +295,30 @@ START_TEST(hashmap_resize)
     /* the capacity should have been increased by now from the initial 2 */
     ck_assert_uint_gt(hm->capacity, init_capacity);
 
-    ck_assert(ccoll_hashmap_contains(hm, testkey1));
-    ck_assert_str_eq(testval2, (char*) ccoll_hashmap_get(hm, testkey1));
+    ck_assert(libcoll_hashmap_contains(hm, testkey1));
+    ck_assert_str_eq(testval2, (char*) libcoll_hashmap_get(hm, testkey1));
 
     previous_capacity = hm->capacity;
 
     DEBUG("Inserting key-value pair #3...\n");
-    ccoll_hashmap_put(hm, testkey3, testval3);
+    libcoll_hashmap_put(hm, testkey3, testval3);
     DEBUGF("Hashmap contents/capacity: %lu/%lu\n",
-        ccoll_hashmap_get_size(hm),
-        ccoll_hashmap_get_capacity(hm)
+        libcoll_hashmap_get_size(hm),
+        libcoll_hashmap_get_capacity(hm)
     );
     DEBUG("Hashmap contents after insertion:\n");
     print_hashmap(hm);
 
     ck_assert_uint_gt(hm->capacity, previous_capacity);
-    ck_assert_str_eq(testval2, (char*) ccoll_hashmap_get(hm, testkey1)); 
+    ck_assert_str_eq(testval2, (char*) libcoll_hashmap_get(hm, testkey1)); 
 
     previous_capacity = hm->capacity;
 
     DEBUG("Inserting key-value pair #4...\n");
-    ccoll_hashmap_put(hm, testkey4, testval4);
+    libcoll_hashmap_put(hm, testkey4, testval4);
     DEBUGF("Hashmap contents/capacity: %lu/%lu\n",
-        ccoll_hashmap_get_size(hm),
-        ccoll_hashmap_get_capacity(hm)
+        libcoll_hashmap_get_size(hm),
+        libcoll_hashmap_get_capacity(hm)
     );
     DEBUG("Hashmap contents after insertion:\n");
     print_hashmap(hm);
@@ -326,10 +326,10 @@ START_TEST(hashmap_resize)
     ck_assert_uint_eq(hm->capacity, previous_capacity);
 
     /* check retrieval after resizings */
-    ck_assert_str_eq(testval2, (char*) ccoll_hashmap_get(hm, testkey1));
+    ck_assert_str_eq(testval2, (char*) libcoll_hashmap_get(hm, testkey1));
 
     /* free all resources */
-    ccoll_hashmap_deinit(hm);
+    libcoll_hashmap_deinit(hm);
 
     free(testkey1);
     free(testkey2);
@@ -382,14 +382,14 @@ TCase* create_hashmap_tests(void)
     return tc_core;
 }
 
-Suite* create_ccoll_test_suite(void)
+Suite* create_libcoll_test_suite(void)
 {
     Suite *s;
     TCase *linkedlist_tests;
     TCase *hashmap_tests;
     TCase *self_sanity_test;
 
-    s = suite_create("libccoll");
+    s = suite_create("liblibcoll");
     linkedlist_tests = create_linkedlist_tests();
     hashmap_tests = create_hashmap_tests();
     self_sanity_test = create_self_sanity_test();
@@ -411,7 +411,7 @@ int main(void)
     Suite *s;
     SRunner *sr;
 
-    s = create_ccoll_test_suite();
+    s = create_libcoll_test_suite();
     sr = srunner_create(s);
 
     srunner_run_all(sr, CK_NORMAL);

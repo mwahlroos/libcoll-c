@@ -7,7 +7,7 @@
 #include "linkedlist.h"
 #include "debug.h"
 
-static void _ccoll_linkedlist_remove_node(ccoll_linkedlist_t *list, ccoll_linkedlist_node_t *node)
+static void _libcoll_linkedlist_remove_node(libcoll_linkedlist_t *list, libcoll_linkedlist_node_t *node)
 {
     if (NULL != node) {
         if (NULL != node->previous) {
@@ -27,41 +27,41 @@ static void _ccoll_linkedlist_remove_node(ccoll_linkedlist_t *list, ccoll_linked
     }
 }
 
-ccoll_linkedlist_t* ccoll_linkedlist_init()
+libcoll_linkedlist_t* libcoll_linkedlist_init()
 {
-    return ccoll_linkedlist_init_with_comparator(NULL);
+    return libcoll_linkedlist_init_with_comparator(NULL);
 }
 
-ccoll_linkedlist_t* ccoll_linkedlist_init_with_comparator(int (*compare_function)(void *value1, void *value2))
+libcoll_linkedlist_t* libcoll_linkedlist_init_with_comparator(int (*compare_function)(void *value1, void *value2))
 {
-    ccoll_linkedlist_t *list = (ccoll_linkedlist_t*) malloc(sizeof(ccoll_linkedlist_t));
+    libcoll_linkedlist_t *list = (libcoll_linkedlist_t*) malloc(sizeof(libcoll_linkedlist_t));
     list->length = 0;
     list->head = list->tail = NULL;
     if (NULL != compare_function) {
         list->compare_function = compare_function;
     } else {
-        list->compare_function = &_ccoll_node_comparator_memaddr;
+        list->compare_function = &_libcoll_node_comparator_memaddr;
     }
     return list;
 }
 
-void ccoll_linkedlist_deinit(ccoll_linkedlist_t *list)
+void libcoll_linkedlist_deinit(libcoll_linkedlist_t *list)
 {
     /* remove all nodes first to make sure the memory gets freed */
-    ccoll_linkedlist_iter_t *iter = ccoll_linkedlist_get_iter(list);
-    while (ccoll_linkedlist_iter_has_next(iter)) {
-        ccoll_linkedlist_iter_next(iter);
-        ccoll_linkedlist_iter_remove(iter);
+    libcoll_linkedlist_iter_t *iter = libcoll_linkedlist_get_iter(list);
+    while (libcoll_linkedlist_iter_has_next(iter)) {
+        libcoll_linkedlist_iter_next(iter);
+        libcoll_linkedlist_iter_remove(iter);
     }
-    ccoll_linkedlist_drop_iter(iter);
+    libcoll_linkedlist_drop_iter(iter);
 
     free(list);
 }
 
-void ccoll_linkedlist_append(ccoll_linkedlist_t *list, void *value)
+void libcoll_linkedlist_append(libcoll_linkedlist_t *list, void *value)
 {
     DEBUGF("New node: %d\n", *(int*)(value));
-    ccoll_linkedlist_node_t *new_node = (ccoll_linkedlist_node_t*) malloc(sizeof(ccoll_linkedlist_node_t));
+    libcoll_linkedlist_node_t *new_node = (libcoll_linkedlist_node_t*) malloc(sizeof(libcoll_linkedlist_node_t));
     new_node->next = NULL;
     new_node->value = value;
     if (NULL == list->head) {
@@ -80,15 +80,15 @@ void ccoll_linkedlist_append(ccoll_linkedlist_t *list, void *value)
                                           (list->tail->value));
 }
 
-void ccoll_linkedlist_insert(ccoll_linkedlist_t *list, void *value, size_t index)
+void libcoll_linkedlist_insert(libcoll_linkedlist_t *list, void *value, size_t index)
 {
     if (index >= list->length) {
-        ccoll_linkedlist_append(list, value);
+        libcoll_linkedlist_append(list, value);
     } else {
-        ccoll_linkedlist_node_t *new_node = (ccoll_linkedlist_node_t*) malloc(sizeof(ccoll_linkedlist_node_t));
+        libcoll_linkedlist_node_t *new_node = (libcoll_linkedlist_node_t*) malloc(sizeof(libcoll_linkedlist_node_t));
         new_node->value = value;
 
-        ccoll_linkedlist_node_t *insert_before = list->head;
+        libcoll_linkedlist_node_t *insert_before = list->head;
         size_t counter = 0;
         while (counter < index) {
             insert_before = insert_before->next;
@@ -109,12 +109,12 @@ void ccoll_linkedlist_insert(ccoll_linkedlist_t *list, void *value, size_t index
     }
 }
 
-int ccoll_linkedlist_index_of(ccoll_linkedlist_t *list, void *value)
+int libcoll_linkedlist_index_of(libcoll_linkedlist_t *list, void *value)
 {
     int retval = -1;
     int counter = 0;
 
-    ccoll_linkedlist_node_t *node = list->head;
+    libcoll_linkedlist_node_t *node = list->head;
 
     while(NULL != node) {
         if (list->compare_function(value, node->value) == 0) {
@@ -129,33 +129,33 @@ int ccoll_linkedlist_index_of(ccoll_linkedlist_t *list, void *value)
     return retval;
 }
 
-char ccoll_linkedlist_contains(ccoll_linkedlist_t *list, void *value)
+char libcoll_linkedlist_contains(libcoll_linkedlist_t *list, void *value)
 {
-    return ccoll_linkedlist_index_of(list, value) != -1;
+    return libcoll_linkedlist_index_of(list, value) != -1;
 }
 
-char ccoll_linkedlist_remove(ccoll_linkedlist_t *list, void *value)
+char libcoll_linkedlist_remove(libcoll_linkedlist_t *list, void *value)
 {
     char success = 0;
-    ccoll_linkedlist_iter_t *iter = ccoll_linkedlist_get_iter(list);
+    libcoll_linkedlist_iter_t *iter = libcoll_linkedlist_get_iter(list);
 
-    while (ccoll_linkedlist_iter_has_next(iter) && !success) {
-        void *entry_value = ccoll_linkedlist_iter_next(iter)->value;
+    while (libcoll_linkedlist_iter_has_next(iter) && !success) {
+        void *entry_value = libcoll_linkedlist_iter_next(iter)->value;
         if (list->compare_function(value, entry_value) == 0) {
-            ccoll_linkedlist_iter_remove(iter);
+            libcoll_linkedlist_iter_remove(iter);
             success = 1;
         }
     }
 
-    ccoll_linkedlist_drop_iter(iter);
+    libcoll_linkedlist_drop_iter(iter);
 
     return success;
 }
 
 
-ccoll_linkedlist_iter_t* ccoll_linkedlist_get_iter(ccoll_linkedlist_t *list)
+libcoll_linkedlist_iter_t* libcoll_linkedlist_get_iter(libcoll_linkedlist_t *list)
 {
-    ccoll_linkedlist_iter_t *iter = (ccoll_linkedlist_iter_t*) malloc(sizeof(ccoll_linkedlist_iter_t));
+    libcoll_linkedlist_iter_t *iter = (libcoll_linkedlist_iter_t*) malloc(sizeof(libcoll_linkedlist_iter_t));
     iter->next = list->head;
     iter->previous = NULL;
     iter->list = list;
@@ -163,39 +163,39 @@ ccoll_linkedlist_iter_t* ccoll_linkedlist_get_iter(ccoll_linkedlist_t *list)
     return iter;
 }
 
-ccoll_linkedlist_iter_t* ccoll_linkedlist_get_iter_at(ccoll_linkedlist_t *list, size_t index)
+libcoll_linkedlist_iter_t* libcoll_linkedlist_get_iter_at(libcoll_linkedlist_t *list, size_t index)
 {
-    ccoll_linkedlist_iter_t *iter = ccoll_linkedlist_get_iter(list);
+    libcoll_linkedlist_iter_t *iter = libcoll_linkedlist_get_iter(list);
     if (index >= list->length) {
         index = list->length - 1;
     } else {
         size_t counter = 0;
         while (counter < index) {
-            ccoll_linkedlist_iter_next(iter);
+            libcoll_linkedlist_iter_next(iter);
             counter++;
         }
     }
     return iter;
 }
 
-void ccoll_linkedlist_drop_iter(ccoll_linkedlist_iter_t *iter)
+void libcoll_linkedlist_drop_iter(libcoll_linkedlist_iter_t *iter)
 {
     free(iter);
 }
 
-char ccoll_linkedlist_iter_has_next(ccoll_linkedlist_iter_t *iter)
+char libcoll_linkedlist_iter_has_next(libcoll_linkedlist_iter_t *iter)
 {
     return (NULL != iter->next);
 }
 
-char ccoll_linkedlist_iter_has_previous(ccoll_linkedlist_iter_t *iter)
+char libcoll_linkedlist_iter_has_previous(libcoll_linkedlist_iter_t *iter)
 {
     return (NULL != iter->previous);
 }
 
-ccoll_linkedlist_node_t* ccoll_linkedlist_iter_next(ccoll_linkedlist_iter_t *iter)
+libcoll_linkedlist_node_t* libcoll_linkedlist_iter_next(libcoll_linkedlist_iter_t *iter)
 {
-    ccoll_linkedlist_node_t *node = iter->next;
+    libcoll_linkedlist_node_t *node = iter->next;
     if (NULL != node) {
         iter->next = node->next;
         iter->previous = node;
@@ -205,9 +205,9 @@ ccoll_linkedlist_node_t* ccoll_linkedlist_iter_next(ccoll_linkedlist_iter_t *ite
     return node;
 }
 
-ccoll_linkedlist_node_t* ccoll_linkedlist_iter_previous(ccoll_linkedlist_iter_t *iter)
+libcoll_linkedlist_node_t* libcoll_linkedlist_iter_previous(libcoll_linkedlist_iter_t *iter)
 {
-    ccoll_linkedlist_node_t *node = iter->previous;
+    libcoll_linkedlist_node_t *node = iter->previous;
     if (NULL != node) {
         iter->previous = node->previous;
         iter->next = node;
@@ -217,7 +217,7 @@ ccoll_linkedlist_node_t* ccoll_linkedlist_iter_previous(ccoll_linkedlist_iter_t 
     return node;
 }
 
-void ccoll_linkedlist_iter_remove(ccoll_linkedlist_iter_t *iter)
+void libcoll_linkedlist_iter_remove(libcoll_linkedlist_iter_t *iter)
 {
     if (NULL != iter->last_returned) {
         if (iter->last_skip_forward) {
@@ -225,16 +225,16 @@ void ccoll_linkedlist_iter_remove(ccoll_linkedlist_iter_t *iter)
         } else {
             iter->next = iter->last_returned->next;
         }
-        _ccoll_linkedlist_remove_node(iter->list, iter->last_returned);
+        _libcoll_linkedlist_remove_node(iter->list, iter->last_returned);
     }
 }
 
-size_t ccoll_linkedlist_length(ccoll_linkedlist_t *list)
+size_t libcoll_linkedlist_length(libcoll_linkedlist_t *list)
 {
     return list->length;
 }
 
-int ccoll_linkedlist_is_empty(ccoll_linkedlist_t *list)
+int libcoll_linkedlist_is_empty(libcoll_linkedlist_t *list)
 {
     return (list->length == 0);
 }

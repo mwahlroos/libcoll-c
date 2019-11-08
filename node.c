@@ -6,7 +6,7 @@
 
 #include "node.h"
 
-int _ccoll_node_comparator_memaddr(void *node1, void *node2)
+int _libcoll_node_comparator_memaddr(void *node1, void *node2)
 {
     int cmpval;
     if (node1 == node2) {
@@ -19,7 +19,7 @@ int _ccoll_node_comparator_memaddr(void *node1, void *node2)
     return cmpval;
 }
 
-unsigned long _ccoll_node_hashvalue_memaddr(void *value)
+unsigned long _libcoll_node_hashvalue_memaddr(void *value)
 {
     return (unsigned long) value;
 }

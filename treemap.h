@@ -10,84 +10,84 @@
 #include <stdbool.h>
 #include "types.h"
 
-#ifndef CCOLL_TREEMAP_H
-#define CCOLL_TREEMAP_H
+#ifndef libcoll_TREEMAP_H
+#define libcoll_TREEMAP_H
 
 /* data types */
 
 /* A type for representing single nodes in the tree */
-typedef struct ccoll_treemap_node {
-    struct ccoll_treemap_node *left;
-    struct ccoll_treemap_node *right;
-    struct ccoll_treemap_node *parent;
+typedef struct libcoll_treemap_node {
+    struct libcoll_treemap_node *left;
+    struct libcoll_treemap_node *right;
+    struct libcoll_treemap_node *parent;
     void *key;
     void *value;
     char color;
-} ccoll_treemap_node_t;
+} libcoll_treemap_node_t;
 
 /* A type for representing the tree itself, for holding useful metadata */
-typedef struct ccoll_treemap {
+typedef struct libcoll_treemap {
     size_t size;
-    ccoll_treemap_node_t *root;
+    libcoll_treemap_node_t *root;
     int (*key_comparator)(void *key1, void *key2);
-} ccoll_treemap_t;
+} libcoll_treemap_t;
 
 /* An iterator for iterating through the nodes of a tree in the order of
  * keys as defined by the comparator function (e.g. alphabetical order).
  */
-typedef struct ccoll_treemap_iter {
-    ccoll_treemap_t *tree;
-    ccoll_treemap_node_t *previous;
-    ccoll_treemap_node_t *next;
-    ccoll_treemap_node_t *last_traversed_node;
-} ccoll_treemap_iter_t;
+typedef struct libcoll_treemap_iter {
+    libcoll_treemap_t *tree;
+    libcoll_treemap_node_t *previous;
+    libcoll_treemap_node_t *next;
+    libcoll_treemap_node_t *last_traversed_node;
+} libcoll_treemap_iter_t;
 
 
 /* external functions */
 
-ccoll_treemap_t* ccoll_treemap_init();
+libcoll_treemap_t* libcoll_treemap_init();
 
-ccoll_treemap_t* ccoll_treemap_init_with_comparator(int (*key_comparator_func)(void *key1, void *key2));
+libcoll_treemap_t* libcoll_treemap_init_with_comparator(int (*key_comparator_func)(void *key1, void *key2));
 
-void ccoll_treemap_deinit(ccoll_treemap_t *tree);
+void libcoll_treemap_deinit(libcoll_treemap_t *tree);
 
-void ccoll_treemap_deinit_and_delete_contents(ccoll_treemap_t *tree);
+void libcoll_treemap_deinit_and_delete_contents(libcoll_treemap_t *tree);
 
-ccoll_treemap_node_t* ccoll_treemap_add(ccoll_treemap_t *tree, void *key, void *value);
+libcoll_treemap_node_t* libcoll_treemap_add(libcoll_treemap_t *tree, void *key, void *value);
 
-ccoll_treemap_node_t* ccoll_treemap_get(ccoll_treemap_t *tree, void *key);
+libcoll_treemap_node_t* libcoll_treemap_get(libcoll_treemap_t *tree, void *key);
 
-bool ccoll_treemap_contains(ccoll_treemap_t *tree, void *key);
+bool libcoll_treemap_contains(libcoll_treemap_t *tree, void *key);
 
-ccoll_pair_voidptr_t ccoll_treemap_remove(ccoll_treemap_t *tree, void *key);
+libcoll_pair_voidptr_t libcoll_treemap_remove(libcoll_treemap_t *tree, void *key);
 
-ccoll_treemap_node_t* ccoll_treemap_get_successor(ccoll_treemap_node_t *node);
+libcoll_treemap_node_t* libcoll_treemap_get_successor(libcoll_treemap_node_t *node);
 
-ccoll_treemap_node_t* ccoll_treemap_get_predecessor(ccoll_treemap_node_t *node);
+libcoll_treemap_node_t* libcoll_treemap_get_predecessor(libcoll_treemap_node_t *node);
 
-int ccoll_treemap_depth_of(ccoll_treemap_t *tree, void *key);
+int libcoll_treemap_depth_of(libcoll_treemap_t *tree, void *key);
 
-size_t ccoll_treemap_get_size(ccoll_treemap_t *tree);
+size_t libcoll_treemap_get_size(libcoll_treemap_t *tree);
 
-char ccoll_treemap_is_empty(ccoll_treemap_t *tree);
+char libcoll_treemap_is_empty(libcoll_treemap_t *tree);
 
-ccoll_treemap_iter_t* ccoll_treemap_get_iterator(ccoll_treemap_t *tree);
+libcoll_treemap_iter_t* libcoll_treemap_get_iterator(libcoll_treemap_t *tree);
 
-void ccoll_treemap_drop_iterator(ccoll_treemap_iter_t *iterator);
+void libcoll_treemap_drop_iterator(libcoll_treemap_iter_t *iterator);
 
-bool ccoll_treemap_has_next(ccoll_treemap_iter_t *iterator);
+bool libcoll_treemap_has_next(libcoll_treemap_iter_t *iterator);
 
-ccoll_treemap_node_t* ccoll_treemap_next(ccoll_treemap_iter_t *iterator);
+libcoll_treemap_node_t* libcoll_treemap_next(libcoll_treemap_iter_t *iterator);
 
-bool ccoll_treemap_has_previous(ccoll_treemap_iter_t *iterator);
+bool libcoll_treemap_has_previous(libcoll_treemap_iter_t *iterator);
 
-ccoll_treemap_node_t* ccoll_treemap_previous(ccoll_treemap_iter_t *iterator);
+libcoll_treemap_node_t* libcoll_treemap_previous(libcoll_treemap_iter_t *iterator);
 
-void ccoll_treemap_remove_last_traversed(ccoll_treemap_iter_t *iterator);
+void libcoll_treemap_remove_last_traversed(libcoll_treemap_iter_t *iterator);
 
-bool _ccoll_treemap_verify_red_black_conditions(ccoll_treemap_t *tree);
+bool _libcoll_treemap_verify_red_black_conditions(libcoll_treemap_t *tree);
 
 
 
-#endif /* CCOLL_TREEMAP_H */
+#endif /* libcoll_TREEMAP_H */
 

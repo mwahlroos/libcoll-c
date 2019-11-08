@@ -25,6 +25,18 @@ int intptrcmp(void *value1, void *value2)
     return *a - *b;
 }
 
+/* Compares two pointers by their string values.
+ * Wrapper around strcmp that accepts void pointers, for comparing map keys
+ * and/or values.
+ */
+int strcmp_wrapper(void *value1, void *value2)
+{
+    char *s1 = (char*) value1;
+    char *s2 = (char*) value2;
+
+    return strcmp(s1, s2);
+}
+
 START_TEST(linkedlist_create)
 {
     DEBUG("*** Starting linkedlist_create\n");
@@ -123,7 +135,7 @@ START_TEST(hashmap_populate_and_retrieve)
     DEBUG("*** Starting hashmap_populate_and_retrieve\n");
     ccoll_hashmap_t *counts = ccoll_hashmap_init();
     counts->hash_code_function = hashcode_str2;
-    counts->key_comparator_function = intptrcmp;
+    counts->key_comparator_function = strcmp_wrapper;
 
     char *identifiers[] = { "identifier_1", "identifier_2" };
     int values[] = { 7, -34 };
@@ -177,6 +189,112 @@ START_TEST(hashmap_populate_and_retrieve)
 }
 END_TEST
 
+START_TEST(hashmap_resize)
+{
+    /* test hashmap capacity increase and the associated rehashing */
+    DEBUG("*** Starting hashmap_resize\n");
+    size_t init_capacity = 2LU;
+    size_t previous_capacity;
+
+    float max_load_factor = 0.6f;
+    DEBUGF("Initializing hashmap with a capacity=%lu, max_load_factor=%f\n",
+          init_capacity, max_load_factor
+    );
+    ccoll_hashmap_t *hm = ccoll_hashmap_init_with_params(
+            init_capacity,
+            max_load_factor,
+            hashcode_int,
+            intptrcmp,
+            strcmp_wrapper
+    );
+
+    int *testkey1 = (int*) malloc(sizeof(int));
+    int *testkey2 = (int*) malloc(sizeof(int));
+    int *testkey3 = (int*) malloc(sizeof(int));
+    int *testkey4 = (int*) malloc(sizeof(int));
+    *testkey1 = 2;
+    *testkey2 = 3;
+    *testkey3 = 5;
+    *testkey4 = 8;
+
+    /* Using stack-allocated values is technically wrong but works here */
+    char *testval1 = "foo";
+    char *testval2 = "bar";
+    char *testval3 = "baz";
+    char *testval4 = "quux";
+
+    DEBUGF("Hashmap contents/capacity: %lu/%lu\n",
+          ccoll_hashmap_get_size(hm),
+          ccoll_hashmap_get_capacity(hm)
+    );
+    ck_assert_uint_eq(hm->capacity, init_capacity);
+
+    DEBUG("Inserting key-value pair #1...\n");
+    ccoll_hashmap_put(hm, testkey1, testval1);
+    DEBUGF("Hashmap contents/capacity: %lu/%lu\n",
+          ccoll_hashmap_get_size(hm),
+          ccoll_hashmap_get_capacity(hm)
+    );
+    ck_assert_uint_eq(hm->capacity, init_capacity);
+
+    DEBUG("Inserting key-value pair with existing key...\n");
+    ccoll_hashmap_put(hm, testkey1, testval2);
+    DEBUGF("Hashmap contents/capacity: %lu/%lu\n",
+          ccoll_hashmap_get_size(hm),
+          ccoll_hashmap_get_capacity(hm)
+    );
+    ck_assert_uint_eq(hm->capacity, init_capacity);
+    ck_assert_str_eq(testval2, (char*) ccoll_hashmap_get(hm, testkey1));
+
+    DEBUG("Inserting key-value pair #2...\n");
+    ccoll_hashmap_put(hm, testkey2, testval2);
+    DEBUGF("Hashmap contents/capacity: %lu/%lu\n",
+          ccoll_hashmap_get_size(hm),
+          ccoll_hashmap_get_capacity(hm)
+    );
+
+    /* the capacity should have been increased by now from the initial 2 */
+    ck_assert_uint_gt(hm->capacity, init_capacity);
+
+    ck_assert(ccoll_hashmap_contains(hm, testkey1));
+    ck_assert_str_eq(testval2, (char*) ccoll_hashmap_get(hm, testkey1)); // debug
+
+    previous_capacity = hm->capacity;
+
+    DEBUG("Inserting key-value pair #3...\n");
+    ccoll_hashmap_put(hm, testkey3, testval3);
+    DEBUGF("Hashmap contents/capacity: %lu/%lu\n",
+          ccoll_hashmap_get_size(hm),
+          ccoll_hashmap_get_capacity(hm)
+    );
+
+    ck_assert_uint_gt(hm->capacity, previous_capacity);
+
+    ck_assert_str_eq(testval2, (char*) ccoll_hashmap_get(hm, testkey1)); // debug
+
+    previous_capacity = hm->capacity;
+
+    DEBUG("Inserting key-value pair #4...\n");
+    ccoll_hashmap_put(hm, testkey4, testval4);
+    DEBUGF("Hashmap contents/capacity: %lu/%lu\n",
+          ccoll_hashmap_get_size(hm),
+          ccoll_hashmap_get_capacity(hm)
+    );
+    ck_assert_uint_eq(hm->capacity, previous_capacity);
+
+    /* check retrieval after resizings */
+    ck_assert_str_eq(testval2, (char*) ccoll_hashmap_get(hm, testkey1));
+
+    /* free all resources */
+    ccoll_hashmap_deinit(hm);
+
+    free(testkey1);
+    free(testkey2);
+    free(testkey3);
+    free(testkey4);
+}
+END_TEST
+
 START_TEST(comparator_self_sanity_check)
 {
     int a, b, c;
@@ -216,6 +334,7 @@ TCase* create_hashmap_tests(void)
 
     tcase_add_test(tc_core, hashmap_create);
     tcase_add_test(tc_core, hashmap_populate_and_retrieve);
+    tcase_add_test(tc_core, hashmap_resize);
 
     return tc_core;
 }

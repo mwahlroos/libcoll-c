@@ -15,6 +15,7 @@ static size_t hash(ccoll_hashmap_t *hm, unsigned long hashcode)
 static ccoll_linkedlist_t* find_collision_list(ccoll_hashmap_t *hm, void *key)
 {
     size_t slot_index = hash(hm, hm->hash_code_function(key));
+    DEBUGF("find_collision_list: hashed to bucket %lu\n", slot_index);
     ccoll_linkedlist_t *collision_list = hm->hash_slots[slot_index];
 
     return collision_list;
@@ -26,6 +27,7 @@ static ccoll_hashmap_entry_t* find_entry(ccoll_hashmap_t *hm, void *key)
     ccoll_linkedlist_t *collision_list = find_collision_list(hm, key);
 
     if (NULL != collision_list) {
+        DEBUGF("find_entry: found collision list for key %p\n", key);
         ccoll_linkedlist_iter_t *iter = ccoll_linkedlist_get_iter(collision_list);
         while (ccoll_linkedlist_iter_has_next(iter)) {
             ccoll_hashmap_entry_t *entry_tmp;
@@ -41,6 +43,8 @@ static ccoll_hashmap_entry_t* find_entry(ccoll_hashmap_t *hm, void *key)
             }
         }
         ccoll_linkedlist_drop_iter(iter);
+    } else {
+        DEBUGF("find_entry: no collision list found for key %p\n", key);
     }
 
     return matching_entry;
@@ -68,6 +72,7 @@ static ccoll_map_insertion_result_t insert_new(ccoll_hashmap_t *hm, void *key, v
     new_entry->value = value;
 
     size_t slot_index = hash(hm, hm->hash_code_function(key));
+    DEBUGF("insert_new: inserting at bucket %lu\n", slot_index);
     ccoll_linkedlist_t *collision_list = hm->hash_slots[slot_index];
 
     if (NULL == collision_list) {
@@ -101,6 +106,40 @@ static ccoll_map_insertion_result_t insert_new(ccoll_hashmap_t *hm, void *key, v
 
     return result;
 }
+
+static void resize(ccoll_hashmap_t *hm, size_t capacity)
+{
+    size_t old_cap = hm->capacity;
+    ccoll_linkedlist_t **old_buckets = hm->hash_slots;
+    ccoll_linkedlist_t **new_buckets = calloc(capacity, sizeof(ccoll_linkedlist_t*));
+    hm->hash_slots = new_buckets;
+    hm->capacity = capacity;
+
+    DEBUG("\n");
+    for (size_t i=0; i<old_cap; i++) {
+        DEBUGF("resize: rehashing elements in bucket %lu\n", i);
+        ccoll_linkedlist_t *list = old_buckets[i];
+        if (NULL != list) {
+            ccoll_linkedlist_iter_t *iter = ccoll_linkedlist_get_iter(list);
+            ccoll_linkedlist_node_t *listnode;
+            while ((listnode = ccoll_linkedlist_iter_next(iter)) != NULL) {
+                /* TODO: There shouldn't be any need to allocate all-new entries
+                 * and freeing the old ones. Could be improved, requires a bit
+                 * of reorganization.
+                 */
+                ccoll_hashmap_entry_t *old_entry =
+                    (ccoll_hashmap_entry_t*) listnode->value;
+
+                ccoll_map_insertion_result_t res = insert_new(hm, old_entry->key, old_entry->value);
+                DEBUGF("resize: insertion result: status=%d, error=%d\n", res.status, res.error);
+                free(old_entry);
+            }
+            ccoll_linkedlist_drop_iter(iter);
+        }
+    }
+    free(old_buckets);
+}
+
 
 ccoll_hashmap_t* ccoll_hashmap_init()
 {
@@ -181,6 +220,10 @@ ccoll_map_insertion_result_t ccoll_hashmap_put(ccoll_hashmap_t *hm, void *key, v
     ccoll_map_insertion_result_t result = insert_new(hm, key, value);
     if (result.status == ADDED) {
         hm->total_entries++;
+        float load = (float) hm->total_entries / hm->capacity;
+        if (load > hm->max_load_factor) {
+            resize(hm, hm->capacity * 2);
+        }
     }
     return result;
 }

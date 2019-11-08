@@ -22,7 +22,7 @@ typedef struct ccoll_hashmap_entry {
 } ccoll_hashmap_entry_t;
 
 typedef struct ccoll_hashmap {
-    ccoll_linkedlist_t **hash_slots;
+    ccoll_linkedlist_t **buckets;
     size_t capacity;
     size_t total_entries;
     float max_load_factor;

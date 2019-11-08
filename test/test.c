@@ -40,7 +40,7 @@ int strcmp_wrapper(void *value1, void *value2)
 static void print_hashmap(ccoll_hashmap_t *hm)
 {
     for (size_t i=0; i<hm->capacity; i++) {
-        ccoll_linkedlist_t *collision_list = hm->hash_slots[i];
+        ccoll_linkedlist_t *collision_list = hm->buckets[i];
         if (NULL == collision_list) {
             DEBUGF("[%lu] empty bucket\n", i);
         } else {
@@ -141,7 +141,7 @@ START_TEST(hashmap_create)
     DEBUG("\n*** Starting hashmap_create\n");
     ccoll_hashmap_t *hashmap = ccoll_hashmap_init();
     ck_assert_ptr_nonnull(hashmap);
-    ck_assert_ptr_nonnull(hashmap->hash_slots);
+    ck_assert_ptr_nonnull(hashmap->buckets);
     ck_assert(hashmap->key_comparator_function != NULL);
     ck_assert(hashmap->hash_code_function != NULL);
     ck_assert_uint_ge(hashmap->capacity, 0);

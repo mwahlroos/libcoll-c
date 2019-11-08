@@ -16,7 +16,7 @@ static ccoll_linkedlist_t* find_collision_list(ccoll_hashmap_t *hm, void *key)
 {
     size_t slot_index = hash(hm, hm->hash_code_function(key));
     DEBUGF("find_collision_list: hashed to bucket %lu\n", slot_index);
-    ccoll_linkedlist_t *collision_list = hm->hash_slots[slot_index];
+    ccoll_linkedlist_t *collision_list = hm->buckets[slot_index];
 
     return collision_list;
 }
@@ -73,11 +73,11 @@ static ccoll_map_insertion_result_t insert_new(ccoll_hashmap_t *hm, void *key, v
 
     size_t slot_index = hash(hm, hm->hash_code_function(key));
     DEBUGF("insert_new: inserting at bucket %lu\n", slot_index);
-    ccoll_linkedlist_t *collision_list = hm->hash_slots[slot_index];
+    ccoll_linkedlist_t *collision_list = hm->buckets[slot_index];
 
     if (NULL == collision_list) {
         collision_list = ccoll_linkedlist_init_with_comparator(hm->key_comparator_function);
-        hm->hash_slots[slot_index] = collision_list;
+        hm->buckets[slot_index] = collision_list;
     }
 
     ccoll_linkedlist_iter_t *iter = ccoll_linkedlist_get_iter(collision_list);
@@ -112,9 +112,9 @@ static ccoll_map_insertion_result_t insert_new(ccoll_hashmap_t *hm, void *key, v
 static void resize(ccoll_hashmap_t *hm, size_t capacity)
 {
     size_t old_cap = hm->capacity;
-    ccoll_linkedlist_t **old_buckets = hm->hash_slots;
+    ccoll_linkedlist_t **old_buckets = hm->buckets;
     ccoll_linkedlist_t **new_buckets = calloc(capacity, sizeof(ccoll_linkedlist_t*));
-    hm->hash_slots = new_buckets;
+    hm->buckets = new_buckets;
     hm->capacity = capacity;
 
     DEBUG("\n");
@@ -167,7 +167,7 @@ ccoll_hashmap_t* ccoll_hashmap_init_with_params(size_t init_capacity,
 //    ccoll_linkedlist_t *first_slot = (ccoll_linkedlist_t*) calloc(init_capacity, sizeof(ccoll_linkedlist_t*));
     ccoll_linkedlist_t **buckets = (ccoll_linkedlist_t**) calloc(init_capacity, sizeof(ccoll_linkedlist_t*));
 
-    hm->hash_slots = buckets;
+    hm->buckets = buckets;
     hm->max_load_factor = max_load_factor;
     hm->capacity = init_capacity;
     hm->total_entries = 0;
@@ -196,7 +196,7 @@ ccoll_hashmap_t* ccoll_hashmap_init_with_params(size_t init_capacity,
 void ccoll_hashmap_deinit(ccoll_hashmap_t *hm)
 {
     for (size_t i=0; i<hm->capacity; i++) {
-        ccoll_linkedlist_t *list = hm->hash_slots[i];
+        ccoll_linkedlist_t *list = hm->buckets[i];
         if (NULL != list) {
             DEBUGF("Hashmap deinit: clearing collision list (%lu entries) at bucket %lu\n",
                    ccoll_linkedlist_length(list), i);
@@ -214,7 +214,7 @@ void ccoll_hashmap_deinit(ccoll_hashmap_t *hm)
             free(list);
         }
     }
-    free(hm->hash_slots);
+    free(hm->buckets);
     free(hm);
 }
 
@@ -266,7 +266,7 @@ ccoll_map_removal_result_t ccoll_hashmap_remove(ccoll_hashmap_t *hm, void *key)
 
     unsigned long key_hash = hash(hm, hm->hash_code_function(key));
     size_t slot_index = (key_hash % hm->capacity);
-    ccoll_linkedlist_t *collision_list = hm->hash_slots[slot_index];
+    ccoll_linkedlist_t *collision_list = hm->buckets[slot_index];
 
     if (NULL != collision_list) {
         ccoll_linkedlist_iter_t *iter = ccoll_linkedlist_get_iter(collision_list);

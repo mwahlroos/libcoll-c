@@ -76,8 +76,8 @@ void ccoll_linkedlist_append(ccoll_linkedlist_t *list, void *value)
         list->tail = new_node;
         list->length++;
     }
-    DEBUGF("List head / tail: %d / %d\n", *(int*)(list->head->value),
-                                          *(int*)(list->tail->value));
+    DEBUGF("List head / tail: %p / %p\n", (list->head->value),
+                                          (list->tail->value));
 }
 
 void ccoll_linkedlist_insert(ccoll_linkedlist_t *list, void *value, size_t index)

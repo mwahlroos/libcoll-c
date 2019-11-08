@@ -1,5 +1,5 @@
 /*
- * Unit tests for the liblibcoll library.
+ * Unit tests for the libcoll library.
  */
 
 #include <check.h>
@@ -14,6 +14,8 @@
 #include "../types.h"
 #include "../hash.h"
 #include "../debug.h"
+
+/* helper functions */
 
 /* Compares two pointers by the integer value they point to.
  * Utility function for unit tests.
@@ -57,6 +59,8 @@ static void print_hashmap(libcoll_hashmap_t *hm)
         }
     }
 }
+
+/* actual tests */
 
 START_TEST(linkedlist_create)
 {
@@ -389,7 +393,7 @@ Suite* create_libcoll_test_suite(void)
     TCase *hashmap_tests;
     TCase *self_sanity_test;
 
-    s = suite_create("liblibcoll");
+    s = suite_create("libcoll");
     linkedlist_tests = create_linkedlist_tests();
     hashmap_tests = create_hashmap_tests();
     self_sanity_test = create_self_sanity_test();

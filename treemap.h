@@ -10,8 +10,8 @@
 #include <stdbool.h>
 #include "types.h"
 
-#ifndef libcoll_TREEMAP_H
-#define libcoll_TREEMAP_H
+#ifndef LIBCOLL_TREEMAP_H
+#define LIBCOLL_TREEMAP_H
 
 /* data types */
 
@@ -89,5 +89,5 @@ bool _libcoll_treemap_verify_red_black_conditions(libcoll_treemap_t *tree);
 
 
 
-#endif /* libcoll_TREEMAP_H */
+#endif /* LIBCOLL_TREEMAP_H */
 

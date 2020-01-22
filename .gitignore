@@ -4,3 +4,4 @@
 *.so
 *.so.*
 libcoll_test
+.vscode

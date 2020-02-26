@@ -140,7 +140,7 @@ char libcoll_linkedlist_remove(libcoll_linkedlist_t *list, void *value)
     libcoll_linkedlist_iter_t *iter = libcoll_linkedlist_get_iter(list);
 
     while (libcoll_linkedlist_iter_has_next(iter) && !success) {
-        void *entry_value = libcoll_linkedlist_iter_next(iter)->value;
+        void *entry_value = libcoll_linkedlist_iter_next(iter);
         if (list->compare_function(value, entry_value) == 0) {
             libcoll_linkedlist_iter_remove(iter);
             success = 1;
@@ -193,19 +193,23 @@ char libcoll_linkedlist_iter_has_previous(libcoll_linkedlist_iter_t *iter)
     return (NULL != iter->previous);
 }
 
-libcoll_linkedlist_node_t* libcoll_linkedlist_iter_next(libcoll_linkedlist_iter_t *iter)
+void* libcoll_linkedlist_iter_next(libcoll_linkedlist_iter_t *iter)
 {
     libcoll_linkedlist_node_t *node = iter->next;
+
+    iter->last_skip_forward = 1;
+    iter->last_returned = node;
+
     if (NULL != node) {
         iter->next = node->next;
         iter->previous = node;
+        return node->value;
+    } else {
+        return NULL;
     }
-    iter->last_returned = node;
-    iter->last_skip_forward = 1;
-    return node;
 }
 
-libcoll_linkedlist_node_t* libcoll_linkedlist_iter_previous(libcoll_linkedlist_iter_t *iter)
+void* libcoll_linkedlist_iter_previous(libcoll_linkedlist_iter_t *iter)
 {
     libcoll_linkedlist_node_t *node = iter->previous;
     if (NULL != node) {
@@ -214,7 +218,7 @@ libcoll_linkedlist_node_t* libcoll_linkedlist_iter_previous(libcoll_linkedlist_i
     }
     iter->last_returned = node;
     iter->last_skip_forward = 0;
-    return node;
+    return node->value;
 }
 
 void libcoll_linkedlist_iter_remove(libcoll_linkedlist_iter_t *iter)

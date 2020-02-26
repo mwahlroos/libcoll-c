@@ -149,15 +149,15 @@ char libcoll_linkedlist_iter_has_previous(libcoll_linkedlist_iter_t *iter);
 
 /*
  * Advances the iterator over the next node on the list.
- * Returns: the node that was passed over, or NULL if none
+ * Returns: the value at the node that was passed over, or NULL if none
  */
-libcoll_linkedlist_node_t* libcoll_linkedlist_iter_next(libcoll_linkedlist_iter_t *iter);
+void* libcoll_linkedlist_iter_next(libcoll_linkedlist_iter_t *iter);
 
 /*
  * Moves the iterator over the previous node on the list.
- * Returns: the node that was passed over, or NULL if none
+ * Returns: the value at the node that was passed over, or NULL if none
  */
-libcoll_linkedlist_node_t* libcoll_linkedlist_iter_previous(libcoll_linkedlist_iter_t *iter);
+void* libcoll_linkedlist_iter_previous(libcoll_linkedlist_iter_t *iter);
 
 /*
  * Removes the node last returned by the given iterator.

@@ -49,8 +49,9 @@ static void print_hashmap(libcoll_hashmap_t *hm)
             DEBUGF("[%lu] nonempty bucket:", i);
             libcoll_linkedlist_iter_t *iter = libcoll_linkedlist_get_iter(collision_list);
             while (libcoll_linkedlist_iter_has_next(iter)) {
-                libcoll_linkedlist_node_t *node = libcoll_linkedlist_iter_next(iter);
-                libcoll_hashmap_entry_t *entry = (libcoll_hashmap_entry_t*) node->value;
+                libcoll_hashmap_entry_t *entry =
+                    (libcoll_hashmap_entry_t*) libcoll_linkedlist_iter_next(iter);
+
                 DEBUGF(" (%p -> %p)", entry->key, entry->value);
                 DEBUG("\n");
             }
@@ -101,10 +102,10 @@ START_TEST(linkedlist_populate_and_iterate)
     /* test iteration and retrieval */
     libcoll_linkedlist_iter_t *iter = libcoll_linkedlist_get_iter(list);
     ck_assert(libcoll_linkedlist_iter_has_next(iter));
-    ck_assert_int_eq(*testint1, *((int*) libcoll_linkedlist_iter_next(iter)->value));
+    ck_assert_int_eq(*testint1, *((int*) libcoll_linkedlist_iter_next(iter)));
 
     ck_assert(libcoll_linkedlist_iter_has_next(iter));
-    ck_assert_int_eq(*testint2, *((int*) libcoll_linkedlist_iter_next(iter)->value));
+    ck_assert_int_eq(*testint2, *((int*) libcoll_linkedlist_iter_next(iter)));
 
     libcoll_linkedlist_drop_iter(iter);
 
@@ -116,7 +117,7 @@ START_TEST(linkedlist_populate_and_iterate)
     /* test iterator at */
     iter = libcoll_linkedlist_get_iter_at(list, 1);
     ck_assert(libcoll_linkedlist_iter_has_next(iter));
-    ck_assert_int_eq(*testint3, *((int*) libcoll_linkedlist_iter_next(iter)->value));
+    ck_assert_int_eq(*testint3, *((int*) libcoll_linkedlist_iter_next(iter)));
 
     /* test removal through iterator */
     libcoll_linkedlist_iter_remove(iter);
@@ -124,7 +125,7 @@ START_TEST(linkedlist_populate_and_iterate)
 
     /* check that the last entry on the list is still accessible */
     ck_assert(libcoll_linkedlist_iter_has_next(iter));
-    ck_assert_int_eq(*testint4, *((int*) libcoll_linkedlist_iter_next(iter)->value));
+    ck_assert_int_eq(*testint4, *((int*) libcoll_linkedlist_iter_next(iter)));
 
     /* should  be at the end of the list */
     ck_assert(!libcoll_linkedlist_iter_has_next(iter));

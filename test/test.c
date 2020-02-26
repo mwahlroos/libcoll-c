@@ -46,7 +46,7 @@ static void print_hashmap(libcoll_hashmap_t *hm)
         if (NULL == collision_list) {
             DEBUGF("[%lu] empty bucket\n", i);
         } else {
-            DEBUGF("[%lu] nonempty bucket:", i);
+            DEBUGF("[%lu] nonempty bucket with %lu entries:", i, libcoll_linkedlist_length(collision_list));
             libcoll_linkedlist_iter_t *iter = libcoll_linkedlist_get_iter(collision_list);
             while (libcoll_linkedlist_iter_has_next(iter)) {
                 libcoll_hashmap_entry_t *entry =
@@ -285,6 +285,7 @@ START_TEST(hashmap_resize)
     print_hashmap(hm);
 
     ck_assert_uint_eq(hm->capacity, init_capacity);
+    DEBUGF("testval2 == %s, testkey1 == %d, val(testkey1) == %s\n", testval2, *testkey1, (char*) libcoll_hashmap_get(hm, testkey1));
     ck_assert_str_eq(testval2, (char*) libcoll_hashmap_get(hm, testkey1));
 
     DEBUGF("Inserting key-value pair #2 ([%p] %d -> [%p] %s)...\n",

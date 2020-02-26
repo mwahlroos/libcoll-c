@@ -66,10 +66,6 @@ static libcoll_map_insertion_result_t insert_new(libcoll_hashmap_t *hm, void *ke
         return result;
     }
 
-    libcoll_hashmap_entry_t *new_entry = malloc(sizeof(libcoll_hashmap_entry_t));
-    new_entry->key = key;
-    new_entry->value = value;
-
     size_t slot_index = hash(hm, hm->hash_code_function(key));
     DEBUGF("insert_new: inserting at bucket %lu\n", slot_index);
     libcoll_linkedlist_t *collision_list = hm->buckets[slot_index];
@@ -85,20 +81,25 @@ static libcoll_map_insertion_result_t insert_new(libcoll_hashmap_t *hm, void *ke
 
     while ((entry = (libcoll_hashmap_entry_t*) libcoll_linkedlist_iter_next(iter)) != NULL) {
         if (hm->key_comparator_function(key, entry->key) == 0) {
+            DEBUG("insert_new: replacing existing entry with matching key\n");
             result.old_key = entry->key;
             result.old_value = entry->value;
+            entry->key = key;
+            entry->value = value;
 
             result.status = MAP_ENTRY_REPLACED;
             result.error = MAP_ERROR_NONE;
             key_exists = 1;
-            free(entry);
-            node->value = new_entry;
             break;
         }
     }
     libcoll_linkedlist_drop_iter(iter);
 
     if (!key_exists) {
+        libcoll_hashmap_entry_t *new_entry = malloc(sizeof(libcoll_hashmap_entry_t));
+        new_entry->key = key;
+        new_entry->value = value;
+
         libcoll_linkedlist_append(collision_list, new_entry);
         result.status = MAP_ENTRY_ADDED;
         result.error = MAP_ERROR_NONE;

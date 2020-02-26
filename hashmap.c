@@ -121,9 +121,11 @@ static void resize(libcoll_hashmap_t *hm, size_t capacity)
         DEBUGF("resize: rehashing elements in bucket %lu\n", i);
         libcoll_linkedlist_t *list = old_buckets[i];
         if (NULL != list) {
+            DEBUG("resize: nonempty list\n");
             libcoll_linkedlist_iter_t *iter = libcoll_linkedlist_get_iter(list);
             libcoll_hashmap_entry_t *old_entry;
             while ((old_entry = libcoll_linkedlist_iter_next(iter)) != NULL) {
+                DEBUG("resize: reallocating list entry\n");
                 /* TODO: There shouldn't be any need to allocate all-new entries
                  * and freeing the old ones. Could be improved, requires a bit
                  * of reorganization.

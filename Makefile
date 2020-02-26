@@ -31,7 +31,7 @@ tests: so
 	$(CC) $(CFLAGS) $(TEST_SRC) -o $(TEST_PROG) -L. -lcoll -lcheck
 
 debugtests: debug
-	$(CC) $(CFLAGS) $(TEST_SRC) -DENABLE_DEBUG=1 -o $(TEST_PROG) -L. -lcoll -lcheck
+	$(CC) $(CFLAGS) $(TEST_SRC) -g -DENABLE_DEBUG=1 -o $(TEST_PROG) -L. -lcoll -lcheck
 
 runtests: tests
 	@echo

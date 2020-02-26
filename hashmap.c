@@ -164,7 +164,6 @@ libcoll_hashmap_t* libcoll_hashmap_init_with_params(size_t init_capacity,
      * which is useful in this case since it means unused buckets are
      * guaranteed to contain NULLs
      */
-//    libcoll_linkedlist_t *first_slot = (libcoll_linkedlist_t*) calloc(init_capacity, sizeof(libcoll_linkedlist_t*));
     libcoll_linkedlist_t **buckets = (libcoll_linkedlist_t**) calloc(init_capacity, sizeof(libcoll_linkedlist_t*));
 
     hm->buckets = buckets;

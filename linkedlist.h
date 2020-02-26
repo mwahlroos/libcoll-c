@@ -89,6 +89,16 @@ libcoll_list_addition_result_t libcoll_linkedlist_append(libcoll_linkedlist_t *l
 libcoll_list_addition_result_t libcoll_linkedlist_insert(libcoll_linkedlist_t *list, void *value, size_t index);
 
 /*
+ * Replaces the value at the given index with the  the given value.
+ * If the index is greater than the length of the list, nothing is done,
+ * and NULL is returned.
+ *
+ * If the replacement is successful, the previous value at the index will be
+ * returned.
+ */
+libcoll_list_replacement_result_t libcoll_linkedlist_replace_at(libcoll_linkedlist_t *list, void *value, size_t index);
+
+/*
  * Returns the index of the first list node containing the given value,
  * or -1 if no such node exists.
  * FIXME: should perhaps return a size_t with an error value indicating non-existence
@@ -165,6 +175,11 @@ libcoll_linkedlist_node_t* libcoll_linkedlist_iter_previous(libcoll_linkedlist_i
  * Note that this does not free any memory allocated for the stored value itself.
  */
 void libcoll_linkedlist_iter_remove(libcoll_linkedlist_iter_t *iter);
+
+/*
+ * Replaces the value at the node last traversed by the iterator.
+ */
+libcoll_list_replacement_result_t libcoll_linkedlist_iter_replace(libcoll_linkedlist_iter_t *iter, void *value);
 
 /*
  * Returns the current length of the given linked list.

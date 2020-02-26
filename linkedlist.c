@@ -117,6 +117,28 @@ libcoll_list_addition_result_t libcoll_linkedlist_insert(libcoll_linkedlist_t *l
     return result;
 }
 
+libcoll_list_replacement_result_t libcoll_linkedlist_replace_at(libcoll_linkedlist_t *list, void *value, size_t index)
+{
+    libcoll_list_replacement_result_t result;
+    if (index >= list->length) {
+        result.status = LIST_REPLACEMENT_FAILED;
+        result.error = LIST_INDEX_OUT_OF_RANGE;
+        return result;
+    }
+
+    libcoll_linkedlist_node_t *node = list->head;
+    for (size_t i=0; i<index; i++) {
+        node = node->next;
+    }
+
+    result.old_value = node->value;
+    result.status = LIST_ITEM_REPLACED;
+
+    node->value = value;
+
+    return result;
+}
+
 int libcoll_linkedlist_index_of(libcoll_linkedlist_t *list, void *value)
 {
     int retval = -1;
@@ -243,6 +265,25 @@ libcoll_list_removal_result_t libcoll_linkedlist_iter_remove(libcoll_linkedlist_
     } else {
         result.status = LIST_REMOVAL_FAILED;
         result.error = LIST_INDEX_OUT_OF_RANGE;
+    }
+
+    return result;
+}
+
+libcoll_list_replacement_result_t libcoll_linkedlist_iter_replace(libcoll_linkedlist_iter_t *iter, void *value)
+{
+    libcoll_list_replacement_result_t result;
+
+    libcoll_linkedlist_node_t *node = iter->last_returned;
+
+    if (NULL != node) {
+        result.old_value = node->value;
+        result.status = LIST_ITEM_REPLACED;
+        node->value = value;
+    } else {
+        /* TODO: should have a more specific error */
+        result.error = LIST_INDEX_OUT_OF_RANGE;
+        result.status = LIST_REPLACEMENT_FAILED;
     }
 
     return result;

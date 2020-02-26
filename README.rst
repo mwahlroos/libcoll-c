@@ -13,8 +13,7 @@ that provides a C standard library.
 Features
 --------
 
-* Currently supported collection types:
-  - treemap, hashmap, linked list
+* Currently supported collection types: treemap, hashmap, linked list
 * List types are double-linked, and with iterators
 * Arbitrary pointer types accepted as values
 * Arbitrary pointer types accepted as keys for map-style collections
@@ -38,7 +37,10 @@ cast to the desired type.
 Dependencies
 ------------
 
-None, other than the C standard library.
+The library itself has not external dependencies beyond the C standard library.
+For building and running automated tests, the `Check framework`_ is required.
+
+.. _Check framework: https://libcheck.github.io/check/
 
 Other requirements
 ------------------

@@ -184,6 +184,7 @@ START_TEST(hashmap_populate_and_retrieve)
     /* test retrieving a nonexisting value */
     char *invalid_key = "asdf";
     ck_assert_ptr_null(libcoll_hashmap_get(counts, invalid_key));
+    ck_assert_uint_eq(libcoll_hashmap_get_size(counts), member_count);
 
     /* test retrieving and removing valid values */
     for (int i=0; i<2; i++) {
@@ -332,6 +333,9 @@ START_TEST(hashmap_resize)
 
     /* check retrieval after resizings */
     ck_assert_str_eq(testval2, (char*) libcoll_hashmap_get(hm, testkey1));
+    ck_assert_str_eq(testval2, (char*) libcoll_hashmap_get(hm, testkey2));
+    ck_assert_str_eq(testval3, (char*) libcoll_hashmap_get(hm, testkey3));
+    ck_assert_str_eq(testval4, (char*) libcoll_hashmap_get(hm, testkey4));
 
     /* free all resources */
     libcoll_hashmap_deinit(hm);

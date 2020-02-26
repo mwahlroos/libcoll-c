@@ -37,10 +37,17 @@ cast to the desired type.
 Dependencies
 ------------
 
-The library itself has not external dependencies beyond the C standard library.
-For building and running automated tests, the `Check framework`_ is required.
+The library itself has no external dependencies beyond the C standard library.
 
-.. _Check framework: https://libcheck.github.io/check/
+A variant of ``make`` is needed for building from source. At least GNU make
+works; no other variants have been tested.
+
+GCC is needed for compiling. Other C compilers should work but have not been
+tested.
+
+For building and running automated tests, the `Check`_ framework is required.
+
+.. _Check: https://libcheck.github.io/check/
 
 Other requirements
 ------------------

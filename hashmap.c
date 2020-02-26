@@ -29,6 +29,7 @@ static libcoll_hashmap_entry_t* find_entry(libcoll_hashmap_t *hm, void *key)
     if (NULL != collision_list) {
         DEBUGF("find_entry: found collision list for key %p\n", key);
         libcoll_linkedlist_iter_t *iter = libcoll_linkedlist_get_iter(collision_list);
+
         while (libcoll_linkedlist_iter_has_next(iter)) {
             libcoll_hashmap_entry_t *entry_tmp;
             void *key_tmp;
@@ -130,9 +131,9 @@ static void resize(libcoll_hashmap_t *hm, size_t capacity)
                  * and freeing the old ones. Could be improved, requires a bit
                  * of reorganization.
                  */
-
                 libcoll_map_insertion_result_t res = insert_new(hm, old_entry->key, old_entry->value);
                 DEBUGF("resize: insertion result: status=%d, error=%d\n", res.status, res.error);
+
                 free(old_entry);
             }
             libcoll_linkedlist_drop_iter(iter);

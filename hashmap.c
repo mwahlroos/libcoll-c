@@ -62,8 +62,8 @@ static libcoll_map_insertion_result_t insert_new(libcoll_hashmap_t *hm, void *ke
     libcoll_map_insertion_result_t result;
 
     if (NULL == key) {
-        result.status = INSERTION_FAILED;
-        result.error = INVALID_KEY;
+        result.status = MAP_INSERTION_FAILED;
+        result.error = MAP_ERROR_INVALID_KEY;
         return result;
     }
 
@@ -89,9 +89,9 @@ static libcoll_map_insertion_result_t insert_new(libcoll_hashmap_t *hm, void *ke
         if (hm->key_comparator_function(key, entry->key) == 0) {
             result.old_key = entry->key;
             result.old_value = entry->value;
-            result.status = REPLACED;
-            result.error = NONE;
 
+            result.status = MAP_ENTRY_REPLACED;
+            result.error = MAP_ERROR_NONE;
             key_exists = 1;
             free(entry);
             node->value = new_entry;
@@ -102,8 +102,8 @@ static libcoll_map_insertion_result_t insert_new(libcoll_hashmap_t *hm, void *ke
 
     if (!key_exists) {
         libcoll_linkedlist_append(collision_list, new_entry);
-        result.status = ADDED;
-        result.error = NONE;
+        result.status = MAP_ENTRY_ADDED;
+        result.error = MAP_ERROR_NONE;
     }
 
     return result;
@@ -221,7 +221,7 @@ void libcoll_hashmap_deinit(libcoll_hashmap_t *hm)
 libcoll_map_insertion_result_t libcoll_hashmap_put(libcoll_hashmap_t *hm, void *key, void *value)
 {
     libcoll_map_insertion_result_t result = insert_new(hm, key, value);
-    if (result.status == ADDED) {
+    if (result.status == MAP_ENTRY_ADDED) {
         hm->total_entries++;
         float load = (float) hm->total_entries / hm->capacity;
         if (load > hm->max_load_factor) {
@@ -255,12 +255,12 @@ libcoll_map_removal_result_t libcoll_hashmap_remove(libcoll_hashmap_t *hm, void 
     libcoll_map_removal_result_t result;
 
     if (NULL == key) {
-        result.status = REMOVAL_FAILED;
-        result.error = INVALID_KEY;
+        result.status = MAP_REMOVAL_FAILED;
+        result.error = MAP_ERROR_INVALID_KEY;
         return result;
     }
 
-    result.status = NOT_FOUND;
+    result.status = KEY_NOT_FOUND;
     result.key = NULL;
     result.value = NULL;
 
@@ -276,7 +276,7 @@ libcoll_map_removal_result_t libcoll_hashmap_remove(libcoll_hashmap_t *hm, void 
             if (hm->key_comparator_function(key, entry->key) == 0) {
                 result.key = entry->key;
                 result.value = entry->value;
-                result.status = REMOVED;
+                result.status = MAP_ENTRY_REMOVED;
                 libcoll_linkedlist_iter_remove(iter);
                 hm->total_entries--;
                 free(entry);

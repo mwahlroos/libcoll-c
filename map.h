@@ -8,15 +8,15 @@
 #define LIBCOLL_MAP_H
 
 typedef enum {
-    NONE, INVALID_KEY
+    MAP_ERROR_NONE, MAP_ERROR_INVALID_KEY
 } libcoll_map_error;
 
 typedef enum {
-    INSERTION_FAILED, ADDED, REPLACED
+    MAP_INSERTION_FAILED, MAP_ENTRY_ADDED, MAP_ENTRY_REPLACED
 } libcoll_map_insertion_status;
 
 typedef enum {
-    REMOVAL_FAILED, NOT_FOUND, REMOVED
+    MAP_REMOVAL_FAILED, KEY_NOT_FOUND, MAP_ENTRY_REMOVED
 } libcoll_map_removal_status;
 
 typedef struct libcoll_map_insertion_result {

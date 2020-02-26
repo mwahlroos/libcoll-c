@@ -39,7 +39,7 @@ int strcmp_wrapper(void *value1, void *value2)
     return strcmp(s1, s2);
 }
 
-static void print_hashmap(libcoll_hashmap_t *hm)
+static void print_hashmap_contents(libcoll_hashmap_t *hm)
 {
     for (size_t i=0; i<hm->capacity; i++) {
         libcoll_linkedlist_t *collision_list = hm->buckets[i];
@@ -59,6 +59,16 @@ static void print_hashmap(libcoll_hashmap_t *hm)
             libcoll_linkedlist_drop_iter(iter);
         }
     }
+}
+
+static void print_hashmap(libcoll_hashmap_t *hm)
+{
+    DEBUGF("Hashmap contents/capacity: %lu/%lu\n",
+          libcoll_hashmap_get_size(hm),
+          libcoll_hashmap_get_capacity(hm)
+    );
+    DEBUG("Hashmap contents:\n");
+    print_hashmap_contents(hm);
 }
 
 /* actual tests */
@@ -250,11 +260,6 @@ START_TEST(hashmap_resize)
     char *testval3 = "baz";
     char *testval4 = "quux";
 
-    DEBUGF("Hashmap contents/capacity: %lu/%lu\n",
-          libcoll_hashmap_get_size(hm),
-          libcoll_hashmap_get_capacity(hm)
-    );
-    DEBUG("Hashmap contents after insertion:\n");
     print_hashmap(hm);
 
     ck_assert_uint_eq(hm->capacity, init_capacity);
@@ -263,11 +268,6 @@ START_TEST(hashmap_resize)
            (void*) testkey1, *testkey1, (void*) testval1, testval1
     );
     libcoll_hashmap_put(hm, testkey1, testval1);
-    DEBUGF("Hashmap contents/capacity: %lu/%lu\n",
-          libcoll_hashmap_get_size(hm),
-          libcoll_hashmap_get_capacity(hm)
-    );
-    DEBUG("Hashmap contents after insertion:\n");
     print_hashmap(hm);
 
     ck_assert_uint_eq(hm->capacity, init_capacity);
@@ -277,11 +277,6 @@ START_TEST(hashmap_resize)
     );
 
     libcoll_hashmap_put(hm, testkey1, testval2);
-    DEBUGF("Hashmap contents/capacity: %lu/%lu\n",
-          libcoll_hashmap_get_size(hm),
-          libcoll_hashmap_get_capacity(hm)
-    );
-    DEBUG("Hashmap contents after insertion:\n");
     print_hashmap(hm);
 
     ck_assert_uint_eq(hm->capacity, init_capacity);
@@ -292,11 +287,6 @@ START_TEST(hashmap_resize)
            (void*) testkey2, *testkey2, (void*) testval2, testval2
     );
     libcoll_hashmap_put(hm, testkey2, testval2);
-    DEBUGF("Hashmap contents/capacity: %lu/%lu\n",
-          libcoll_hashmap_get_size(hm),
-          libcoll_hashmap_get_capacity(hm)
-    );
-    DEBUG("Hashmap contents after insertion:\n");
     print_hashmap(hm);
 
     /* the capacity should have been increased by now from the initial 2 */
@@ -309,11 +299,6 @@ START_TEST(hashmap_resize)
 
     DEBUG("Inserting key-value pair #3...\n");
     libcoll_hashmap_put(hm, testkey3, testval3);
-    DEBUGF("Hashmap contents/capacity: %lu/%lu\n",
-        libcoll_hashmap_get_size(hm),
-        libcoll_hashmap_get_capacity(hm)
-    );
-    DEBUG("Hashmap contents after insertion:\n");
     print_hashmap(hm);
 
     ck_assert_uint_gt(hm->capacity, previous_capacity);
@@ -323,11 +308,6 @@ START_TEST(hashmap_resize)
 
     DEBUG("Inserting key-value pair #4...\n");
     libcoll_hashmap_put(hm, testkey4, testval4);
-    DEBUGF("Hashmap contents/capacity: %lu/%lu\n",
-        libcoll_hashmap_get_size(hm),
-        libcoll_hashmap_get_capacity(hm)
-    );
-    DEBUG("Hashmap contents after insertion:\n");
     print_hashmap(hm);
 
     ck_assert_uint_eq(hm->capacity, previous_capacity);

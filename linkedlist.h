@@ -174,7 +174,7 @@ libcoll_linkedlist_node_t* libcoll_linkedlist_iter_previous(libcoll_linkedlist_i
  * Removes the node last returned by the given iterator.
  * Note that this does not free any memory allocated for the stored value itself.
  */
-void libcoll_linkedlist_iter_remove(libcoll_linkedlist_iter_t *iter);
+libcoll_list_removal_result_t libcoll_linkedlist_iter_remove(libcoll_linkedlist_iter_t *iter);
 
 /*
  * Replaces the value at the node last traversed by the iterator.

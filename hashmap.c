@@ -33,8 +33,7 @@ static libcoll_hashmap_entry_t* find_entry(libcoll_hashmap_t *hm, void *key)
             libcoll_hashmap_entry_t *entry_tmp;
             void *key_tmp;
 
-            libcoll_linkedlist_node_t *node = libcoll_linkedlist_iter_next(iter);
-            entry_tmp = (libcoll_hashmap_entry_t*) (node->value);
+            entry_tmp = libcoll_linkedlist_iter_next(iter);
             key_tmp = entry_tmp->key;
 
             if (hm->key_comparator_function(key, key_tmp) == 0) {
@@ -81,11 +80,10 @@ static libcoll_map_insertion_result_t insert_new(libcoll_hashmap_t *hm, void *ke
     }
 
     libcoll_linkedlist_iter_t *iter = libcoll_linkedlist_get_iter(collision_list);
-    libcoll_linkedlist_node_t *node;
+    libcoll_hashmap_entry_t *entry;
     char key_exists = 0;
 
-    while ((node = libcoll_linkedlist_iter_next(iter)) != NULL) {
-        libcoll_hashmap_entry_t *entry = (libcoll_hashmap_entry_t*) node->value;
+    while ((entry = (libcoll_hashmap_entry_t*) libcoll_linkedlist_iter_next(iter)) != NULL) {
         if (hm->key_comparator_function(key, entry->key) == 0) {
             result.old_key = entry->key;
             result.old_value = entry->value;
@@ -123,14 +121,12 @@ static void resize(libcoll_hashmap_t *hm, size_t capacity)
         libcoll_linkedlist_t *list = old_buckets[i];
         if (NULL != list) {
             libcoll_linkedlist_iter_t *iter = libcoll_linkedlist_get_iter(list);
-            libcoll_linkedlist_node_t *listnode;
-            while ((listnode = libcoll_linkedlist_iter_next(iter)) != NULL) {
+            libcoll_hashmap_entry_t *old_entry;
+            while ((old_entry = libcoll_linkedlist_iter_next(iter)) != NULL) {
                 /* TODO: There shouldn't be any need to allocate all-new entries
                  * and freeing the old ones. Could be improved, requires a bit
                  * of reorganization.
                  */
-                libcoll_hashmap_entry_t *old_entry =
-                    (libcoll_hashmap_entry_t*) listnode->value;
 
                 libcoll_map_insertion_result_t res = insert_new(hm, old_entry->key, old_entry->value);
                 DEBUGF("resize: insertion result: status=%d, error=%d\n", res.status, res.error);
@@ -271,8 +267,7 @@ libcoll_map_removal_result_t libcoll_hashmap_remove(libcoll_hashmap_t *hm, void 
     if (NULL != collision_list) {
         libcoll_linkedlist_iter_t *iter = libcoll_linkedlist_get_iter(collision_list);
         while (libcoll_linkedlist_iter_has_next(iter)) {
-            libcoll_linkedlist_node_t *node = libcoll_linkedlist_iter_next(iter);
-            libcoll_hashmap_entry_t *entry = (libcoll_hashmap_entry_t*) (node->value);
+            libcoll_hashmap_entry_t *entry = (libcoll_hashmap_entry_t*) libcoll_linkedlist_iter_next(iter);
             if (hm->key_comparator_function(key, entry->key) == 0) {
                 result.key = entry->key;
                 result.value = entry->value;

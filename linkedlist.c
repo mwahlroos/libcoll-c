@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "linkedlist.h"
+#include "list.h"
 #include "debug.h"
 
 static void _libcoll_linkedlist_remove_node(libcoll_linkedlist_t *list, libcoll_linkedlist_node_t *node)
@@ -58,8 +59,10 @@ void libcoll_linkedlist_deinit(libcoll_linkedlist_t *list)
     free(list);
 }
 
-void libcoll_linkedlist_append(libcoll_linkedlist_t *list, void *value)
+libcoll_list_addition_result_t libcoll_linkedlist_append(libcoll_linkedlist_t *list, void *value)
 {
+    libcoll_list_addition_result_t result;
+
     DEBUGF("New node: %d\n", *(int*)(value));
     libcoll_linkedlist_node_t *new_node = (libcoll_linkedlist_node_t*) malloc(sizeof(libcoll_linkedlist_node_t));
     new_node->next = NULL;
@@ -78,10 +81,13 @@ void libcoll_linkedlist_append(libcoll_linkedlist_t *list, void *value)
     }
     DEBUGF("List head / tail: %p / %p\n", (list->head->value),
                                           (list->tail->value));
+    result.status = LIST_ENTRY_ADDED;
+    return result;
 }
 
-void libcoll_linkedlist_insert(libcoll_linkedlist_t *list, void *value, size_t index)
+libcoll_list_addition_result_t libcoll_linkedlist_insert(libcoll_linkedlist_t *list, void *value, size_t index)
 {
+    libcoll_list_addition_result_t result;
     if (index >= list->length) {
         libcoll_linkedlist_append(list, value);
     } else {
@@ -107,6 +113,8 @@ void libcoll_linkedlist_insert(libcoll_linkedlist_t *list, void *value, size_t i
             list->head = new_node;
         }
     }
+    result.status = LIST_ENTRY_ADDED;
+    return result;
 }
 
 int libcoll_linkedlist_index_of(libcoll_linkedlist_t *list, void *value)
@@ -217,16 +225,27 @@ libcoll_linkedlist_node_t* libcoll_linkedlist_iter_previous(libcoll_linkedlist_i
     return node;
 }
 
-void libcoll_linkedlist_iter_remove(libcoll_linkedlist_iter_t *iter)
+libcoll_list_removal_result_t libcoll_linkedlist_iter_remove(libcoll_linkedlist_iter_t *iter)
 {
+    libcoll_list_removal_result_t result;
     if (NULL != iter->last_returned) {
         if (iter->last_skip_forward) {
             iter->previous = iter->last_returned->previous;
         } else {
             iter->next = iter->last_returned->next;
         }
+
+        result.value = iter->last_returned->value;
+
         _libcoll_linkedlist_remove_node(iter->list, iter->last_returned);
+
+        result.status = LIST_ENTRY_REMOVED;
+    } else {
+        result.status = LIST_REMOVAL_FAILED;
+        result.error = LIST_INDEX_OUT_OF_RANGE;
     }
+
+    return result;
 }
 
 size_t libcoll_linkedlist_length(libcoll_linkedlist_t *list)

@@ -3,6 +3,7 @@
  */
 
 #include <stdlib.h>
+#include "list.h"
 #include "node.h"
 
 #ifndef LIBCOLL_LINKEDLIST_H
@@ -78,14 +79,14 @@ void libcoll_linkedlist_deinit(libcoll_linkedlist_t *list);
 /*
  * Appends a new node with the given value at the end of the list.
  */
-void libcoll_linkedlist_append(libcoll_linkedlist_t *list, void *value);
+libcoll_list_addition_result_t libcoll_linkedlist_append(libcoll_linkedlist_t *list, void *value);
 
 /*
  * Inserts a new node with the given value at the given index in the list.
  * If the index is greater than the length of the list, the node is appended
  * at the tail of the list.
  */
-void libcoll_linkedlist_insert(libcoll_linkedlist_t *list, void *value, size_t index);
+libcoll_list_addition_result_t libcoll_linkedlist_insert(libcoll_linkedlist_t *list, void *value, size_t index);
 
 /*
  * Returns the index of the first list node containing the given value,

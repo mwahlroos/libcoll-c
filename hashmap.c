@@ -207,8 +207,8 @@ void libcoll_hashmap_deinit(libcoll_hashmap_t *hm)
 
                 free(entry);
             }
-            free(iter);
-            free(list);
+            libcoll_linkedlist_drop_iter(iter);
+            libcoll_linkedlist_deinit(list);
         }
     }
     free(hm->buckets);

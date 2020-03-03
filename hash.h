@@ -36,4 +36,10 @@ unsigned long hashcode_str(void *str);
 
 unsigned long hashcode_str2(void *str);
 
+/*
+ * A hash value function for nodes using the memory address of the data as the
+ * hash value.
+ */
+unsigned long libcoll_hashcode_memaddr(void *value);
+
 #endif /* LIBCOLL_HASH_H */

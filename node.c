@@ -41,8 +41,3 @@ int _libcoll_node_comparator_memaddr(void *node1, void *node2)
     }
     return cmpval;
 }
-
-unsigned long _libcoll_node_hashvalue_memaddr(void *value)
-{
-    return (unsigned long) value;
-}

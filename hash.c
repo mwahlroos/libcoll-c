@@ -60,3 +60,8 @@ unsigned long hashcode_str2(void *str)
     }
     return hash;
 }
+
+unsigned long libcoll_hashcode_memaddr(void *value)
+{
+    return (unsigned long) value;
+}

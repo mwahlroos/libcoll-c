@@ -27,6 +27,7 @@
 
 #include <stdlib.h>
 #include "hashmap.h"
+#include "hash.h"
 #include "map.h"
 #include "debug.h"
 
@@ -198,7 +199,7 @@ libcoll_hashmap_t* libcoll_hashmap_init_with_params(size_t init_capacity,
     if (NULL != hash_code_function) {
         hm->hash_code_function = hash_code_function;
     } else {
-        hm->hash_code_function = &_libcoll_node_hashvalue_memaddr;
+        hm->hash_code_function = &libcoll_hashcode_memaddr;
     }
 
     if (NULL != key_comparator_function) {

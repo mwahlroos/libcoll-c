@@ -7,7 +7,8 @@ CFLAGS_LIB= -shared -fPIC
 LDFLAGS_LIB= -shared
 SRC= hashmap.c linkedlist.c treemap.c node.c hash.c vector.c
 OBJS= hashmap.o linkedlist.o treemap.o node.o hash.o vector.o
-TEST_SRC= test/test.c
+TEST_SRC= test/test.c test/test_linkedlist.c test/test_hashmap.c \
+          test/test_vector.c test/helpers.c
 TEST_PROG= libcoll_test
 LIB_BASENAME= libcoll.so
 LIB_SONAME= $(LIB_BASENAME).$(VER_MAJOR)

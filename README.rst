@@ -13,8 +13,15 @@ that provides a C standard library.
 Features
 --------
 
-* Currently supported collection types: treemap, hashmap, linked list
-* List types are double-linked, and with iterators
+The library currently supports the following collection types:
+
+* treemap
+* hashmap
+* linked list (doubly-linked, with iterators)
+* vector
+
+General features:
+
 * Arbitrary pointer types accepted as values
 * Arbitrary pointer types accepted as keys for map-style collections
 

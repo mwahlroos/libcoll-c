@@ -5,7 +5,9 @@ LD=ld
 CFLAGS= -std=c99 -Wall -Wextra -pedantic
 CFLAGS_LIB= -shared -fPIC
 LDFLAGS_LIB= -shared
-SRC= hashmap.c linkedlist.c treemap.c node.c hash.c vector.c
+SRC_DIR= src
+SRC= $(SRC_DIR)/hashmap.c $(SRC_DIR)/linkedlist.c $(SRC_DIR)/treemap.c \
+     $(SRC_DIR)/node.c $(SRC_DIR)/hash.c $(SRC_DIR)/vector.c
 OBJS= hashmap.o linkedlist.o treemap.o node.o hash.o vector.o
 TEST_SRC= test/test.c test/test_linkedlist.c test/test_hashmap.c \
           test/test_vector.c test/helpers.c

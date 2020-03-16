@@ -26,8 +26,8 @@
  */
 
 #include <string.h>
-#include "../debug.h"
-#include "../hashmap.h"
+#include "../src/debug.h"
+#include "../src/hashmap.h"
 
 /* helper functions for tests */
 

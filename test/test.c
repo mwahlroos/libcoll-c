@@ -30,7 +30,7 @@
 #include "test_linkedlist.h"
 #include "test_vector.h"
 #include "helpers.h"
-#include "../debug.h"
+#include "../src/debug.h"
 
 
 START_TEST(comparator_self_sanity_check)

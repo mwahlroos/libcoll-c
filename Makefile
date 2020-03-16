@@ -47,7 +47,11 @@ rundebugtests: debugtests
 	LD_LIBRARY_PATH=. ./$(TEST_PROG)
 
 valgrind: debugtests
-	LD_LIBRARY_PATH=. $(VALGRIND) $(VALGRIND_OPTS) ./$(TEST_PROG)
+	# use CK_FORK=no to disable forking when running unit tests,
+	# to get a single Valgrind report for the entire set of tests
+	# (forking a separate process for each test suite would make
+	# the output quite a bit less readable due to multiple reports)
+	LD_LIBRARY_PATH=. CK_FORK=no $(VALGRIND) $(VALGRIND_OPTS) ./$(TEST_PROG)
 
 clean:
 	rm -f $(OBJS) $(LIB_SONAME) $(LIB_FILENAME) $(LIB_BASENAME) $(TEST_PROG)

@@ -250,7 +250,7 @@ START_TEST(hashmap_populate_and_retrieve)
 {
     DEBUG("\n*** Starting hashmap_populate_and_retrieve\n");
     libcoll_hashmap_t *counts = libcoll_hashmap_init();
-    counts->hash_code_function = hashcode_str2;
+    counts->hash_code_function = hashcode_str;
     counts->key_comparator_function = strcmp_wrapper;
 
     char *identifiers[] = { "identifier_1", "identifier_2" };

@@ -34,8 +34,6 @@ unsigned long hashcode_int(void *intptr);
 
 unsigned long hashcode_str(void *str);
 
-unsigned long hashcode_str2(void *str);
-
 /*
  * A hash value function for nodes using the memory address of the data as the
  * hash value.

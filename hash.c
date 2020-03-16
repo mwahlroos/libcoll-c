@@ -37,16 +37,6 @@ unsigned long hashcode_int(void *intptr)
 
 unsigned long hashcode_str(void *str)
 {
-    char *s = (char*) str;
-    unsigned long hash = 31;
-    for (size_t i=0; i<strlen(s); i++) {
-        hash = 37 * hash + s[i];
-    }
-    return hash;
-}
-
-unsigned long hashcode_str2(void *str)
-{
     /* use the djb2 algorithm for computing a hash code for a string;
      * shamelessly copied from http://www.cse.yorku.ca/~oz/hash.html
      */

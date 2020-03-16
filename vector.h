@@ -26,6 +26,7 @@
  */
 
 #include <stdlib.h>
+#include <sys/types.h>
 
 #ifndef LIBCOLL_VECTOR_H
 #define LIBCOLL_VECTOR_H
@@ -54,5 +55,11 @@ void libcoll_vector_append(libcoll_vector_t *vector, void *value);
 void libcoll_vector_insert(libcoll_vector_t *vector, size_t index, void *value);
 
 void* libcoll_vector_remove(libcoll_vector_t *vector, size_t index);
+
+ssize_t libcoll_vector_index_of(libcoll_vector_t *vector, void *value);
+
+ssize_t libcoll_vector_last_index_of(libcoll_vector_t *vector, void *value);
+
+char libcoll_vector_contains(libcoll_vector_t *vector, void *value);
 
 #endif /* LIBCOLL_VECTOR_H */

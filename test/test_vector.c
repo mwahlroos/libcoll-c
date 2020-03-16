@@ -41,17 +41,32 @@ END_TEST
 
 START_TEST(vector_populate_and_retrieve)
 {
-    libcoll_vector_t *vector = libcoll_vector_init();
+    libcoll_vector_t *vector =
+        libcoll_vector_init_with_params(LIBCOLL_VECTOR_DEFAULT_INIT_CAPACITY, strcmp_wrapper);
 
     char *s1 = "Hello";
     char *s2 = "World";
+    char *s3 = "!";
 
     libcoll_vector_append(vector, s1);
     libcoll_vector_append(vector, s2);
+    libcoll_vector_append(vector, s3);
+    libcoll_vector_append(vector, s3);
 
-    ck_assert_uint_eq(vector->length, 2);
+    ck_assert_uint_eq(vector->length, 4);
+
+    ck_assert_int_eq(libcoll_vector_index_of(vector, "Hello"), 0);
+    ck_assert_int_eq(libcoll_vector_index_of(vector, "World"), 1);
+    ck_assert_int_eq(libcoll_vector_index_of(vector, "!"), 2);
+    ck_assert_int_eq(libcoll_vector_last_index_of(vector, "!"), 3);
+    ck_assert_int_eq(libcoll_vector_index_of(vector, "nonexistent"), -1);
+
     ck_assert(strcmp(s1, (char*) vector->contents[0]) == 0);
     ck_assert(strcmp(s2, (char*) vector->contents[1]) == 0);
+
+    ck_assert(libcoll_vector_contains(vector, "Hello"));
+    ck_assert(libcoll_vector_contains(vector, "!"));
+    ck_assert(!libcoll_vector_contains(vector, "nonexistent"));
 
     libcoll_vector_deinit(vector);
 }
@@ -81,7 +96,7 @@ START_TEST(vector_resize)
     ck_assert_uint_eq(vector->length, 3);
     ck_assert_uint_gt(vector->capacity, init_capacity);
 
-    // ck_assert(strcmp_wrapper(s3, (char*) vector->contents[2]) == 0);
+    ck_assert(strcmp_wrapper(s3, (char*) vector->contents[2]) == 0);
     libcoll_vector_deinit(vector);
 }
 END_TEST

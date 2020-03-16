@@ -26,6 +26,7 @@
  */
 
 #include <stdlib.h>
+#include <sys/types.h>
 #include "node.h"
 #include "vector.h"
 
@@ -86,6 +87,31 @@ void* libcoll_vector_remove(libcoll_vector_t *vector, size_t index)
     }
     vector->length--;
     return value;
+}
+
+ssize_t libcoll_vector_index_of(libcoll_vector_t *vector, void *value)
+{
+    for (size_t i=0; i<vector->length; i++) {
+        if (!vector->compare_function(value, vector->contents[i])) {
+            return i;
+        }
+    }
+    return -1;
+}
+
+ssize_t libcoll_vector_last_index_of(libcoll_vector_t *vector, void *value)
+{
+    for (size_t i=vector->length; i>0; i--) {
+        if (!vector->compare_function(value, vector->contents[i-1])) {
+            return i-1;
+        }
+    }
+    return -1;
+}
+
+char libcoll_vector_contains(libcoll_vector_t *vector, void *value)
+{
+    return libcoll_vector_index_of(vector, value) != -1;
 }
 
 /* internal functions */

@@ -7,8 +7,7 @@ This library aims to provide a simple and minimalistic API of generic
 collections.
 
 The library has been developed on Linux, although all of the code should be
-compatible with at least other POSIX platforms, and probably any platform
-that provides a C standard library.
+compatible with other POSIX platforms.
 
 Features
 --------
@@ -44,7 +43,8 @@ cast to the desired type.
 Dependencies
 ------------
 
-The library itself has no external dependencies beyond the C standard library.
+The library itself has no external dependencies beyond the C standard library
+and POSIX.
 
 A variant of ``make`` is needed for building from source. At least GNU make
 works; no other variants have been tested.

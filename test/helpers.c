@@ -79,8 +79,9 @@ static void print_hashmap_contents(const libcoll_hashmap_t *hm, FILE *out)
                 libcoll_hashmap_entry_t *entry =
                     (libcoll_hashmap_entry_t*) libcoll_linkedlist_iter_next(iter);
 
-                fprintf(out, " (%p -> %p)\n", entry->key, entry->value);
+                fprintf(out, " (%p -> %p)", entry->key, entry->value);
             }
+            fprintf(out, "\n");
 
             libcoll_linkedlist_drop_iter(iter);
         }

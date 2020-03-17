@@ -50,7 +50,7 @@ typedef struct libcoll_treemap_node {
 typedef struct libcoll_treemap {
     size_t size;
     libcoll_treemap_node_t *root;
-    int (*key_comparator)(void *key1, void *key2);
+    int (*key_comparator)(const void *key1, const void *key2);
 } libcoll_treemap_t;
 
 /* An iterator for iterating through the nodes of a tree in the order of
@@ -68,7 +68,7 @@ typedef struct libcoll_treemap_iter {
 
 libcoll_treemap_t* libcoll_treemap_init();
 
-libcoll_treemap_t* libcoll_treemap_init_with_comparator(int (*key_comparator_func)(void *key1, void *key2));
+libcoll_treemap_t* libcoll_treemap_init_with_comparator(int (*key_comparator_func)(const void *key1, const void *key2));
 
 void libcoll_treemap_deinit(libcoll_treemap_t *tree);
 

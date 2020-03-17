@@ -31,12 +31,12 @@
 
 /* helper functions for tests */
 
-static void print_hashmap_contents(libcoll_hashmap_t *hm);
+static void print_hashmap_contents(const libcoll_hashmap_t *hm);
 
 /* Compares two pointers by the integer value they point to.
  * Utility function for unit tests.
  */
-int intptrcmp(void *value1, void *value2)
+int intptrcmp(const void *value1, const void *value2)
 {
     int *a = (int*) value1;
     int *b = (int*) value2;
@@ -47,7 +47,7 @@ int intptrcmp(void *value1, void *value2)
  * Wrapper around strcmp that accepts void pointers, for comparing map keys
  * and/or values.
  */
-int strcmp_wrapper(void *value1, void *value2)
+int strcmp_wrapper(const void *value1, const void *value2)
 {
     char *s1 = (char*) value1;
     char *s2 = (char*) value2;
@@ -55,7 +55,7 @@ int strcmp_wrapper(void *value1, void *value2)
     return strcmp(s1, s2);
 }
 
-void print_hashmap(libcoll_hashmap_t *hm)
+void print_hashmap(const libcoll_hashmap_t *hm)
 {
     DEBUGF("Hashmap contents/capacity: %lu/%lu\n",
           libcoll_hashmap_get_size(hm),
@@ -65,7 +65,7 @@ void print_hashmap(libcoll_hashmap_t *hm)
     print_hashmap_contents(hm);
 }
 
-static void print_hashmap_contents(libcoll_hashmap_t *hm)
+static void print_hashmap_contents(const libcoll_hashmap_t *hm)
 {
     for (size_t i=0; i<hm->capacity; i++) {
         libcoll_linkedlist_t *collision_list = hm->buckets[i];

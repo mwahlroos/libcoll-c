@@ -45,7 +45,7 @@ libcoll_vector_t* libcoll_vector_init()
 
 libcoll_vector_t* libcoll_vector_init_with_params(
     size_t initial_capacity,
-    int (*compare_function)(void *value1, void *value2))
+    int (*compare_function)(const void *value1, const void *value2))
 {
     libcoll_vector_t *vector = malloc(sizeof(libcoll_vector_t));
     vector->capacity = initial_capacity;

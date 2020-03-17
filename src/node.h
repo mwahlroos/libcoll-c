@@ -36,6 +36,6 @@
  * A comparator function for nodes using the identity (i.e. memory address) of
  * the data as a basis of (in)equality.
  */
-int _libcoll_node_comparator_memaddr(void *value1, void *value2);
+int _libcoll_node_comparator_memaddr(const void *value1, const void *value2);
 
 #endif  /* LIBCOLL_NODE_H */

@@ -53,7 +53,7 @@
 #define COLOR_BLACK 1
 
 /* the default function for comparing stored keys, defined in comparator.c */
-extern int _libcoll_node_comparator_memaddr(void *key1, void *key2);
+extern int _libcoll_node_comparator_memaddr(const void *key1, const void *key2);
 
 /* define a null node for use as black leaf nodes in the red-black tree */
 static libcoll_treemap_node_t null_node_struct = {
@@ -98,7 +98,7 @@ libcoll_treemap_t* libcoll_treemap_init()
  *
  * Returns: a pointer to the newly allocated tree
  */
-libcoll_treemap_t* libcoll_treemap_init_with_comparator (int (*key_comparator)(void *key1, void *key2))
+libcoll_treemap_t* libcoll_treemap_init_with_comparator (int (*key_comparator)(const void *key1, const void *key2))
 {
     DEBUG("treemap initializing\n");
     libcoll_treemap_t *tree = (libcoll_treemap_t*) malloc(sizeof(libcoll_treemap_t));

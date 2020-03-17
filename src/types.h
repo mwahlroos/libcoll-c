@@ -31,8 +31,8 @@
 #define LIBCOLL_TYPES_H
 
 typedef struct libcoll_pair_voidptr {
-    void *a;
-    void *b;
+    const void *a;
+    const void *b;
 } libcoll_pair_voidptr_t;
 
 #endif /* LIBCOLL_TYPES_H */

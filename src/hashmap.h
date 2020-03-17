@@ -40,8 +40,8 @@
 #define LIBCOLL_HASHMAP_DEFAULT_MAX_LOAD_FACTOR   0.75f
 
 typedef struct libcoll_hashmap_entry {
-    void *key;
-    void *value;
+    const void *key;
+    const void *value;
 } libcoll_hashmap_entry_t;
 
 typedef struct libcoll_hashmap {
@@ -49,33 +49,34 @@ typedef struct libcoll_hashmap {
     size_t capacity;
     size_t total_entries;
     float max_load_factor;
-    unsigned long (*hash_code_function)(void *key);
-    int (*key_comparator_function)(void *key1, void *key2);
-    int (*value_comparator_function)(void *value1, void *value2);
+    unsigned long (*hash_code_function)(const void *key);
+    int (*key_comparator_function)(const void *key1, const void *key2);
+    int (*value_comparator_function)(const void *value1, const void *value2);
 } libcoll_hashmap_t;
 
 libcoll_hashmap_t* libcoll_hashmap_init();
 
-libcoll_hashmap_t* libcoll_hashmap_init_with_params(size_t init_capacity,
-                                 float max_load_factor,
-                                 unsigned long (*hash_code_function)(void*),
-                                 int (*key_comparator_function)(void *key1, void *key2),
-                                 int (*value_comparator_function)(void *value1, void *value2));
+libcoll_hashmap_t* libcoll_hashmap_init_with_params(
+        size_t init_capacity,
+        float max_load_factor,
+        unsigned long (*hash_code_function)(const void*),
+        int (*key_comparator_function)(const void *key1, const void *key2),
+        int (*value_comparator_function)(const void *value1, const void *value2));
 
 void libcoll_hashmap_deinit(libcoll_hashmap_t *hm);
 
-libcoll_map_insertion_result_t libcoll_hashmap_put(libcoll_hashmap_t *hm, void *key, void *value);
+libcoll_map_insertion_result_t libcoll_hashmap_put(libcoll_hashmap_t *hm, const void *key, const void *value);
 
-void* libcoll_hashmap_get(libcoll_hashmap_t *hm, void *key);
+void* libcoll_hashmap_get(const libcoll_hashmap_t *hm, const void *key);
 
-char libcoll_hashmap_contains(libcoll_hashmap_t *hm, void *key);
+char libcoll_hashmap_contains(const libcoll_hashmap_t *hm, const void *key);
 
-libcoll_map_removal_result_t libcoll_hashmap_remove(libcoll_hashmap_t *hm, void *key);
+libcoll_map_removal_result_t libcoll_hashmap_remove(libcoll_hashmap_t *hm, const void *key);
 
-size_t libcoll_hashmap_get_capacity(libcoll_hashmap_t *hm);
+size_t libcoll_hashmap_get_capacity(const libcoll_hashmap_t *hm);
 
-size_t libcoll_hashmap_get_size(libcoll_hashmap_t *hm);
+size_t libcoll_hashmap_get_size(const libcoll_hashmap_t *hm);
 
-char libcoll_hashmap_is_empty(libcoll_hashmap_t *hm);
+char libcoll_hashmap_is_empty(const libcoll_hashmap_t *hm);
 
 #endif  /* LIBCOLL_HASHMAP_H */

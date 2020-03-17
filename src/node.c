@@ -29,7 +29,7 @@
 
 #include "node.h"
 
-int _libcoll_node_comparator_memaddr(void *node1, void *node2)
+int _libcoll_node_comparator_memaddr(const void *node1, const void *node2)
 {
     int cmpval;
     if (node1 == node2) {

@@ -38,14 +38,14 @@ typedef struct libcoll_vector
     void **contents;
     size_t length;    /* the number of elements in the vector */
     size_t capacity;  /* the length of the memory currently allocated */
-    int (*compare_function)(void *value1, void *value2);
+    int (*compare_function)(const void *value1, const void *value2);
 } libcoll_vector_t;
 
 libcoll_vector_t* libcoll_vector_init();
 
 libcoll_vector_t* libcoll_vector_init_with_params(
     size_t initial_capacity,
-    int (*compare_function)(void *value1, void *value2)
+    int (*compare_function)(const void *value1, const void *value2)
 );
 
 void libcoll_vector_deinit(libcoll_vector_t *vector);

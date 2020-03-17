@@ -55,7 +55,7 @@ libcoll_linkedlist_t* libcoll_linkedlist_init()
     return libcoll_linkedlist_init_with_comparator(NULL);
 }
 
-libcoll_linkedlist_t* libcoll_linkedlist_init_with_comparator(int (*compare_function)(void *value1, void *value2))
+libcoll_linkedlist_t* libcoll_linkedlist_init_with_comparator(int (*compare_function)(const void *value1, const void *value2))
 {
     libcoll_linkedlist_t *list = (libcoll_linkedlist_t*) malloc(sizeof(libcoll_linkedlist_t));
     list->length = 0;

@@ -48,7 +48,7 @@ typedef struct libcoll_linkedlist {
     size_t length;
     libcoll_linkedlist_node_t *head;
     libcoll_linkedlist_node_t *tail;
-    int (*compare_function)(void *value1, void *value2);
+    int (*compare_function)(const void *value1, const void *value2);
 } libcoll_linkedlist_t;
 
 /*
@@ -86,7 +86,7 @@ libcoll_linkedlist_t* libcoll_linkedlist_init();
  * Returns: a pointer to the initialized list.
  */
 libcoll_linkedlist_t* libcoll_linkedlist_init_with_comparator(
-    int (*compare_function)(void *value1, void *value2)
+    int (*compare_function)(const void *value1, const void *value2)
 );
 
 /*

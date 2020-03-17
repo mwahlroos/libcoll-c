@@ -29,13 +29,13 @@
 #include <string.h>
 #include "hash.h"
 
-unsigned long hashcode_int(void *intptr)
+unsigned long hashcode_int(const void *intptr)
 {
     int val = *(int*) intptr;
     return (unsigned long) val;
 }
 
-unsigned long hashcode_str(void *str)
+unsigned long hashcode_str(const void *str)
 {
     /* use the djb2 algorithm for computing a hash code for a string;
      * shamelessly copied from http://www.cse.yorku.ca/~oz/hash.html
@@ -51,7 +51,7 @@ unsigned long hashcode_str(void *str)
     return hash;
 }
 
-unsigned long libcoll_hashcode_memaddr(void *value)
+unsigned long libcoll_hashcode_memaddr(const void *value)
 {
     return (unsigned long) value;
 }

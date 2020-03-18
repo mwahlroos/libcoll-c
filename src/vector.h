@@ -62,4 +62,8 @@ ssize_t libcoll_vector_last_index_of(libcoll_vector_t *vector, void *value);
 
 char libcoll_vector_contains(libcoll_vector_t *vector, void *value);
 
+size_t libcoll_vector_length(libcoll_vector_t *vector);
+
+char libcoll_vector_is_empty(libcoll_vector_t *vector);
+
 #endif /* LIBCOLL_VECTOR_H */

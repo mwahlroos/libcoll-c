@@ -114,6 +114,16 @@ char libcoll_vector_contains(libcoll_vector_t *vector, void *value)
     return libcoll_vector_index_of(vector, value) != -1;
 }
 
+size_t libcoll_vector_length(libcoll_vector_t *vector)
+{
+    return vector->length;
+}
+
+char libcoll_vector_is_empty(libcoll_vector_t *vector)
+{
+    return vector->length == 0;
+}
+
 /* internal functions */
 
 static void resize_if_full(libcoll_vector_t *vector)

@@ -7,8 +7,9 @@ CFLAGS_LIB= -shared -fPIC
 LDFLAGS_LIB= -shared
 SRC= src/*.c
 OBJS= *.o
-TEST_SRC= test/*.c
-TEST_PROG= libcoll_test
+TEST_SRC= test/test*.c test/helpers.c
+TEST_PROG= run_tests
+PERF_TEST_PROG= perftest
 LIB_BASENAME= libcoll.so
 LIB_SONAME= $(LIB_BASENAME).$(VER_MAJOR)
 LIB_FILENAME= $(LIB_SONAME).$(VER_MINOR)
@@ -50,6 +51,17 @@ valgrind: debugtests
 	# the output quite a bit less readable due to multiple reports)
 	LD_LIBRARY_PATH=. CK_FORK=no $(VALGRIND) $(VALGRIND_OPTS) ./$(TEST_PROG)
 
+perftests: so
+	$(CC) $(CFLAGS) -o $(PERF_TEST_PROG) -O2 test/perftest.c test/helpers.c -L. -lcoll
+
+runperftests: perftests
+	@echo
+	@echo Running performance tests...
+	@echo
+	LD_LIBRARY_PATH=. time ./perftest hashmap
+	@echo
+	LD_LIBRARY_PATH=. time ./perftest treemap
+
 clean:
-	rm -f $(OBJS) $(LIB_SONAME) $(LIB_FILENAME) $(LIB_BASENAME) $(TEST_PROG)
+	rm -f $(OBJS) $(LIB_SONAME) $(LIB_FILENAME) $(LIB_BASENAME) $(TEST_PROG) $(PERF_TEST_PROG)
 

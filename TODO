@@ -1,2 +1,4 @@
 - Add implementations e.g. for sets
 - Error checking
+- Separate headers at least into a separate directory so that they can be
+  packaged separately

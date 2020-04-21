@@ -1,5 +1,28 @@
 /*
  * linkedlist.h
+ *
+ * This file is part of libcoll, a generic collections library for C.
+ *
+ * Copyright (c) 2010-2020 Mika Wahlroos (mika.wahlroos@iki.fi)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #include <stdlib.h>
@@ -26,7 +49,7 @@ typedef struct libcoll_linkedlist {
     size_t length;
     libcoll_linkedlist_node_t *head;
     libcoll_linkedlist_node_t *tail;
-    int (*compare_function)(void *value1, void *value2);
+    int (*compare_function)(const void *value1, const void *value2);
 } libcoll_linkedlist_t;
 
 /*
@@ -64,7 +87,7 @@ libcoll_linkedlist_t* libcoll_linkedlist_init();
  * Returns: a pointer to the initialized list.
  */
 libcoll_linkedlist_t* libcoll_linkedlist_init_with_comparator(
-    int (*compare_function)(void *value1, void *value2)
+    int (*compare_function)(const void *value1, const void *value2)
 );
 
 /*
@@ -160,15 +183,15 @@ char libcoll_linkedlist_iter_has_previous(libcoll_linkedlist_iter_t *iter);
 
 /*
  * Advances the iterator over the next node on the list.
- * Returns: the node that was passed over, or NULL if none
+ * Returns: the value at the node that was passed over, or NULL if none
  */
-libcoll_linkedlist_node_t* libcoll_linkedlist_iter_next(libcoll_linkedlist_iter_t *iter);
+void* libcoll_linkedlist_iter_next(libcoll_linkedlist_iter_t *iter);
 
 /*
  * Moves the iterator over the previous node on the list.
- * Returns: the node that was passed over, or NULL if none
+ * Returns: the value at the node that was passed over, or NULL if none
  */
-libcoll_linkedlist_node_t* libcoll_linkedlist_iter_previous(libcoll_linkedlist_iter_t *iter);
+void* libcoll_linkedlist_iter_previous(libcoll_linkedlist_iter_t *iter);
 
 /*
  * Removes the node last returned by the given iterator.

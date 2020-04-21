@@ -1,18 +1,43 @@
 /*
  * hashmap.c
+ *
+ * This file is part of libcoll, a generic collections library for C.
+ *
+ * Copyright (c) 2010-2020 Mika Wahlroos (mika.wahlroos@iki.fi)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #include <stdlib.h>
 #include "hashmap.h"
+#include "hash.h"
+#include "map.h"
 #include "debug.h"
 
-static size_t hash(libcoll_hashmap_t *hm, unsigned long hashcode)
+static size_t hash(const libcoll_hashmap_t *hm, const size_t hashcode)
 {
     /* trivial distribution for now */
     return hashcode % hm->capacity;
 }
 
-static libcoll_linkedlist_t* find_collision_list(libcoll_hashmap_t *hm, void *key)
+static libcoll_linkedlist_t* find_collision_list(const libcoll_hashmap_t *hm, const void *key)
 {
     size_t slot_index = hash(hm, hm->hash_code_function(key));
     DEBUGF("find_collision_list: hashed to bucket %lu\n", slot_index);
@@ -21,7 +46,7 @@ static libcoll_linkedlist_t* find_collision_list(libcoll_hashmap_t *hm, void *ke
     return collision_list;
 }
 
-static libcoll_hashmap_entry_t* find_entry(libcoll_hashmap_t *hm, void *key)
+static libcoll_hashmap_entry_t* find_entry(const libcoll_hashmap_t *hm, const void *key)
 {
     libcoll_hashmap_entry_t *matching_entry = NULL;
     libcoll_linkedlist_t *collision_list = find_collision_list(hm, key);
@@ -29,12 +54,12 @@ static libcoll_hashmap_entry_t* find_entry(libcoll_hashmap_t *hm, void *key)
     if (NULL != collision_list) {
         DEBUGF("find_entry: found collision list for key %p\n", key);
         libcoll_linkedlist_iter_t *iter = libcoll_linkedlist_get_iter(collision_list);
+
         while (libcoll_linkedlist_iter_has_next(iter)) {
             libcoll_hashmap_entry_t *entry_tmp;
-            void *key_tmp;
+            const void *key_tmp;
 
-            libcoll_linkedlist_node_t *node = libcoll_linkedlist_iter_next(iter);
-            entry_tmp = (libcoll_hashmap_entry_t*) (node->value);
+            entry_tmp = libcoll_linkedlist_iter_next(iter);
             key_tmp = entry_tmp->key;
 
             if (hm->key_comparator_function(key, key_tmp) == 0) {
@@ -57,19 +82,15 @@ static libcoll_hashmap_entry_t* find_entry(libcoll_hashmap_t *hm, void *key)
  * Returns: an insertion result indicating whether an existing entry was
  * replaced or a new entry added, or whether there was an error.
  */
-static libcoll_map_insertion_result_t insert_new(libcoll_hashmap_t *hm, void *key, void *value)
+static libcoll_map_insertion_result_t insert_new(libcoll_hashmap_t *hm, const void *key, const void *value)
 {
     libcoll_map_insertion_result_t result;
 
     if (NULL == key) {
-        result.status = INSERTION_FAILED;
-        result.error = INVALID_KEY;
+        result.status = MAP_INSERTION_FAILED;
+        result.error = MAP_ERROR_INVALID_KEY;
         return result;
     }
-
-    libcoll_hashmap_entry_t *new_entry = malloc(sizeof(libcoll_hashmap_entry_t));
-    new_entry->key = key;
-    new_entry->value = value;
 
     size_t slot_index = hash(hm, hm->hash_code_function(key));
     DEBUGF("insert_new: inserting at bucket %lu\n", slot_index);
@@ -81,29 +102,33 @@ static libcoll_map_insertion_result_t insert_new(libcoll_hashmap_t *hm, void *ke
     }
 
     libcoll_linkedlist_iter_t *iter = libcoll_linkedlist_get_iter(collision_list);
-    libcoll_linkedlist_node_t *node;
+    libcoll_hashmap_entry_t *entry;
     char key_exists = 0;
 
-    while ((node = libcoll_linkedlist_iter_next(iter)) != NULL) {
-        libcoll_hashmap_entry_t *entry = (libcoll_hashmap_entry_t*) node->value;
+    while ((entry = (libcoll_hashmap_entry_t*) libcoll_linkedlist_iter_next(iter)) != NULL) {
         if (hm->key_comparator_function(key, entry->key) == 0) {
-            result.old_key = entry->key;
-            result.old_value = entry->value;
-            result.status = REPLACED;
-            result.error = NONE;
+            DEBUG("insert_new: replacing existing entry with matching key\n");
+            result.old_key = (void*) entry->key;
+            result.old_value = (void*) entry->value;
+            entry->key = key;
+            entry->value = value;
 
+            result.status = MAP_ENTRY_REPLACED;
+            result.error = MAP_ERROR_NONE;
             key_exists = 1;
-            free(entry);
-            node->value = new_entry;
             break;
         }
     }
     libcoll_linkedlist_drop_iter(iter);
 
     if (!key_exists) {
+        libcoll_hashmap_entry_t *new_entry = malloc(sizeof(libcoll_hashmap_entry_t));
+        new_entry->key = key;
+        new_entry->value = value;
+
         libcoll_linkedlist_append(collision_list, new_entry);
-        result.status = ADDED;
-        result.error = NONE;
+        result.status = MAP_ENTRY_ADDED;
+        result.error = MAP_ERROR_NONE;
     }
 
     return result;
@@ -122,18 +147,18 @@ static void resize(libcoll_hashmap_t *hm, size_t capacity)
         DEBUGF("resize: rehashing elements in bucket %lu\n", i);
         libcoll_linkedlist_t *list = old_buckets[i];
         if (NULL != list) {
+            DEBUG("resize: nonempty list\n");
             libcoll_linkedlist_iter_t *iter = libcoll_linkedlist_get_iter(list);
-            libcoll_linkedlist_node_t *listnode;
-            while ((listnode = libcoll_linkedlist_iter_next(iter)) != NULL) {
+            libcoll_hashmap_entry_t *old_entry;
+            while ((old_entry = libcoll_linkedlist_iter_next(iter)) != NULL) {
+                DEBUG("resize: reallocating list entry\n");
                 /* TODO: There shouldn't be any need to allocate all-new entries
                  * and freeing the old ones. Could be improved, requires a bit
                  * of reorganization.
                  */
-                libcoll_hashmap_entry_t *old_entry =
-                    (libcoll_hashmap_entry_t*) listnode->value;
-
                 libcoll_map_insertion_result_t res = insert_new(hm, old_entry->key, old_entry->value);
                 DEBUGF("resize: insertion result: status=%d, error=%d\n", res.status, res.error);
+
                 free(old_entry);
             }
             libcoll_linkedlist_drop_iter(iter);
@@ -152,11 +177,12 @@ libcoll_hashmap_t* libcoll_hashmap_init()
         NULL, NULL, NULL);
 }
 
-libcoll_hashmap_t* libcoll_hashmap_init_with_params(size_t init_capacity,
-                                           float max_load_factor,
-                                           unsigned long (*hash_code_function)(void*),
-                                           int (*key_comparator_function)(void *key1, void *key2),
-                                           int (*value_comparator_function)(void *value1, void *value2))
+libcoll_hashmap_t* libcoll_hashmap_init_with_params(
+        size_t init_capacity,
+        float max_load_factor,
+        unsigned long (*hash_code_function)(const void* key),
+        int (*key_comparator_function)(const void *key1, const void *key2),
+        int (*value_comparator_function)(const void *value1, const void *value2))
 {
     libcoll_hashmap_t *hm = (libcoll_hashmap_t*) malloc(sizeof(libcoll_hashmap_t));
 
@@ -164,7 +190,6 @@ libcoll_hashmap_t* libcoll_hashmap_init_with_params(size_t init_capacity,
      * which is useful in this case since it means unused buckets are
      * guaranteed to contain NULLs
      */
-//    libcoll_linkedlist_t *first_slot = (libcoll_linkedlist_t*) calloc(init_capacity, sizeof(libcoll_linkedlist_t*));
     libcoll_linkedlist_t **buckets = (libcoll_linkedlist_t**) calloc(init_capacity, sizeof(libcoll_linkedlist_t*));
 
     hm->buckets = buckets;
@@ -175,7 +200,7 @@ libcoll_hashmap_t* libcoll_hashmap_init_with_params(size_t init_capacity,
     if (NULL != hash_code_function) {
         hm->hash_code_function = hash_code_function;
     } else {
-        hm->hash_code_function = &_libcoll_node_hashvalue_memaddr;
+        hm->hash_code_function = &libcoll_hashcode_memaddr;
     }
 
     if (NULL != key_comparator_function) {
@@ -210,18 +235,18 @@ void libcoll_hashmap_deinit(libcoll_hashmap_t *hm)
 
                 free(entry);
             }
-            free(iter);
-            free(list);
+            libcoll_linkedlist_drop_iter(iter);
+            libcoll_linkedlist_deinit(list);
         }
     }
     free(hm->buckets);
     free(hm);
 }
 
-libcoll_map_insertion_result_t libcoll_hashmap_put(libcoll_hashmap_t *hm, void *key, void *value)
+libcoll_map_insertion_result_t libcoll_hashmap_put(libcoll_hashmap_t *hm, const void *key, const void *value)
 {
     libcoll_map_insertion_result_t result = insert_new(hm, key, value);
-    if (result.status == ADDED) {
+    if (result.status == MAP_ENTRY_ADDED) {
         hm->total_entries++;
         float load = (float) hm->total_entries / hm->capacity;
         if (load > hm->max_load_factor) {
@@ -232,35 +257,34 @@ libcoll_map_insertion_result_t libcoll_hashmap_put(libcoll_hashmap_t *hm, void *
     return result;
 }
 
-void* libcoll_hashmap_get(libcoll_hashmap_t *hm, void *key)
+void* libcoll_hashmap_get(const libcoll_hashmap_t *hm, const void *key)
 {
-    void *value = NULL;
     libcoll_hashmap_entry_t *entry = find_entry(hm, key);
 
     if (NULL != entry) {
-        value = entry->value;
+        return (void*) entry->value;
+    } else {
+        return NULL;
     }
-
-    return value;
 }
 
-char libcoll_hashmap_contains(libcoll_hashmap_t *hm, void *key)
+char libcoll_hashmap_contains(const libcoll_hashmap_t *hm, const void *key)
 {
     libcoll_hashmap_entry_t *entry = find_entry(hm, key);
     return NULL != entry;
 }
 
-libcoll_map_removal_result_t libcoll_hashmap_remove(libcoll_hashmap_t *hm, void *key)
+libcoll_map_removal_result_t libcoll_hashmap_remove(libcoll_hashmap_t *hm, const void *key)
 {
     libcoll_map_removal_result_t result;
 
     if (NULL == key) {
-        result.status = REMOVAL_FAILED;
-        result.error = INVALID_KEY;
+        result.status = MAP_REMOVAL_FAILED;
+        result.error = MAP_ERROR_INVALID_KEY;
         return result;
     }
 
-    result.status = NOT_FOUND;
+    result.status = KEY_NOT_FOUND;
     result.key = NULL;
     result.value = NULL;
 
@@ -271,12 +295,11 @@ libcoll_map_removal_result_t libcoll_hashmap_remove(libcoll_hashmap_t *hm, void 
     if (NULL != collision_list) {
         libcoll_linkedlist_iter_t *iter = libcoll_linkedlist_get_iter(collision_list);
         while (libcoll_linkedlist_iter_has_next(iter)) {
-            libcoll_linkedlist_node_t *node = libcoll_linkedlist_iter_next(iter);
-            libcoll_hashmap_entry_t *entry = (libcoll_hashmap_entry_t*) (node->value);
+            libcoll_hashmap_entry_t *entry = (libcoll_hashmap_entry_t*) libcoll_linkedlist_iter_next(iter);
             if (hm->key_comparator_function(key, entry->key) == 0) {
-                result.key = entry->key;
-                result.value = entry->value;
-                result.status = REMOVED;
+                result.key = (void*) entry->key;
+                result.value = (void*) entry->value;
+                result.status = MAP_ENTRY_REMOVED;
                 libcoll_linkedlist_iter_remove(iter);
                 hm->total_entries--;
                 free(entry);
@@ -288,17 +311,17 @@ libcoll_map_removal_result_t libcoll_hashmap_remove(libcoll_hashmap_t *hm, void 
     return result;
 }
 
-size_t libcoll_hashmap_get_capacity(libcoll_hashmap_t *hm)
+size_t libcoll_hashmap_get_capacity(const libcoll_hashmap_t *hm)
 {
     return hm->capacity;
 }
 
-size_t libcoll_hashmap_get_size(libcoll_hashmap_t *hm)
+size_t libcoll_hashmap_get_size(const libcoll_hashmap_t *hm)
 {
     return hm->total_entries;
 }
 
-char libcoll_hashmap_is_empty(libcoll_hashmap_t *hm)
+char libcoll_hashmap_is_empty(const libcoll_hashmap_t *hm)
 {
     return hm->total_entries == 0;
 }

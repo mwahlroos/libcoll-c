@@ -1,6 +1,8 @@
 /*
  * treemap.c
  *
+ * This file is part of libcoll, a generic collections library for C.
+ *
  * An implementation of a generic key-value map as a binary search tree.
  *
  * The tree provides a data structure for mapping between keys and values;
@@ -19,7 +21,26 @@
  * red-black tree.  Most of the algorithms are adaptations from the book
  * Introduction to Algorithms, 2nd ed., by Cormen, Leiserson, Rivest and Stein.
  *
- * Author: Mika Wahlroos 2011
+ * Copyright (c) 2010-2020 Mika Wahlroos (mika.wahlroos@iki.fi)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. *
  */
 
 #include <stdlib.h>
@@ -32,7 +53,7 @@
 #define COLOR_BLACK 1
 
 /* the default function for comparing stored keys, defined in comparator.c */
-extern int _libcoll_node_comparator_memaddr(void *key1, void *key2);
+extern int _libcoll_node_comparator_memaddr(const void *key1, const void *key2);
 
 /* define a null node for use as black leaf nodes in the red-black tree */
 static libcoll_treemap_node_t null_node_struct = {
@@ -77,7 +98,7 @@ libcoll_treemap_t* libcoll_treemap_init()
  *
  * Returns: a pointer to the newly allocated tree
  */
-libcoll_treemap_t* libcoll_treemap_init_with_comparator (int (*key_comparator)(void *key1, void *key2))
+libcoll_treemap_t* libcoll_treemap_init_with_comparator (int (*key_comparator)(const void *key1, const void *key2))
 {
     DEBUG("treemap initializing\n");
     libcoll_treemap_t *tree = (libcoll_treemap_t*) malloc(sizeof(libcoll_treemap_t));

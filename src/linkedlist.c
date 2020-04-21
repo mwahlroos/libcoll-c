@@ -1,5 +1,28 @@
 /*
  * linkedlist.c
+ *
+ * This file is part of libcoll, a generic collections library for C.
+ *
+ * Copyright (c) 2010-2020 Mika Wahlroos (mika.wahlroos@iki.fi)
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining
+ * a copy of this software and associated documentation files (the
+ * "Software"), to deal in the Software without restriction, including
+ * without limitation the rights to use, copy, modify, merge, publish,
+ * distribute, sublicense, and/or sell copies of the Software, and to
+ * permit persons to whom the Software is furnished to do so, subject to
+ * the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be
+ * included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+ * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+ * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+ * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+ * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
 #include <stdlib.h>
@@ -33,7 +56,7 @@ libcoll_linkedlist_t* libcoll_linkedlist_init()
     return libcoll_linkedlist_init_with_comparator(NULL);
 }
 
-libcoll_linkedlist_t* libcoll_linkedlist_init_with_comparator(int (*compare_function)(void *value1, void *value2))
+libcoll_linkedlist_t* libcoll_linkedlist_init_with_comparator(int (*compare_function)(const void *value1, const void *value2))
 {
     libcoll_linkedlist_t *list = (libcoll_linkedlist_t*) malloc(sizeof(libcoll_linkedlist_t));
     list->length = 0;
@@ -170,7 +193,7 @@ char libcoll_linkedlist_remove(libcoll_linkedlist_t *list, void *value)
     libcoll_linkedlist_iter_t *iter = libcoll_linkedlist_get_iter(list);
 
     while (libcoll_linkedlist_iter_has_next(iter) && !success) {
-        void *entry_value = libcoll_linkedlist_iter_next(iter)->value;
+        void *entry_value = libcoll_linkedlist_iter_next(iter);
         if (list->compare_function(value, entry_value) == 0) {
             libcoll_linkedlist_iter_remove(iter);
             success = 1;
@@ -223,19 +246,23 @@ char libcoll_linkedlist_iter_has_previous(libcoll_linkedlist_iter_t *iter)
     return (NULL != iter->previous);
 }
 
-libcoll_linkedlist_node_t* libcoll_linkedlist_iter_next(libcoll_linkedlist_iter_t *iter)
+void* libcoll_linkedlist_iter_next(libcoll_linkedlist_iter_t *iter)
 {
     libcoll_linkedlist_node_t *node = iter->next;
+
+    iter->last_skip_forward = 1;
+    iter->last_returned = node;
+
     if (NULL != node) {
         iter->next = node->next;
         iter->previous = node;
+        return node->value;
+    } else {
+        return NULL;
     }
-    iter->last_returned = node;
-    iter->last_skip_forward = 1;
-    return node;
 }
 
-libcoll_linkedlist_node_t* libcoll_linkedlist_iter_previous(libcoll_linkedlist_iter_t *iter)
+void* libcoll_linkedlist_iter_previous(libcoll_linkedlist_iter_t *iter)
 {
     libcoll_linkedlist_node_t *node = iter->previous;
     if (NULL != node) {
@@ -244,7 +271,7 @@ libcoll_linkedlist_node_t* libcoll_linkedlist_iter_previous(libcoll_linkedlist_i
     }
     iter->last_returned = node;
     iter->last_skip_forward = 0;
-    return node;
+    return node->value;
 }
 
 libcoll_list_removal_result_t libcoll_linkedlist_iter_remove(libcoll_linkedlist_iter_t *iter)

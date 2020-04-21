@@ -7,15 +7,20 @@ This library aims to provide a simple and minimalistic API of generic
 collections.
 
 The library has been developed on Linux, although all of the code should be
-compatible with at least other POSIX platforms, and probably any platform
-that provides a C standard library.
+compatible with other POSIX platforms.
 
 Features
 --------
 
-* Currently supported collection types:
-  - treemap, hashmap, linked list
-* List types are double-linked, and with iterators
+The library currently supports the following collection types:
+
+* treemap
+* hashmap
+* linked list (doubly-linked, with iterators)
+* vector
+
+General features:
+
 * Arbitrary pointer types accepted as values
 * Arbitrary pointer types accepted as keys for map-style collections
 
@@ -38,7 +43,18 @@ cast to the desired type.
 Dependencies
 ------------
 
-None, other than the C standard library.
+The library itself has no external dependencies beyond the C standard library
+and POSIX.
+
+A variant of ``make`` is needed for building from source. At least GNU make
+works; no other variants have been tested.
+
+GCC is needed for compiling. Other C compilers should work but have not been
+tested.
+
+For building and running automated tests, the `Check`_ framework is required.
+
+.. _Check: https://libcheck.github.io/check/
 
 Other requirements
 ------------------

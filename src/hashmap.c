@@ -26,9 +26,11 @@
  */
 
 #include <stdlib.h>
-#include "hashmap.h"
+
 #include "hash.h"
+#include "hashmap.h"
 #include "map.h"
+
 #include "debug.h"
 
 static size_t hash(const libcoll_hashmap_t *hm, const size_t hashcode)

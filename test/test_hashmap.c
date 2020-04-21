@@ -26,11 +26,14 @@
  */
 
 #include <check.h>
-#include "test_hashmap.h"
+
 #include "helpers.h"
-#include "../src/debug.h"
+#include "test_hashmap.h"
+
 #include "hash.h"
 #include "hashmap.h"
+
+#include "../src/debug.h"
 
 START_TEST(hashmap_create)
 {

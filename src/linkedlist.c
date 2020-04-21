@@ -25,9 +25,11 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+
 #include "linkedlist.h"
+
 #include "debug.h"
 
 static void _libcoll_linkedlist_remove_node(libcoll_linkedlist_t *list, libcoll_linkedlist_node_t *node)

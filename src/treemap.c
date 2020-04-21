@@ -43,10 +43,12 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. *
  */
 
-#include <stdlib.h>
 #include <stdbool.h>
-#include "treemap.h"
+#include <stdlib.h>
+
 #include "node.h"
+#include "treemap.h"
+
 #include "debug.h"
 
 #define COLOR_RED   0

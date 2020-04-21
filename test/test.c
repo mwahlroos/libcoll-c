@@ -26,10 +26,12 @@
  */
 
 #include <check.h>
+
 #include "test_hashmap.h"
 #include "test_linkedlist.h"
 #include "test_vector.h"
 #include "helpers.h"
+
 #include "../src/debug.h"
 
 

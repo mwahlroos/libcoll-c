@@ -26,7 +26,7 @@
  */
 
 #include <stdlib.h>
-#include <sys/types.h>
+#include <sys/types.h>  /* for ssize_t */
 
 #ifndef LIBCOLL_VECTOR_H
 #define LIBCOLL_VECTOR_H

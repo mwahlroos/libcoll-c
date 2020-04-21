@@ -26,7 +26,8 @@
  */
 
 #include <stdlib.h>
-#include <sys/types.h>
+#include <sys/types.h>  /* for ssize_t */
+
 #include "node.h"
 #include "vector.h"
 

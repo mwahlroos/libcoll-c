@@ -26,9 +26,11 @@
  */
 
 #include <check.h>
+
+#include "test_linkedlist.h"
+
 #include "linkedlist.h"
 #include "../src/debug.h"
-#include "test_linkedlist.h"
 
 START_TEST(linkedlist_create)
 {

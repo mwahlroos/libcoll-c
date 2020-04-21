@@ -30,8 +30,8 @@
 #include "test_hashmap.h"
 #include "helpers.h"
 #include "../src/debug.h"
-#include "../src/hash.h"
-#include "../src/hashmap.h"
+#include "hash.h"
+#include "hashmap.h"
 
 static void print_hashmap_if_debug(const libcoll_hashmap_t *hm)
 {

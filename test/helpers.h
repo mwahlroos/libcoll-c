@@ -26,7 +26,7 @@
  */
 
 #include <stdio.h>
-#include "../src/hashmap.h"
+#include "hashmap.h"
 
 /* helper functions for tests */
 

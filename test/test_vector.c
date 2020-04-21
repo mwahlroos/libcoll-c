@@ -27,7 +27,7 @@
 
 #include <check.h>
 #include "helpers.h"
-#include "../src/vector.h"
+#include "vector.h"
 #include "../src/debug.h"
 
 START_TEST(vector_create)

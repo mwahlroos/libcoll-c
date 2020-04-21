@@ -2,10 +2,8 @@ VER_MAJOR=0
 VER_MINOR=0
 CC=gcc
 LD=ld
-CFLAGS= -std=c99 -Wall -Wextra -pedantic
-CFLAGS_LIB= -shared -fPIC
-LDFLAGS_LIB= -shared
 SRC= src/*.c
+INCLUDE_DIR= include
 OBJS= *.o
 TEST_SRC= test/test*.c test/helpers.c
 TEST_PROG= run_tests
@@ -13,17 +11,22 @@ PERF_TEST_PROG= perftest
 LIB_BASENAME= libcoll.so
 LIB_SONAME= $(LIB_BASENAME).$(VER_MAJOR)
 LIB_FILENAME= $(LIB_SONAME).$(VER_MINOR)
+CFLAGS= -std=c99 -Wall -Wextra -pedantic -I$(INCLUDE_DIR)
+CFLAGS_DEBUG= -DENABLE_DEBUG=1 -Og -g
+CFLAGS_PROD= -O2
+CFLAGS_LIB= -shared -fPIC
+LDFLAGS_LIB= -shared
 VALGRIND=valgrind
 VALGRIND_OPTS= --leak-check=full --trace-children=yes
 
 so:
-	$(CC) $(CFLAGS) $(CFLAGS_LIB) -O2 -c $(SRC)
+	$(CC) $(CFLAGS) $(CFLAGS_LIB) $(CFLAGS_PROD) -c $(SRC)
 	$(LD) $(LDFLAGS_LIB) -soname $(LIB_SONAME) -o $(LIB_FILENAME) -lc $(OBJS)
 	ln -fs $(LIB_FILENAME) $(LIB_SONAME)
 	ln -fs $(LIB_SONAME) $(LIB_BASENAME)
 
 debug:
-	$(CC) $(CFLAGS) $(CFLAGS_LIB) -DENABLE_DEBUG=1 -c -g $(SRC)
+	$(CC) $(CFLAGS) $(CFLAGS_LIB) $(CFLAGS_DEBUG) -c $(SRC)
 	$(LD) $(LDFLAGS_LIB) -soname $(LIB_SONAME) -o $(LIB_FILENAME) -lc $(OBJS)
 	ln -fs $(LIB_FILENAME) $(LIB_SONAME)
 	ln -fs $(LIB_SONAME) $(LIB_BASENAME)
@@ -32,7 +35,7 @@ tests: so
 	$(CC) $(CFLAGS) $(TEST_SRC) -o $(TEST_PROG) -L. -lcoll -lcheck
 
 debugtests: debug
-	$(CC) $(CFLAGS) $(TEST_SRC) -g -DENABLE_DEBUG=1 -o $(TEST_PROG) -L. -lcoll -lcheck
+	$(CC) $(CFLAGS) $(TEST_SRC) $(CFLAGS_DEBUG) -o $(TEST_PROG) -L. -lcoll -lcheck
 
 runtests: tests
 	@echo

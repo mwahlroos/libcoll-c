@@ -25,7 +25,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "../src/hashmap.h"
+#include "hashmap.h"
 
 /* helper functions for tests */
 

@@ -2,16 +2,17 @@ VER_MAJOR=0
 VER_MINOR=0
 CC=gcc
 LD=ld
-CFLAGS= -std=c99 -Wall -Wextra -pedantic
-CFLAGS_LIB= -shared -fPIC
-LDFLAGS_LIB= -shared
 SRC= src/*.c
+INCLUDE_DIR= include
 OBJS= *.o
 TEST_SRC= test/*.c
 TEST_PROG= libcoll_test
 LIB_BASENAME= libcoll.so
 LIB_SONAME= $(LIB_BASENAME).$(VER_MAJOR)
 LIB_FILENAME= $(LIB_SONAME).$(VER_MINOR)
+CFLAGS= -std=c99 -Wall -Wextra -pedantic -I$(INCLUDE_DIR)
+CFLAGS_LIB= -shared -fPIC
+LDFLAGS_LIB= -shared
 VALGRIND=valgrind
 VALGRIND_OPTS= --leak-check=full --trace-children=yes
 

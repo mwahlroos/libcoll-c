@@ -26,7 +26,7 @@
  */
 
 #include <check.h>
-#include "../src/linkedlist.h"
+#include "linkedlist.h"
 #include "../src/debug.h"
 #include "test_linkedlist.h"
 

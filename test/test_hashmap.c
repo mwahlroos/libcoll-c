@@ -29,8 +29,8 @@
 #include "test_hashmap.h"
 #include "helpers.h"
 #include "../src/debug.h"
-#include "../src/hash.h"
-#include "../src/hashmap.h"
+#include "hash.h"
+#include "hashmap.h"
 
 START_TEST(hashmap_create)
 {

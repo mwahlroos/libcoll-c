@@ -27,7 +27,7 @@
 
 #include <check.h>
 
-#include "helpers.h"
+#include "comparators.h"
 #include "test_treemap.h"
 
 #include "treemap.h"

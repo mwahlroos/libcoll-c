@@ -33,6 +33,8 @@
 #include "test_vector.h"
 #include "helpers.h"
 
+#include "comparators.h"  /* for the comparator sanity tests */
+
 #include "../src/debug.h"
 
 

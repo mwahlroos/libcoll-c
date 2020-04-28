@@ -27,7 +27,7 @@
 
 #include <check.h>
 
-#include "helpers.h"
+#include "comparators.h"
 #include "vector.h"
 
 #include "../src/debug.h"

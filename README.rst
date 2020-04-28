@@ -23,6 +23,8 @@ General features:
 
 * Arbitrary pointer types accepted as values
 * Arbitrary pointer types accepted as keys for map-style collections
+* Custom comparators can be defined for comparing stored keys/values by value.
+  Comparators for some common types (e.g. ``int``, ``char*`` are provided.)
 
 Building
 --------
@@ -79,5 +81,5 @@ To be honest, this is a hobby project. If you find it useful or educational in
 any way, cool, but it was written mostly to teach myself a bit more C and to
 explore the challenges of designing APIs without automatic memory management.
 
-The library is a work in progress, and may see both API/ABI changes and added
-collection types in the future.
+The library is a work in progress, and **neither the API nor the ABI are stable
+at the moment**.

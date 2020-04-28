@@ -51,7 +51,6 @@ static int string_counts_values_sorted_by_key[10] = { 4, 1, 0, 2, 3, 5, 6, 8, 7,
 
 void _setup_string_counts_treemap(void)
 {
-    DEBUG("----- test setup called\n");
     string_counts = libcoll_treemap_init_with_comparator(strcmp_wrapper);
 
     /*
@@ -74,8 +73,6 @@ void _setup_string_counts_treemap(void)
 
 void _teardown_string_counts_treemap(void)
 {
-    DEBUG("----- test teardown called\n");
-
     /* clean up by freeing any remaining keys and values */
     libcoll_treemap_iter_t *iter = libcoll_treemap_get_iterator(string_counts);
 

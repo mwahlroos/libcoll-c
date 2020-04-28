@@ -98,7 +98,7 @@ START_TEST(treemap_populate_and_retrieve)
         libcoll_treemap_node_t *node = libcoll_treemap_get(counts, key);
         int *retrieved_value = node->value;
 
-        DEBUGF("Hashmap: retrieved %d with key %s; expected %d\n",
+        DEBUGF("Treemap: retrieved %d with key %s; expected %d\n",
                *retrieved_value, key, expected_value
         );
 

@@ -30,6 +30,7 @@
 #include "helpers.h"
 #include "test_hashmap.h"
 
+#include "comparators.h"
 #include "hash.h"
 #include "hashmap.h"
 

@@ -1,5 +1,7 @@
 /*
- * Unit tests for the libcoll library.
+ * comparators.h
+ *
+ * Functions that can be used as comparators in various collections.
  *
  * This file is part of libcoll, a generic collections library for C.
  *
@@ -25,8 +27,15 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "hashmap.h"
+/*
+ * Comparator for integer values.
+ * 
+ * The pointers are treated as pointers to integers, and the comparison
+ * is done based on the values they point to.
+ */
+int intptrcmp(const void *value1, const void *value2);
 
-/* helper functions for tests */
-
-void print_hashmap(const libcoll_hashmap_t *hm);
+/*
+ * Comparator for string values.
+ */
+int strcmp_wrapper(const void *value1, const void *value2);

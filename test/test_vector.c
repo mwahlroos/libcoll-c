@@ -27,6 +27,8 @@
 
 #include <check.h>
 
+#include "test_vector.h"
+
 #include "comparators.h"
 #include "vector.h"
 

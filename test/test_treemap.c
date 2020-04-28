@@ -27,13 +27,69 @@
 
 #include <check.h>
 
-#include "comparators.h"
 #include "test_treemap.h"
 
+#include "comparators.h"
 #include "treemap.h"
 #include "types.h"
 
 #include "../src/debug.h"
+
+/* test data */
+libcoll_treemap_t *string_counts;
+
+static const size_t TEST_KEY_COUNT = 10;
+
+static char *string_counts_keys[] = { "axe", "asdf", "bar", "foo", "alter ego", "quine",
+                                      "ra", "rust", "rendezvous", "xylophone" };
+static char *string_counts_keys_sorted[] = { "alter ego", "asdf", "axe", "bar", "foo", "quine",
+                                             "ra", "rendezvous", "rust", "xylophone" };
+static int string_counts_values[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+static int string_counts_values_sorted_by_key[10] = { 4, 1, 0, 2, 3, 5, 6, 8, 7, 9 };
+
+/* test fixtures, run once per test */
+
+void _setup_string_counts_treemap(void)
+{
+    DEBUG("----- test setup called\n");
+    string_counts = libcoll_treemap_init_with_comparator(strcmp_wrapper);
+
+    /*
+     * Allocate and insert keys and values.
+     *
+     * malloc()ing the keys and values wouldn't really be necessary here and
+     * inserting stack-allocated ones would do okay in this test case, but
+     * duplicating the keys and values allows for testing that key comparison
+     * using the custom comparator works properly.
+     */
+    for (size_t i=0; i<TEST_KEY_COUNT; i++) {
+        char *key = malloc((strlen(string_counts_keys[i]) + 1) * sizeof(char));
+        strcpy(key, string_counts_keys[i]);
+        int *value = malloc(sizeof(int));
+
+        *value = string_counts_values[i];
+        libcoll_treemap_add(string_counts, key, value);
+    }
+}
+
+void _teardown_string_counts_treemap(void)
+{
+    DEBUG("----- test teardown called\n");
+
+    /* clean up by freeing any remaining keys and values */
+    libcoll_treemap_iter_t *iter = libcoll_treemap_get_iterator(string_counts);
+
+    while (libcoll_treemap_has_next(iter)) {
+        libcoll_treemap_next(iter);
+        libcoll_pair_voidptr_t entry = libcoll_treemap_remove_last_traversed(iter);
+        free(entry.a);
+        free(entry.b);
+    }
+
+    libcoll_treemap_drop_iterator(iter);
+
+    libcoll_treemap_deinit(string_counts);
+}
 
 START_TEST(treemap_create)
 {
@@ -46,56 +102,27 @@ START_TEST(treemap_create)
 }
 END_TEST
 
-START_TEST(treemap_populate_and_retrieve)
+START_TEST(treemap_retrieve_and_remove)
 {
-    DEBUG("\n*** Starting treemap_populate_and_retrieve\n");
-    libcoll_treemap_t *counts = libcoll_treemap_init();
-    counts->key_comparator = strcmp_wrapper;
+    DEBUG("\n*** Starting treemap_retrieve_and_remove\n");
 
-    const size_t test_key_count = 10;
+    size_t member_count = libcoll_treemap_get_size(string_counts);
 
-    char *keys[] = { "axe", "asdf", "bar", "foo", "alter ego", "quine",
-                   "ra", "rust", "rendezvous", "xylophone" };
-
-    int values[test_key_count];
-    for (size_t i=0; i<test_key_count; i++) {
-        values[i] = (int) i;
-    }
-
-    /*
-     * Generate values to insert.
-     *
-     * malloc()ing the keys and values wouldn't really be necessary here and
-     * inserting stack-allocated ones would do okay in this test case, but
-     * duplicating the keys and values allows for testing that key comparison
-     * using the custom comparator works properly.
-     */
-    for (size_t i=0; i<test_key_count; i++) {
-        char *key = malloc((strlen(keys[i]) + 1) * sizeof(char));
-        strcpy(key, keys[i]);
-        int *value = malloc(sizeof(int));
-
-        *value = values[i];
-        libcoll_treemap_add(counts, key, value);
-    }
-
-    size_t member_count = libcoll_treemap_get_size(counts);
-
-    ck_assert_uint_eq(member_count, test_key_count);
+    ck_assert_uint_eq(member_count, TEST_KEY_COUNT);
 
     /* test retrieving a nonexisting value */
     char *invalid_key = "xkcd";
-    ck_assert(!libcoll_treemap_contains(counts, invalid_key));
-    ck_assert_ptr_null(libcoll_treemap_get(counts, invalid_key));
+    ck_assert(!libcoll_treemap_contains(string_counts, invalid_key));
+    ck_assert_ptr_null(libcoll_treemap_get(string_counts, invalid_key));
 
     /* test retrieving and removing valid values */
-    for (size_t i=0; i<test_key_count; i++) {
-        char *key = keys[i];
-        int expected_value = values[i];
+    for (size_t i=0; i<TEST_KEY_COUNT; i++) {
+        char *key = string_counts_keys[i];
+        int expected_value = string_counts_values[i];
 
-        ck_assert(libcoll_treemap_contains(counts, key));
+        ck_assert(libcoll_treemap_contains(string_counts, key));
 
-        libcoll_treemap_node_t *node = libcoll_treemap_get(counts, key);
+        libcoll_treemap_node_t *node = libcoll_treemap_get(string_counts, key);
         int *retrieved_value = node->value;
 
         DEBUGF("Treemap: retrieved %d with key %s; expected %d\n",
@@ -105,27 +132,54 @@ START_TEST(treemap_populate_and_retrieve)
         ck_assert_ptr_nonnull(retrieved_value);
         ck_assert_int_eq(*retrieved_value, expected_value);
 
-        libcoll_pair_voidptr_t entry = libcoll_treemap_remove(counts, key);
+        libcoll_pair_voidptr_t entry = libcoll_treemap_remove(string_counts, key);
         ck_assert_str_eq(key, (char*) entry.a);
         ck_assert_int_eq(expected_value, *(int*) entry.b);
 
         free(entry.a);
         free(entry.b);
 
-        ck_assert_uint_eq(libcoll_treemap_get_size(counts), --member_count);
+        ck_assert_uint_eq(libcoll_treemap_get_size(string_counts), --member_count);
     }
-
-    libcoll_treemap_deinit(counts);
 }
 END_TEST
+
+/*
+ * Tests that the treemap returns all expected keys and in expected order.
+ */
+START_TEST(treemap_iterate)
+{
+    DEBUG("\n*** Starting treemap_iterate\n");
+
+    libcoll_treemap_iter_t *iter = libcoll_treemap_get_iterator(string_counts);
+    for (size_t i=0; i<TEST_KEY_COUNT; i++) {
+        char *expected_key = string_counts_keys_sorted[i];
+        int expected_value = string_counts_values_sorted_by_key[i];
+
+        ck_assert(libcoll_treemap_has_next(iter));
+
+        libcoll_treemap_node_t *node = libcoll_treemap_next(iter);
+        ck_assert_str_eq(expected_key, (char*) node->key);
+        ck_assert_int_eq(expected_value, *(int*) node->value);
+    }
+
+    ck_assert(!libcoll_treemap_has_next(iter));
+
+    libcoll_treemap_drop_iterator(iter);
+}
 
 TCase* create_treemap_tests(void)
 {
     TCase *tc_core;
     tc_core = tcase_create("treemap_core");
 
+    tcase_add_checked_fixture(tc_core,
+                              _setup_string_counts_treemap,
+                              _teardown_string_counts_treemap);
+
     tcase_add_test(tc_core, treemap_create);
-    tcase_add_test(tc_core, treemap_populate_and_retrieve);
+    tcase_add_test(tc_core, treemap_retrieve_and_remove);
+    tcase_add_test(tc_core, treemap_iterate);
 
     return tc_core;
 }

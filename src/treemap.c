@@ -525,11 +525,17 @@ libcoll_treemap_node_t* libcoll_treemap_previous(libcoll_treemap_iter_t *iterato
  *
  * Params:
  *      iterator -- the iterator whose last traversed node is to be removed
+ *
+ * Returns a struct that contains a pointer to the key as the first member
+ * and a pointer to the value as the second member.
  */
-void libcoll_treemap_remove_last_traversed(libcoll_treemap_iter_t *iterator)
+libcoll_pair_voidptr_t libcoll_treemap_remove_last_traversed(libcoll_treemap_iter_t *iterator)
 {
+    libcoll_pair_voidptr_t pair;
     if (NULL_NODE != iterator->last_traversed_node) {
         libcoll_treemap_node_t *to_be_removed = iterator->last_traversed_node;
+        pair.a = to_be_removed->key;
+        pair.b = to_be_removed->value;
 
         if (iterator->last_traversed_node == iterator->previous) {
             iterator->previous = libcoll_treemap_get_predecessor(iterator->previous);
@@ -539,7 +545,11 @@ void libcoll_treemap_remove_last_traversed(libcoll_treemap_iter_t *iterator)
             iterator->last_traversed_node = NULL_NODE;
         }
         remove_node(iterator->tree, to_be_removed);
+    } else {
+        pair.a = NULL;
+        pair.b = NULL;
     }
+    return pair;
 }
 
 /*

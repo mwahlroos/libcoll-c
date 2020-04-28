@@ -105,7 +105,7 @@ bool libcoll_treemap_has_previous(libcoll_treemap_iter_t *iterator);
 
 libcoll_treemap_node_t* libcoll_treemap_previous(libcoll_treemap_iter_t *iterator);
 
-void libcoll_treemap_remove_last_traversed(libcoll_treemap_iter_t *iterator);
+libcoll_pair_voidptr_t libcoll_treemap_remove_last_traversed(libcoll_treemap_iter_t *iterator);
 
 bool _libcoll_treemap_verify_red_black_conditions(libcoll_treemap_t *tree);
 

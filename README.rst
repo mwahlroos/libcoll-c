@@ -23,6 +23,8 @@ General features:
 
 * Arbitrary pointer types accepted as values
 * Arbitrary pointer types accepted as keys for map-style collections
+* Custom comparators can be defined for comparing stored keys/values by value.
+  Comparators for some common types (e.g. ``int``, ``char*`` are provided.)
 
 Building
 --------

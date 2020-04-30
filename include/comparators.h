@@ -39,3 +39,9 @@ int intptrcmp(const void *value1, const void *value2);
  * Comparator for string values.
  */
 int strcmp_wrapper(const void *value1, const void *value2);
+
+/*
+ * A comparator function for keys using the identity (i.e. memory address) of
+ * the data as a basis of (in)equality.
+ */
+int libcoll_memaddrcmp(const void *value1, const void *value2);

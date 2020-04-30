@@ -28,7 +28,7 @@
 #include <stdlib.h>
 #include <sys/types.h>  /* for ssize_t */
 
-#include "node.h"
+#include "comparators.h"
 #include "vector.h"
 
 /* declarations of internal functions */
@@ -40,7 +40,7 @@ libcoll_vector_t* libcoll_vector_init()
 {
     return libcoll_vector_init_with_params(
         LIBCOLL_VECTOR_DEFAULT_INIT_CAPACITY,
-        _libcoll_node_comparator_memaddr
+        libcoll_memaddrcmp
     );
 }
 

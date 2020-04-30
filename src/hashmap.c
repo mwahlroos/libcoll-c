@@ -27,6 +27,7 @@
 
 #include <stdlib.h>
 
+#include "comparators.h"
 #include "hash.h"
 #include "hashmap.h"
 #include "map.h"
@@ -208,13 +209,13 @@ libcoll_hashmap_t* libcoll_hashmap_init_with_params(
     if (NULL != key_comparator_function) {
         hm->key_comparator_function = key_comparator_function;
     } else {
-        hm->key_comparator_function = &_libcoll_node_comparator_memaddr;
+        hm->key_comparator_function = &libcoll_memaddrcmp;
     }
 
     if (NULL != value_comparator_function) {
         hm->value_comparator_function = value_comparator_function;
     } else {
-        hm->value_comparator_function = &_libcoll_node_comparator_memaddr;
+        hm->value_comparator_function = &libcoll_memaddrcmp;
     }
 
     return hm;

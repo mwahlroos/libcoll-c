@@ -46,16 +46,13 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
-#include "node.h"
+#include "comparators.h"
 #include "treemap.h"
 
 #include "debug.h"
 
 #define COLOR_RED   0
 #define COLOR_BLACK 1
-
-/* the default function for comparing stored keys, defined in comparator.c */
-extern int _libcoll_node_comparator_memaddr(const void *key1, const void *key2);
 
 /* define a null node for use as black leaf nodes in the red-black tree */
 static libcoll_treemap_node_t null_node_struct = {
@@ -111,7 +108,7 @@ libcoll_treemap_t* libcoll_treemap_init_with_comparator (int (*key_comparator)(c
             tree->key_comparator = key_comparator;
         } else {
             // fall back to the default behaviour of comparison by memory address
-            tree->key_comparator = &_libcoll_node_comparator_memaddr;
+            tree->key_comparator = &libcoll_memaddrcmp;
         }
     }
     return tree;

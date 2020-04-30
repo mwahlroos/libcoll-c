@@ -28,6 +28,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "comparators.h"
 #include "linkedlist.h"
 
 #include "debug.h"
@@ -65,7 +66,7 @@ libcoll_linkedlist_t* libcoll_linkedlist_init_with_comparator(int (*compare_func
     if (NULL != compare_function) {
         list->compare_function = compare_function;
     } else {
-        list->compare_function = &_libcoll_node_comparator_memaddr;
+        list->compare_function = &libcoll_memaddrcmp;
     }
     return list;
 }

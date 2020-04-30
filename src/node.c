@@ -28,16 +28,3 @@
  */
 
 #include "node.h"
-
-int _libcoll_node_comparator_memaddr(const void *node1, const void *node2)
-{
-    int cmpval;
-    if (node1 == node2) {
-        cmpval = 0;
-    } else if (node1 < node2) {
-        cmpval = -1;
-    } else {
-        cmpval = 1;
-    }
-    return cmpval;
-}

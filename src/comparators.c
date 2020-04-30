@@ -50,3 +50,16 @@ int strcmp_wrapper(const void *value1, const void *value2)
 
     return strcmp(s1, s2);
 }
+
+int libcoll_memaddrcmp(const void *value1, const void *value2)
+{
+    int cmpval;
+    if (value1 == value2) {
+        cmpval = 0;
+    } else if (value1 < value2) {
+        cmpval = -1;
+    } else {
+        cmpval = 1;
+    }
+    return cmpval;
+}

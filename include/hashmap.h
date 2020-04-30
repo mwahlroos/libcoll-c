@@ -31,7 +31,6 @@
 
 #include "linkedlist.h"
 #include "map.h"
-#include "node.h"
 #include "types.h"
 
 #ifndef LIBCOLL_HASHMAP_H

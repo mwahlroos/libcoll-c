@@ -49,35 +49,6 @@ static libcoll_linkedlist_t* find_collision_list(const libcoll_hashmap_t *hm, co
     return collision_list;
 }
 
-static libcoll_hashmap_entry_t* find_entry(const libcoll_hashmap_t *hm, const void *key)
-{
-    libcoll_hashmap_entry_t *matching_entry = NULL;
-    libcoll_linkedlist_t *collision_list = find_collision_list(hm, key);
-
-    if (NULL != collision_list) {
-        DEBUGF("find_entry: found collision list for key %p\n", key);
-        libcoll_linkedlist_iter_t *iter = libcoll_linkedlist_get_iter(collision_list);
-
-        while (libcoll_linkedlist_iter_has_next(iter)) {
-            libcoll_hashmap_entry_t *entry_tmp;
-            const void *key_tmp;
-
-            entry_tmp = libcoll_linkedlist_iter_next(iter);
-            key_tmp = entry_tmp->key;
-
-            if (hm->key_comparator_function(key, key_tmp) == 0) {
-                matching_entry = entry_tmp;
-                break;
-            }
-        }
-        libcoll_linkedlist_drop_iter(iter);
-    } else {
-        DEBUGF("find_entry: no collision list found for key %p\n", key);
-    }
-
-    return matching_entry;
-}
-
 /*
  * Inserts the given key-value pair into the given collision list.
  * If a value with the same key already exists, it is replaced.
@@ -171,6 +142,35 @@ static void resize(libcoll_hashmap_t *hm, size_t capacity)
     free(old_buckets);
 }
 
+libcoll_hashmap_entry_t* _find_entry(const libcoll_hashmap_t *hm, const void *key)
+{
+    libcoll_hashmap_entry_t *matching_entry = NULL;
+    libcoll_linkedlist_t *collision_list = find_collision_list(hm, key);
+
+    if (NULL != collision_list) {
+        DEBUGF("_find_entry: found collision list for key %p\n", key);
+        libcoll_linkedlist_iter_t *iter = libcoll_linkedlist_get_iter(collision_list);
+
+        while (libcoll_linkedlist_iter_has_next(iter)) {
+            libcoll_hashmap_entry_t *entry_tmp;
+            const void *key_tmp;
+
+            entry_tmp = libcoll_linkedlist_iter_next(iter);
+            key_tmp = entry_tmp->key;
+
+            if (hm->key_comparator_function(key, key_tmp) == 0) {
+                matching_entry = entry_tmp;
+                break;
+            }
+        }
+        libcoll_linkedlist_drop_iter(iter);
+    } else {
+        DEBUGF("_find_entry: no collision list found for key %p\n", key);
+    }
+
+    return matching_entry;
+}
+
 
 libcoll_hashmap_t* libcoll_hashmap_init()
 {
@@ -262,7 +262,7 @@ libcoll_map_insertion_result_t libcoll_hashmap_put(libcoll_hashmap_t *hm, const 
 
 void* libcoll_hashmap_get(const libcoll_hashmap_t *hm, const void *key)
 {
-    libcoll_hashmap_entry_t *entry = find_entry(hm, key);
+    libcoll_hashmap_entry_t *entry = _find_entry(hm, key);
 
     if (NULL != entry) {
         return (void*) entry->value;
@@ -273,7 +273,7 @@ void* libcoll_hashmap_get(const libcoll_hashmap_t *hm, const void *key)
 
 char libcoll_hashmap_contains(const libcoll_hashmap_t *hm, const void *key)
 {
-    libcoll_hashmap_entry_t *entry = find_entry(hm, key);
+    libcoll_hashmap_entry_t *entry = _find_entry(hm, key);
     return NULL != entry;
 }
 

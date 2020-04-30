@@ -79,4 +79,6 @@ size_t libcoll_hashmap_get_size(const libcoll_hashmap_t *hm);
 
 char libcoll_hashmap_is_empty(const libcoll_hashmap_t *hm);
 
+libcoll_hashmap_entry_t* _find_entry(const libcoll_hashmap_t *hm, const void *key);
+
 #endif  /* LIBCOLL_HASHMAP_H */

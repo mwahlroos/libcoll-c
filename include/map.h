@@ -39,7 +39,7 @@ typedef enum {
 } libcoll_map_insertion_status;
 
 typedef enum {
-    MAP_REMOVAL_FAILED, KEY_NOT_FOUND, MAP_ENTRY_REMOVED
+    MAP_REMOVAL_FAILED, MAP_KEY_NOT_FOUND, MAP_ENTRY_REMOVED
 } libcoll_map_removal_status;
 
 typedef struct libcoll_map_insertion_result {

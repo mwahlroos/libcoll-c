@@ -287,7 +287,7 @@ libcoll_map_removal_result_t libcoll_hashmap_remove(libcoll_hashmap_t *hm, const
         return result;
     }
 
-    result.status = KEY_NOT_FOUND;
+    result.status = MAP_KEY_NOT_FOUND;
     result.key = NULL;
     result.value = NULL;
 

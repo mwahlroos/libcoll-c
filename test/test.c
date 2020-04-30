@@ -44,8 +44,8 @@ START_TEST(comparator_self_sanity_check)
     a = b = 1;
     c = 2;
 
-    ck_assert_int_eq(intptrcmp(&a, &b), 0);
-    ck_assert_int_lt(intptrcmp(&a, &c), 0);
+    ck_assert_int_eq(libcoll_intptrcmp(&a, &b), 0);
+    ck_assert_int_lt(libcoll_intptrcmp(&a, &c), 0);
 }
 END_TEST
 

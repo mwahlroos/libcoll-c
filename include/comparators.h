@@ -33,12 +33,12 @@
  * The pointers are treated as pointers to integers, and the comparison
  * is done based on the values they point to.
  */
-int intptrcmp(const void *value1, const void *value2);
+int libcoll_intptrcmp(const void *value1, const void *value2);
 
 /*
  * Comparator for string values.
  */
-int strcmp_wrapper(const void *value1, const void *value2);
+int libcoll_strcmp_wrapper(const void *value1, const void *value2);
 
 /*
  * A comparator function for keys using the identity (i.e. memory address) of

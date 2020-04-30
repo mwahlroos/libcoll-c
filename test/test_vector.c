@@ -46,7 +46,7 @@ END_TEST
 START_TEST(vector_populate_and_retrieve)
 {
     libcoll_vector_t *vector =
-        libcoll_vector_init_with_params(LIBCOLL_VECTOR_DEFAULT_INIT_CAPACITY, strcmp_wrapper);
+        libcoll_vector_init_with_params(LIBCOLL_VECTOR_DEFAULT_INIT_CAPACITY, libcoll_strcmp_wrapper);
 
     char *s1 = "Hello";
     char *s2 = "World";
@@ -81,7 +81,7 @@ START_TEST(vector_resize)
     size_t init_capacity = 2LU;
     libcoll_vector_t *vector = libcoll_vector_init_with_params(
         init_capacity,
-        strcmp_wrapper
+        libcoll_strcmp_wrapper
     );
 
     char *s1 = "Hello";
@@ -100,7 +100,7 @@ START_TEST(vector_resize)
     ck_assert_uint_eq(vector->length, 3);
     ck_assert_uint_gt(vector->capacity, init_capacity);
 
-    ck_assert(strcmp_wrapper(s3, (char*) vector->contents[2]) == 0);
+    ck_assert(libcoll_strcmp_wrapper(s3, (char*) vector->contents[2]) == 0);
     libcoll_vector_deinit(vector);
 }
 END_TEST

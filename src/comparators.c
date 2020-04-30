@@ -31,7 +31,7 @@
 /*
  * Compares two pointers by the integer value they point to.
  */
-int intptrcmp(const void *value1, const void *value2)
+int libcoll_intptrcmp(const void *value1, const void *value2)
 {
     int *a = (int*) value1;
     int *b = (int*) value2;
@@ -43,7 +43,7 @@ int intptrcmp(const void *value1, const void *value2)
  * Wrapper around strcmp that accepts void pointers, for comparing map keys
  * and/or values.
  */
-int strcmp_wrapper(const void *value1, const void *value2)
+int libcoll_strcmp_wrapper(const void *value1, const void *value2)
 {
     char *s1 = (char*) value1;
     char *s2 = (char*) value2;

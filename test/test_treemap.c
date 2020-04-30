@@ -42,10 +42,7 @@ static const size_t TEST_KEY_COUNT = 10;
 
 static char *string_counts_keys[] = { "axe", "asdf", "bar", "foo", "alter ego", "quine",
                                       "ra", "rust", "rendezvous", "xylophone" };
-static char *string_counts_keys_sorted[] = { "alter ego", "asdf", "axe", "bar", "foo", "quine",
-                                             "ra", "rendezvous", "rust", "xylophone" };
 static int string_counts_values[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-static int string_counts_values_sorted_by_key[10] = { 4, 1, 0, 2, 3, 5, 6, 8, 7, 9 };
 
 /* test fixtures, run once per test */
 
@@ -142,22 +139,24 @@ START_TEST(treemap_retrieve_and_remove)
 END_TEST
 
 /*
- * Tests that the treemap returns all expected keys and in expected order.
+ * Tests that the treemap iterator returns all expected keys and in expected
+ * (sorted) order.
  */
 START_TEST(treemap_iterate)
 {
     DEBUG("\n*** Starting treemap_iterate\n");
 
     libcoll_treemap_iter_t *iter = libcoll_treemap_get_iterator(string_counts);
+    char *last_key = NULL;
     for (size_t i=0; i<TEST_KEY_COUNT; i++) {
-        char *expected_key = string_counts_keys_sorted[i];
-        int expected_value = string_counts_values_sorted_by_key[i];
-
         ck_assert(libcoll_treemap_has_next(iter));
 
         libcoll_treemap_node_t *node = libcoll_treemap_next(iter);
-        ck_assert_str_eq(expected_key, (char*) node->key);
-        ck_assert_int_eq(expected_value, *(int*) node->value);
+        char *retrieved_key = (char*) node->key;
+        if (last_key) {
+            ck_assert_str_lt(last_key, retrieved_key);
+        }
+        last_key = retrieved_key;
     }
 
     ck_assert(!libcoll_treemap_has_next(iter));

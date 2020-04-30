@@ -78,7 +78,18 @@ void libcoll_vector_insert(libcoll_vector_t *vector, size_t index, void *value)
     vector->contents[index] = value;
 }
 
-void* libcoll_vector_remove(libcoll_vector_t *vector, size_t index)
+void* libcoll_vector_remove(libcoll_vector_t *vector, void *value)
+{
+    void *retvalue = NULL;
+    ssize_t index = libcoll_vector_index_of(vector, value);
+    if (index != -1) {
+        retvalue = libcoll_vector_remove_at(vector, (size_t) index);
+    }
+
+    return retvalue;
+}
+
+void* libcoll_vector_remove_at(libcoll_vector_t *vector, size_t index)
 {
     if (index >= vector->length) return NULL;
 

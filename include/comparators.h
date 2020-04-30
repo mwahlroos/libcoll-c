@@ -28,20 +28,25 @@
  */
 
 /*
- * Comparator for integer values.
- * 
+ * Comparator for integer keys/values.
+ *
  * The pointers are treated as pointers to integers, and the comparison
- * is done based on the values they point to.
+ * is done based on the integer values they point to.
  */
 int libcoll_intptrcmp(const void *value1, const void *value2);
 
 /*
- * Comparator for string values.
+ * Comparator for string keys/values.
+ *
+ * Wrapper around strcmp that accepts void pointers, for comparing map keys
+ * and/or values.
  */
 int libcoll_strcmp_wrapper(const void *value1, const void *value2);
 
 /*
- * A comparator function for keys using the identity (i.e. memory address) of
- * the data as a basis of (in)equality.
+ * A comparator function for keys using the memory address of the data as a
+ * basis of (in)equality.
+ *
+ * Used as the default comparator in all collections.
  */
 int libcoll_memaddrcmp(const void *value1, const void *value2);

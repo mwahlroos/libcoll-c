@@ -28,9 +28,6 @@
 
 #include <string.h>
 
-/*
- * Compares two pointers by the integer value they point to.
- */
 int libcoll_intptrcmp(const void *value1, const void *value2)
 {
     int *a = (int*) value1;
@@ -38,11 +35,6 @@ int libcoll_intptrcmp(const void *value1, const void *value2)
     return *a - *b;
 }
 
-
-/* Compares two pointers by their string values.
- * Wrapper around strcmp that accepts void pointers, for comparing map keys
- * and/or values.
- */
 int libcoll_strcmp_wrapper(const void *value1, const void *value2)
 {
     char *s1 = (char*) value1;

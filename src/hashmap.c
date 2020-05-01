@@ -26,6 +26,7 @@
  */
 
 #include <stdlib.h>
+#include <sys/types.h>  /* for ssize_t */
 
 #include "comparators.h"
 #include "hash.h"
@@ -171,6 +172,33 @@ static void resize(libcoll_hashmap_t *hm, size_t capacity)
     free(old_buckets);
 }
 
+static ssize_t find_next_nonempty_bucket(libcoll_hashmap_t *hm, size_t start_index)
+{
+    while (start_index < hm->capacity) {
+        if (hm->buckets[start_index] != NULL) {
+            return start_index;
+        }
+
+        start_index++;
+    }
+
+    return -1;
+}
+
+static ssize_t find_previous_nonempty_bucket(libcoll_hashmap_t *hm, size_t start_index)
+{
+    ssize_t tmpindex = (ssize_t) start_index;
+
+    while (tmpindex >= 0) {
+        if (hm->buckets[tmpindex] != NULL) {
+            return tmpindex;
+        }
+
+        tmpindex--;
+    }
+
+    return -1;
+}
 
 libcoll_hashmap_t* libcoll_hashmap_init()
 {
@@ -327,4 +355,77 @@ size_t libcoll_hashmap_get_size(const libcoll_hashmap_t *hm)
 char libcoll_hashmap_is_empty(const libcoll_hashmap_t *hm)
 {
     return hm->total_entries == 0;
+}
+
+libcoll_hashmap_iter_t* libcoll_hashmap_get_iterator(libcoll_hashmap_t *hm)
+{
+    libcoll_hashmap_iter_t *iter = malloc(sizeof(libcoll_hashmap_iter_t));
+    iter->hm = hm;
+    iter->bucket_index = 0;
+    iter->list_node = NULL;
+
+    return iter;
+}
+
+void libcoll_hashmap_drop_iterator(libcoll_hashmap_iter_t *iter)
+{
+    free(iter);
+}
+
+char libcoll_hashmap_iter_has_next(libcoll_hashmap_iter_t *iter)
+{
+    if (iter->list_node != NULL && iter->list_node->next != NULL) {
+        return 1;
+    } else {
+        return find_next_nonempty_bucket(iter->hm, iter->bucket_index) != -1;
+    }
+}
+
+libcoll_hashmap_entry_t* libcoll_hashmap_iter_next(libcoll_hashmap_iter_t *iter)
+{
+    libcoll_linkedlist_node_t *next = NULL;
+
+    if (iter->list_node != NULL && iter->list_node->next != NULL) {
+        next = iter->list_node->next;
+    } else {
+        ssize_t next_nonempty_bucket = find_next_nonempty_bucket(iter->hm, iter->bucket_index);
+        if (next_nonempty_bucket != -1) {
+            libcoll_linkedlist_t *list = iter->hm->buckets[next_nonempty_bucket];
+            next = list->head;
+            iter->bucket_index = next_nonempty_bucket + 1;
+        }
+    }
+
+    iter->list_node = next;
+
+    return next != NULL ? (libcoll_hashmap_entry_t*) next->value : NULL;
+}
+
+char libcoll_hashmap_iter_has_previous(libcoll_hashmap_iter_t *iter)
+{
+    if (iter->list_node != NULL && iter->list_node->previous != NULL) {
+        return 1;
+    } else {
+        return find_previous_nonempty_bucket(iter->hm, iter->bucket_index) != -1;
+    }
+}
+
+libcoll_hashmap_entry_t* libcoll_hashmap_iter_previous(libcoll_hashmap_iter_t *iter)
+{
+    libcoll_linkedlist_node_t *previous = NULL;
+
+    if (iter->list_node != NULL && iter->list_node->previous != NULL) {
+        previous = iter->list_node->previous;
+    } else {
+        ssize_t previous_nonempty_bucket = find_previous_nonempty_bucket(iter->hm, iter->bucket_index);
+        if (previous_nonempty_bucket != -1) {
+            libcoll_linkedlist_t *list = iter->hm->buckets[previous_nonempty_bucket];
+            previous = list->tail;
+            iter->bucket_index = previous_nonempty_bucket - 1;
+        }
+    }
+
+    iter->list_node = previous;
+
+    return previous != NULL ? (libcoll_hashmap_entry_t*) previous->value : NULL;
 }

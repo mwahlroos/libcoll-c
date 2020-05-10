@@ -105,6 +105,19 @@ START_TEST(vector_resize)
 }
 END_TEST
 
+START_TEST(vector_pop)
+{
+    libcoll_vector_t *vector = libcoll_vector_init();
+    int a = 13;
+    int b;
+    libcoll_vector_append(vector, &a);
+    b = *(int*) libcoll_vector_pop(vector);
+    ck_assert_int_eq(a, b);
+    ck_assert_uint_eq(libcoll_vector_length(vector), 0);
+    libcoll_vector_deinit(vector);
+}
+END_TEST
+
 TCase* create_vector_tests(void)
 {
     TCase *tc_core;
@@ -113,6 +126,7 @@ TCase* create_vector_tests(void)
     tcase_add_test(tc_core, vector_create);
     tcase_add_test(tc_core, vector_populate_and_retrieve);
     tcase_add_test(tc_core, vector_resize);
+    tcase_add_test(tc_core, vector_pop);
 
     return tc_core;
 }

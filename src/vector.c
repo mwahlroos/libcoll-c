@@ -101,6 +101,11 @@ void* libcoll_vector_remove_at(libcoll_vector_t *vector, size_t index)
     return value;
 }
 
+void* libcoll_vector_pop(libcoll_vector_t *vector)
+{
+    return libcoll_vector_remove_at(vector, vector->length-1);
+}
+
 ssize_t libcoll_vector_index_of(libcoll_vector_t *vector, void *value)
 {
     for (size_t i=0; i<vector->length; i++) {

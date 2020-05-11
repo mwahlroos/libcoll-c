@@ -56,7 +56,7 @@ START_TEST(hashmap_populate_and_retrieve)
 {
     DEBUG("\n*** Starting hashmap_populate_and_retrieve\n");
     libcoll_hashmap_t *counts = libcoll_hashmap_init();
-    counts->hash_code_function = hashcode_str;
+    counts->hash_code_function = libcoll_hashcode_str;
     counts->key_comparator_function = libcoll_strcmp_wrapper;
 
     char *identifiers[] = { "identifier_1", "identifier_2" };
@@ -116,7 +116,7 @@ START_TEST(hashmap_iterate)
 {
     DEBUG("\n*** Starting hashmap_iterate\n");
     libcoll_hashmap_t *hm = libcoll_hashmap_init();
-    hm->hash_code_function = hashcode_str;
+    hm->hash_code_function = libcoll_hashcode_str;
     hm->key_comparator_function = libcoll_strcmp_wrapper;
 
     size_t test_value_count = 3;
@@ -176,7 +176,7 @@ START_TEST(hashmap_resize)
     libcoll_hashmap_t *hm = libcoll_hashmap_init_with_params(
             init_capacity,
             max_load_factor,
-            hashcode_int,
+            libcoll_hashcode_int,
             libcoll_intptrcmp,
             libcoll_strcmp_wrapper
     );

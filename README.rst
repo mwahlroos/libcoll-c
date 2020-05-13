@@ -14,8 +14,8 @@ Features
 
 The library currently supports the following collection types:
 
-* treemap
-* hashmap
+* treemap (with in-order iterators)
+* hashmap (with iterators)
 * linked list (doubly-linked, with iterators)
 * vector
 

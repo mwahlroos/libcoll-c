@@ -48,5 +48,16 @@ int libcoll_strcmp_wrapper(const void *value1, const void *value2);
  * basis of (in)equality.
  *
  * Used as the default comparator in all collections.
+ *
+ * Note: The result of comparing pointers is undefined if the pointers do not
+ * point to members of the same array, so this is technically not a very good
+ * comparator for generic pointers. However, there's no obvious better
+ * alternative for a default comparator in C, so considering that this probably
+ * practically works at least for (in)equality, which most collections are
+ * interested in, it can stay for now.
+ *
+ * If you're building for a platform where comparing two arbitrary pointers for
+ * equality actually causes undefined behaviour, you should use a custom
+ * comparator instead.
  */
 int libcoll_memaddrcmp(const void *value1, const void *value2);

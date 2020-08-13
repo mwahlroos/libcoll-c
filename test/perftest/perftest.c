@@ -2,16 +2,20 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
+#include <unistd.h>  /* for getopt, POSIX-specific */
+#include <getopt.h>  /* for getopt, POSIX-specific */
+
 #include "../helpers.h"
+
 #include "hash.h"
 #include "hashmap.h"
 #include "treemap.h"
 #include "types.h"
 
 #define BENCHMARK_SEED                  1U
-#define BENCHMARK_SIZE                  10000000LU
+#define BENCHMARK_SIZE_DEFAULT          10000000LU
 #define KEY_STR_LEN                     5
-#define BENCHMARK_RETRIEVE_PROPORTION   1  /* one in how many inserted values to retrieve */
+#define BENCHMARK_RETRIEVE_PROPORTION   1  /* one in how many inserted values to get in retrieval tests */
 
 typedef enum {
     NONE,
@@ -68,10 +72,10 @@ static void populate_treemap(libcoll_treemap_t *tm, libcoll_pair_voidptr_t *data
     }
 }
 
-static void benchmark_hashmap(size_t testsize)
+static void benchmark_hashmap(unsigned long testsize)
 {
     clock_t start_time;
-    size_t retrieve_count = BENCHMARK_SIZE / BENCHMARK_RETRIEVE_PROPORTION;
+    unsigned long retrieve_count = testsize / BENCHMARK_RETRIEVE_PROPORTION;
 
     /* null output for printing values retrieved during retrieval tests,
      * to prevent the compiler from optimizing the retrievals out
@@ -98,7 +102,7 @@ static void benchmark_hashmap(size_t testsize)
 
     start_time = clock();
     printf("Retrieving %lu items... \t", retrieve_count);
-    for (size_t i=0; i<retrieve_count; i++) {
+    for (unsigned long i=0; i<retrieve_count; i++) {
         size_t key_idx = i * (BENCHMARK_RETRIEVE_PROPORTION);
         int *value = (int*) libcoll_hashmap_get(map, data[key_idx].a);
 
@@ -118,10 +122,10 @@ static void benchmark_hashmap(size_t testsize)
     libcoll_hashmap_deinit(map);
 }
 
-static void benchmark_treemap(size_t testsize)
+static void benchmark_treemap(unsigned long testsize)
 {
     clock_t start_time;
-    size_t retrieve_count = BENCHMARK_SIZE / BENCHMARK_RETRIEVE_PROPORTION;
+    unsigned long retrieve_count = testsize / BENCHMARK_RETRIEVE_PROPORTION;
 
     /* null output for printing values retrieved during retrieval tests,
      * to prevent the compiler from optimizing the retrievals out
@@ -142,7 +146,7 @@ static void benchmark_treemap(size_t testsize)
 
     start_time = clock();
     printf("Retrieving %lu items... \t", retrieve_count);
-    for (size_t i=0; i<retrieve_count; i++) {
+    for (unsigned long i=0; i<retrieve_count; i++) {
         size_t key_idx = i * (BENCHMARK_RETRIEVE_PROPORTION);
         int *value = (int*) libcoll_treemap_get(map, data[key_idx].a);
 
@@ -171,8 +175,22 @@ int main(int argc, char *argv[])
 
     BenchmarkTarget target = NONE;
 
-    if (argc > 1) {
-        char *s = argv[1];
+    /* parse options given on the command line */
+    int option_char;
+    long benchmark_size = BENCHMARK_SIZE_DEFAULT;
+    while ((option_char = getopt(argc, argv, "n:")) != -1) {
+        switch (option_char) {
+            case 'n':
+                if (sscanf(optarg, "%ld", &benchmark_size) != 1 || benchmark_size < 0) {
+                    fprintf(stderr, "-n requires a positive integer argument\n");
+                    return EXIT_FAILURE;
+                }
+                break;
+        }
+    }
+
+    if (argc > optind) {
+        char *s = argv[optind];
         if (strcmp(s, "hashmap") == 0) {
             target = HASHMAP;
         } else if (strcmp(s, "treemap") == 0) {
@@ -182,10 +200,10 @@ int main(int argc, char *argv[])
 
     switch (target) {
         case HASHMAP:
-            benchmark_hashmap(BENCHMARK_SIZE);
+            benchmark_hashmap(benchmark_size);
             break;
         case TREEMAP:
-            benchmark_treemap(BENCHMARK_SIZE);
+            benchmark_treemap(benchmark_size);
             break;
         case NONE:
             fprintf(stderr, "No benchmark selected\n");

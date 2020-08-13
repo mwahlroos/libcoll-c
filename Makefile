@@ -55,15 +55,15 @@ valgrind: debugtests
 	LD_LIBRARY_PATH=. CK_FORK=no $(VALGRIND) $(VALGRIND_OPTS) ./$(TEST_PROG)
 
 perftests: so
-	$(CC) $(CFLAGS) -o $(PERF_TEST_PROG) -O2 test/perftest.c test/helpers.c -L. -lcoll
+	$(CC) $(CFLAGS) $(CFLAGS_PROD) -o $(PERF_TEST_PROG) test/perftest/perftest.c test/helpers.c -L. -lcoll
 
 runperftests: perftests
 	@echo
 	@echo Running performance tests...
 	@echo
-	LD_LIBRARY_PATH=. time ./perftest hashmap
+	LD_LIBRARY_PATH=. ./perftest hashmap
 	@echo
-	LD_LIBRARY_PATH=. time ./perftest treemap
+	LD_LIBRARY_PATH=. ./perftest treemap
 
 clean:
 	rm -f $(OBJS) $(LIB_SONAME) $(LIB_FILENAME) $(LIB_BASENAME) $(TEST_PROG) $(PERF_TEST_PROG)

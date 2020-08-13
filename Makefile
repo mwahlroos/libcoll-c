@@ -1,21 +1,28 @@
 VER_MAJOR=0
 VER_MINOR=0
+
 CC=gcc
 LD=ld
+
 SRC= src/*.c
 INCLUDE_DIR= include
 OBJS= *.o
+
 TEST_SRC= test/test*.c test/helpers.c
 TEST_PROG= run_tests
+PERF_TEST_SRC= test/perftest/perftest.c test/helpers.c
 PERF_TEST_PROG= perftest
+
 LIB_BASENAME= libcoll.so
 LIB_SONAME= $(LIB_BASENAME).$(VER_MAJOR)
 LIB_FILENAME= $(LIB_SONAME).$(VER_MINOR)
+
 CFLAGS= -std=c99 -Wall -Wextra -pedantic -I$(INCLUDE_DIR)
 CFLAGS_DEBUG= -DENABLE_DEBUG=1 -Og -g
 CFLAGS_PROD= -O2
 CFLAGS_LIB= -shared -fPIC
 LDFLAGS_LIB= -shared
+
 VALGRIND=valgrind
 VALGRIND_OPTS= --leak-check=full --trace-children=yes
 
@@ -55,7 +62,7 @@ valgrind: debugtests
 	LD_LIBRARY_PATH=. CK_FORK=no $(VALGRIND) $(VALGRIND_OPTS) ./$(TEST_PROG)
 
 perftests: so
-	$(CC) $(CFLAGS) $(CFLAGS_PROD) -o $(PERF_TEST_PROG) test/perftest/perftest.c test/helpers.c -L. -lcoll
+	$(CC) $(CFLAGS) $(CFLAGS_PROD) -o $(PERF_TEST_PROG) $(PERF_TEST_SRC) -L. -lcoll
 
 runperftests: perftests
 	@echo

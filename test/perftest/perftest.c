@@ -7,6 +7,7 @@
 
 #include "../helpers.h"
 
+#include "comparators.h"
 #include "hash.h"
 #include "hashmap.h"
 #include "treemap.h"
@@ -86,9 +87,9 @@ static void benchmark_hashmap(unsigned long testsize)
         libcoll_hashmap_init_with_params(
             LIBCOLL_HASHMAP_DEFAULT_INIT_SIZE,
             LIBCOLL_HASHMAP_DEFAULT_MAX_LOAD_FACTOR,
-            hashcode_str,
-            strcmp_wrapper,
-            intptrcmp
+            libcoll_hashcode_str,
+            libcoll_strcmp_wrapper,
+            libcoll_intptrcmp
         );
 
     libcoll_pair_voidptr_t *data = malloc(testsize * sizeof(libcoll_pair_voidptr_t));
@@ -133,7 +134,7 @@ static void benchmark_treemap(unsigned long testsize)
     FILE *null_out = get_null_output();
 
     libcoll_treemap_t *map =
-        libcoll_treemap_init_with_comparator(strcmp_wrapper);
+        libcoll_treemap_init_with_comparator(libcoll_strcmp_wrapper);
 
     libcoll_pair_voidptr_t *data = malloc(testsize * sizeof(libcoll_pair_voidptr_t));
     generate_key_value_data(data, testsize);

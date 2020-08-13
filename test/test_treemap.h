@@ -1,7 +1,5 @@
 /*
- * node.c
- *
- * Functions and types related to nodes in data structures, e.g. lists.
+ * Unit tests for the libcoll library.
  *
  * This file is part of libcoll, a generic collections library for C.
  *
@@ -27,17 +25,6 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "node.h"
+#include <check.h>
 
-int _libcoll_node_comparator_memaddr(const void *node1, const void *node2)
-{
-    int cmpval;
-    if (node1 == node2) {
-        cmpval = 0;
-    } else if (node1 < node2) {
-        cmpval = -1;
-    } else {
-        cmpval = 1;
-    }
-    return cmpval;
-}
+TCase* create_treemap_tests(void);

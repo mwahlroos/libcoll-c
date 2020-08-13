@@ -30,8 +30,4 @@
 
 /* helper functions for tests */
 
-int intptrcmp(const void *value1, const void *value2);
-
-int strcmp_wrapper(const void *value1, const void *value2);
-
 void print_hashmap(const libcoll_hashmap_t *hm, FILE *out);

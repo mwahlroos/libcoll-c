@@ -26,8 +26,12 @@
  */
 
 #include <check.h>
-#include "helpers.h"
+
+#include "test_vector.h"
+
+#include "comparators.h"
 #include "vector.h"
+
 #include "../src/debug.h"
 
 START_TEST(vector_create)
@@ -42,7 +46,7 @@ END_TEST
 START_TEST(vector_populate_and_retrieve)
 {
     libcoll_vector_t *vector =
-        libcoll_vector_init_with_params(LIBCOLL_VECTOR_DEFAULT_INIT_CAPACITY, strcmp_wrapper);
+        libcoll_vector_init_with_params(LIBCOLL_VECTOR_DEFAULT_INIT_CAPACITY, libcoll_strcmp_wrapper);
 
     char *s1 = "Hello";
     char *s2 = "World";
@@ -77,7 +81,7 @@ START_TEST(vector_resize)
     size_t init_capacity = 2LU;
     libcoll_vector_t *vector = libcoll_vector_init_with_params(
         init_capacity,
-        strcmp_wrapper
+        libcoll_strcmp_wrapper
     );
 
     char *s1 = "Hello";
@@ -96,7 +100,20 @@ START_TEST(vector_resize)
     ck_assert_uint_eq(vector->length, 3);
     ck_assert_uint_gt(vector->capacity, init_capacity);
 
-    ck_assert(strcmp_wrapper(s3, (char*) vector->contents[2]) == 0);
+    ck_assert(libcoll_strcmp_wrapper(s3, (char*) vector->contents[2]) == 0);
+    libcoll_vector_deinit(vector);
+}
+END_TEST
+
+START_TEST(vector_pop)
+{
+    libcoll_vector_t *vector = libcoll_vector_init();
+    int a = 13;
+    int b;
+    libcoll_vector_append(vector, &a);
+    b = *(int*) libcoll_vector_pop(vector);
+    ck_assert_int_eq(a, b);
+    ck_assert_uint_eq(libcoll_vector_length(vector), 0);
     libcoll_vector_deinit(vector);
 }
 END_TEST
@@ -109,6 +126,7 @@ TCase* create_vector_tests(void)
     tcase_add_test(tc_core, vector_create);
     tcase_add_test(tc_core, vector_populate_and_retrieve);
     tcase_add_test(tc_core, vector_resize);
+    tcase_add_test(tc_core, vector_pop);
 
     return tc_core;
 }

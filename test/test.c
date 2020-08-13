@@ -26,10 +26,15 @@
  */
 
 #include <check.h>
+
 #include "test_hashmap.h"
 #include "test_linkedlist.h"
+#include "test_treemap.h"
 #include "test_vector.h"
 #include "helpers.h"
+
+#include "comparators.h"  /* for the comparator sanity tests */
+
 #include "../src/debug.h"
 
 
@@ -39,8 +44,8 @@ START_TEST(comparator_self_sanity_check)
     a = b = 1;
     c = 2;
 
-    ck_assert_int_eq(intptrcmp(&a, &b), 0);
-    ck_assert_int_lt(intptrcmp(&a, &c), 0);
+    ck_assert_int_eq(libcoll_intptrcmp(&a, &b), 0);
+    ck_assert_int_lt(libcoll_intptrcmp(&a, &c), 0);
 }
 END_TEST
 
@@ -58,18 +63,21 @@ Suite* create_libcoll_test_suite(void)
     TCase *linkedlist_tests;
     TCase *vector_tests;
     TCase *hashmap_tests;
+    TCase *treemap_tests;
     TCase *self_sanity_test;
 
     s = suite_create("libcoll");
     linkedlist_tests = create_linkedlist_tests();
     vector_tests = create_vector_tests();
     hashmap_tests = create_hashmap_tests();
+    treemap_tests = create_treemap_tests();
     self_sanity_test = create_self_sanity_test();
 
     suite_add_tcase(s, self_sanity_test);
     suite_add_tcase(s, linkedlist_tests);
     suite_add_tcase(s, vector_tests);
     suite_add_tcase(s, hashmap_tests);
+    suite_add_tcase(s, treemap_tests);
 
     return s;
 }

@@ -26,8 +26,9 @@
  */
 
 #include <stdlib.h>
-#include <sys/types.h>
-#include "node.h"
+#include <sys/types.h>  /* for ssize_t */
+
+#include "comparators.h"
 #include "vector.h"
 
 /* declarations of internal functions */
@@ -39,7 +40,7 @@ libcoll_vector_t* libcoll_vector_init()
 {
     return libcoll_vector_init_with_params(
         LIBCOLL_VECTOR_DEFAULT_INIT_CAPACITY,
-        _libcoll_node_comparator_memaddr
+        libcoll_memaddrcmp
     );
 }
 
@@ -77,7 +78,18 @@ void libcoll_vector_insert(libcoll_vector_t *vector, size_t index, void *value)
     vector->contents[index] = value;
 }
 
-void* libcoll_vector_remove(libcoll_vector_t *vector, size_t index)
+void* libcoll_vector_remove(libcoll_vector_t *vector, void *value)
+{
+    void *retvalue = NULL;
+    ssize_t index = libcoll_vector_index_of(vector, value);
+    if (index != -1) {
+        retvalue = libcoll_vector_remove_at(vector, (size_t) index);
+    }
+
+    return retvalue;
+}
+
+void* libcoll_vector_remove_at(libcoll_vector_t *vector, size_t index)
 {
     if (index >= vector->length) return NULL;
 
@@ -87,6 +99,11 @@ void* libcoll_vector_remove(libcoll_vector_t *vector, size_t index)
     }
     vector->length--;
     return value;
+}
+
+void* libcoll_vector_pop(libcoll_vector_t *vector)
+{
+    return libcoll_vector_remove_at(vector, vector->length-1);
 }
 
 ssize_t libcoll_vector_index_of(libcoll_vector_t *vector, void *value)

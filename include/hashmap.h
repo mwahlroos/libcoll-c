@@ -28,9 +28,9 @@
  */
 
 #include <stdlib.h>
+
 #include "linkedlist.h"
 #include "map.h"
-#include "node.h"
 #include "types.h"
 
 #ifndef LIBCOLL_HASHMAP_H
@@ -53,6 +53,12 @@ typedef struct libcoll_hashmap {
     int (*key_comparator_function)(const void *key1, const void *key2);
     int (*value_comparator_function)(const void *value1, const void *value2);
 } libcoll_hashmap_t;
+
+typedef struct libcoll_hashmap_iter {
+    libcoll_hashmap_t *hm;
+    size_t bucket_index;
+    libcoll_linkedlist_node_t *list_node;
+} libcoll_hashmap_iter_t;
 
 libcoll_hashmap_t* libcoll_hashmap_init();
 
@@ -78,5 +84,17 @@ size_t libcoll_hashmap_get_capacity(const libcoll_hashmap_t *hm);
 size_t libcoll_hashmap_get_size(const libcoll_hashmap_t *hm);
 
 char libcoll_hashmap_is_empty(const libcoll_hashmap_t *hm);
+
+libcoll_hashmap_iter_t *libcoll_hashmap_get_iterator(libcoll_hashmap_t *hm);
+
+void libcoll_hashmap_drop_iterator(libcoll_hashmap_iter_t *iter);
+
+char libcoll_hashmap_iter_has_next(libcoll_hashmap_iter_t *iter);
+
+libcoll_hashmap_entry_t* libcoll_hashmap_iter_next(libcoll_hashmap_iter_t *iter);
+
+char libcoll_hashmap_iter_has_previous(libcoll_hashmap_iter_t *iter);
+
+libcoll_hashmap_entry_t* libcoll_hashmap_iter_previous(libcoll_hashmap_iter_t *iter);
 
 #endif  /* LIBCOLL_HASHMAP_H */

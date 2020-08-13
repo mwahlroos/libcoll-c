@@ -27,34 +27,14 @@
 
 #include <stdio.h>
 #include <string.h>
-#include "../src/debug.h"
 #include "hashmap.h"
+
+#include "../src/debug.h"
 
 /* helper functions for tests */
 
 static void print_hashmap_contents(const libcoll_hashmap_t *hm, FILE *out);
 
-/* Compares two pointers by the integer value they point to.
- * Utility function for unit tests.
- */
-int intptrcmp(const void *value1, const void *value2)
-{
-    int *a = (int*) value1;
-    int *b = (int*) value2;
-    return *a - *b;
-}
-
-/* Compares two pointers by their string values.
- * Wrapper around strcmp that accepts void pointers, for comparing map keys
- * and/or values.
- */
-int strcmp_wrapper(const void *value1, const void *value2)
-{
-    char *s1 = (char*) value1;
-    char *s2 = (char*) value2;
-
-    return strcmp(s1, s2);
-}
 
 void print_hashmap(const libcoll_hashmap_t *hm, FILE *out)
 {

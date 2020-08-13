@@ -28,10 +28,16 @@
 #include <check.h>
 #include <stdio.h>
 #include "test_hashmap.h"
+
 #include "helpers.h"
-#include "../src/debug.h"
+#include "test_hashmap.h"
+
+#include "comparators.h"
 #include "hash.h"
 #include "hashmap.h"
+#include "vector.h"  /* use as a utility type */
+
+#include "../src/debug.h"
 
 static void print_hashmap_if_debug(const libcoll_hashmap_t *hm)
 {
@@ -59,8 +65,8 @@ START_TEST(hashmap_populate_and_retrieve)
 {
     DEBUG("\n*** Starting hashmap_populate_and_retrieve\n");
     libcoll_hashmap_t *counts = libcoll_hashmap_init();
-    counts->hash_code_function = hashcode_str;
-    counts->key_comparator_function = strcmp_wrapper;
+    counts->hash_code_function = libcoll_hashcode_str;
+    counts->key_comparator_function = libcoll_strcmp_wrapper;
 
     char *identifiers[] = { "identifier_1", "identifier_2" };
     int values[] = { 7, -34 };
@@ -115,6 +121,56 @@ START_TEST(hashmap_populate_and_retrieve)
 }
 END_TEST
 
+START_TEST(hashmap_iterate)
+{
+    DEBUG("\n*** Starting hashmap_iterate\n");
+    libcoll_hashmap_t *hm = libcoll_hashmap_init();
+    hm->hash_code_function = libcoll_hashcode_str;
+    hm->key_comparator_function = libcoll_strcmp_wrapper;
+
+    size_t test_value_count = 3;
+
+    char *keys[] = { "key1", "key2", "key3" };
+    int values[] = { 3, 4, 5 };
+
+    /* put the values in a vector so that the values retrieved
+     * from the hashmap can later be compared against them
+     */
+    libcoll_vector_t *tmpvect = libcoll_vector_init();
+    tmpvect->compare_function = libcoll_intptrcmp;
+
+    for (size_t i=0; i<test_value_count; i++) {
+        libcoll_vector_append(tmpvect, &values[i]);
+    }
+
+    /* sanity check to make sure at least the vector contains all values */
+    ck_assert_uint_eq(libcoll_vector_length(tmpvect), 3);
+
+    for (size_t i=0; i<test_value_count; i++) {
+        libcoll_hashmap_put(hm, keys[i], &values[i]);
+    }
+
+    ck_assert_uint_eq(libcoll_hashmap_get_size(hm), 3);
+
+    libcoll_hashmap_iter_t *iter = libcoll_hashmap_get_iterator(hm);
+    for (int i=0; i<3; i++) {
+        ck_assert(libcoll_hashmap_iter_has_next(iter));
+
+        libcoll_hashmap_entry_t *entry = libcoll_hashmap_iter_next(iter);
+        int *value = (int*) entry->value;
+
+        ck_assert(libcoll_vector_contains(tmpvect, value));
+
+        libcoll_vector_remove(tmpvect, value);
+    }
+
+    ck_assert(!libcoll_hashmap_iter_has_next(iter));
+
+    libcoll_hashmap_drop_iterator(iter);
+    libcoll_vector_deinit(tmpvect);
+    libcoll_hashmap_deinit(hm);
+}
+
 START_TEST(hashmap_resize)
 {
     /* test hashmap capacity increase and the associated rehashing */
@@ -129,9 +185,9 @@ START_TEST(hashmap_resize)
     libcoll_hashmap_t *hm = libcoll_hashmap_init_with_params(
             init_capacity,
             max_load_factor,
-            hashcode_int,
-            intptrcmp,
-            strcmp_wrapper
+            libcoll_hashcode_int,
+            libcoll_intptrcmp,
+            libcoll_strcmp_wrapper
     );
 
     int *testkey1 = (int*) malloc(sizeof(int));
@@ -224,6 +280,7 @@ TCase* create_hashmap_tests(void)
 
     tcase_add_test(tc_core, hashmap_create);
     tcase_add_test(tc_core, hashmap_populate_and_retrieve);
+    tcase_add_test(tc_core, hashmap_iterate);
     tcase_add_test(tc_core, hashmap_resize);
 
     return tc_core;

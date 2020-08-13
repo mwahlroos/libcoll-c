@@ -26,7 +26,6 @@
  */
 
 #include <stdlib.h>
-#include "node.h"
 
 #ifndef LIBCOLL_LINKEDLIST_H
 #define LIBCOLL_LINKEDLIST_H

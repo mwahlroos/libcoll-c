@@ -15,6 +15,7 @@
 
 #define BENCHMARK_SEED                  1U
 #define BENCHMARK_SIZE_DEFAULT          10000000LU
+#define BENCHMARK_RUNS_DEFAULT          1
 #define KEY_STR_LEN                     5
 #define BENCHMARK_RETRIEVE_PROPORTION   1  /* one in how many inserted values to get in retrieval tests */
 
@@ -179,14 +180,29 @@ int main(int argc, char *argv[])
     /* parse options given on the command line */
     int option_char;
     long benchmark_size = BENCHMARK_SIZE_DEFAULT;
-    while ((option_char = getopt(argc, argv, "n:")) != -1) {
+    int benchmark_runs = BENCHMARK_RUNS_DEFAULT;
+
+    while ((option_char = getopt(argc, argv, "n:t:")) != -1) {
         switch (option_char) {
             case 'n':
-                if (sscanf(optarg, "%ld", &benchmark_size) != 1 || benchmark_size < 0) {
+                if (sscanf(optarg, "%ld", &benchmark_size) != 1 || benchmark_size <= 0) {
                     fprintf(stderr, "-n requires a positive integer argument\n");
                     return EXIT_FAILURE;
                 }
                 break;
+            case 't':
+                if (sscanf(optarg, "%d", &benchmark_runs) != 1 || benchmark_runs <= 0) {
+                    fprintf(stderr, "-t requires a positive integer argument\n");
+                    return EXIT_FAILURE;
+                }
+                break;
+            case '?':
+                switch (optopt) {
+                    case 'n':
+                    case 't':
+                        fprintf(stderr, "-%c requires a positive integer argument\n", optopt);
+                        return EXIT_FAILURE;
+                }
         }
     }
 
@@ -201,10 +217,16 @@ int main(int argc, char *argv[])
 
     switch (target) {
         case HASHMAP:
-            benchmark_hashmap(benchmark_size);
+            for (int i=0; i<benchmark_runs; i++) {
+                printf("Benchmark run %u\n", i+1);
+                benchmark_hashmap(benchmark_size);
+            }
             break;
         case TREEMAP:
-            benchmark_treemap(benchmark_size);
+            for (int i=0; i<benchmark_runs; i++) {
+                printf("Benchmark run %u\n", i+1);
+                benchmark_treemap(benchmark_size);
+            }
             break;
         case NONE:
             fprintf(stderr, "No benchmark selected\n");

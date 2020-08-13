@@ -94,7 +94,7 @@ static void benchmark_hashmap(size_t testsize)
 
     start_time = clock();
     populate_hashmap(map, data, testsize);
-    printf("%.2f s\n", (double) ((clock() - start_time) / CLOCKS_PER_SEC));
+    printf("%.2f s\n", ((double) (clock() - start_time) / CLOCKS_PER_SEC));
 
     start_time = clock();
     printf("Retrieving %lu items... \t", retrieve_count);
@@ -110,7 +110,7 @@ static void benchmark_hashmap(size_t testsize)
          */
         // fprintf(null_out, "%d", *value);
     }
-    printf("%.2f s\n", (double) ((clock() - start_time) / CLOCKS_PER_SEC));
+    printf("%.2f s\n", ((double) (clock() - start_time) / CLOCKS_PER_SEC));
 
     fclose(null_out);
     free(data);
@@ -138,7 +138,7 @@ static void benchmark_treemap(size_t testsize)
 
     start_time = clock();
     populate_treemap(map, data, testsize);
-    printf("%.2f s\n", (double) ((clock() - start_time) / CLOCKS_PER_SEC));
+    printf("%.2f s\n", ((double) (clock() - start_time) / CLOCKS_PER_SEC));
 
     start_time = clock();
     printf("Retrieving %lu items... \t", retrieve_count);
@@ -154,7 +154,7 @@ static void benchmark_treemap(size_t testsize)
          */
         // fprintf(null_out, "%d", *value);
     }
-    printf("%.2f s\n", (double) ((clock() - start_time) / CLOCKS_PER_SEC));
+    printf("%.2f s\n", ((double) (clock() - start_time) / CLOCKS_PER_SEC));
 
     fclose(null_out);
     free(data);

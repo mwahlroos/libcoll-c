@@ -32,6 +32,9 @@ Building
 To build a shared object (.so) of the library, run ``make``.
 
 To also run included unit tests, run ``make runtests``.
+For building and running automated tests, the `Check`_ framework is required.
+
+.. _Check: https://libcheck.github.io/check/
 
 Type safety
 -----------
@@ -53,10 +56,6 @@ works; no other variants have been tested.
 
 GCC is needed for compiling. Other C compilers should work but have not been
 tested.
-
-For building and running automated tests, the `Check`_ framework is required.
-
-.. _Check: https://libcheck.github.io/check/
 
 Other requirements
 ------------------

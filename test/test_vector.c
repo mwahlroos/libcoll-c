@@ -134,6 +134,38 @@ START_TEST(vector_pop)
 }
 END_TEST
 
+/*
+ * Tests that inserting into a vector works properly, including vector
+ * resizing.
+ */
+START_TEST(vector_insert)
+{
+    DEBUG("\n*** Starting vector_insert\n");
+
+    size_t init_capacity = 2LU;
+    libcoll_vector_t *vector = libcoll_vector_init_with_params(
+        init_capacity,
+        libcoll_strcmp_wrapper
+    );
+
+    char *s1 = "Hello";
+    char *s2 = "World";
+    char *s3 = "!";
+
+    libcoll_vector_insert(vector, 0, s3);
+    libcoll_vector_insert(vector, 0, s1);
+    libcoll_vector_insert(vector, 1, s2);
+
+    ck_assert_uint_eq(libcoll_vector_length(vector), 3);
+
+    ck_assert_str_eq((char*) libcoll_vector_get(vector, 0), s1);
+    ck_assert_str_eq((char*) libcoll_vector_get(vector, 1), s2);
+    ck_assert_str_eq((char*) libcoll_vector_get(vector, 2), s3);
+
+    libcoll_vector_deinit(vector);
+}
+END_TEST
+
 TCase* create_vector_tests(void)
 {
     TCase *tc_core;
@@ -142,6 +174,7 @@ TCase* create_vector_tests(void)
     tcase_add_test(tc_core, vector_create);
     tcase_add_test(tc_core, vector_populate_and_retrieve);
     tcase_add_test(tc_core, vector_resize);
+    tcase_add_test(tc_core, vector_insert);
     tcase_add_test(tc_core, vector_pop);
 
     return tc_core;

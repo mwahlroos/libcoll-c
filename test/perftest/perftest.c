@@ -197,6 +197,7 @@ int main(int argc, char *argv[])
                 }
                 break;
             case '?':
+                /* invalid option, either unknown or lacking a required argument */
                 switch (optopt) {
                     case 'n':
                     case 't':

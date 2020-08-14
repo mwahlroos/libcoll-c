@@ -71,11 +71,13 @@ void libcoll_vector_append(libcoll_vector_t *vector, void *value)
 void libcoll_vector_insert(libcoll_vector_t *vector, size_t index, void *value)
 {
     resize_if_full(vector);
-    /* TODO: check for errors in reallocation */
-    for (size_t i=vector->length-1; i>=index; i--) {
-        vector->contents[i+1] = vector->contents[i];
+    if (vector->length > 0) {
+        for (size_t i=vector->length; i>index; i--) {
+            vector->contents[i] = vector->contents[i-1];
+        }
     }
     vector->contents[index] = value;
+    vector->length++;
 }
 
 void* libcoll_vector_remove(libcoll_vector_t *vector, void *value)

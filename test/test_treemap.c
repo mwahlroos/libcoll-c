@@ -85,6 +85,9 @@ void _teardown_string_counts_treemap(void)
     libcoll_treemap_deinit(string_counts);
 }
 
+/*
+ * Tests that an empty treemap gets created correctly.
+ */
 START_TEST(treemap_create)
 {
     DEBUG("\n*** Starting treemap_create\n");
@@ -97,6 +100,10 @@ START_TEST(treemap_create)
 }
 END_TEST
 
+/*
+ * Tests that a populated treemap contains and retrieves expected values
+ * correctly, and that key/value pairs get properly removed.
+ */
 START_TEST(treemap_retrieve_and_remove)
 {
     DEBUG("\n*** Starting treemap_retrieve_and_remove\n");

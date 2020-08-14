@@ -34,6 +34,9 @@
 
 #include "../src/debug.h"
 
+/*
+ * Tests that an empty vector gets properly allocated.
+ */
 START_TEST(vector_create)
 {
     libcoll_vector_t *vector = libcoll_vector_init();
@@ -44,6 +47,10 @@ START_TEST(vector_create)
 }
 END_TEST
 
+/*
+ * Tests appending values to a vector and checks that they can be properly
+ * retrieved afterwards.
+ */
 START_TEST(vector_populate_and_retrieve)
 {
     libcoll_vector_t *vector =
@@ -77,6 +84,10 @@ START_TEST(vector_populate_and_retrieve)
 }
 END_TEST
 
+/*
+ * Tests that a vector gets properly resized once its capacity is exceeded,
+ * and that appended values are correctly retrieved afterwards.
+ */
 START_TEST(vector_resize)
 {
     size_t init_capacity = 2LU;
@@ -106,6 +117,9 @@ START_TEST(vector_resize)
 }
 END_TEST
 
+/*
+ * Tests the vector pop (return and remove last item) operation.
+ */
 START_TEST(vector_pop)
 {
     libcoll_vector_t *vector = libcoll_vector_init();

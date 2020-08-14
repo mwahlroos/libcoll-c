@@ -32,6 +32,9 @@
 #include "linkedlist.h"
 #include "../src/debug.h"
 
+/*
+ * Tests that an empty linked list gets properly created.
+ */
 START_TEST(linkedlist_create)
 {
     DEBUG("\n*** Starting linkedlist_create\n");
@@ -45,6 +48,11 @@ START_TEST(linkedlist_create)
 }
 END_TEST
 
+/*
+ * Tests that appending values to a linked list works, that an iterator
+ * properly returns the stored values, and that removing an item through
+ * the iterator works.
+ */
 START_TEST(linkedlist_populate_and_iterate)
 {
     DEBUG("\n*** Starting linkedlist_populate_and_iterate\n");
@@ -97,7 +105,7 @@ START_TEST(linkedlist_populate_and_iterate)
     ck_assert(libcoll_linkedlist_iter_has_next(iter));
     ck_assert_int_eq(*testint4, *((int*) libcoll_linkedlist_iter_next(iter)));
 
-    /* should  be at the end of the list */
+    /* should now be at the end of the list */
     ck_assert(!libcoll_linkedlist_iter_has_next(iter));
 
     libcoll_linkedlist_drop_iter(iter);

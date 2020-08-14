@@ -37,6 +37,9 @@
 
 #include "../src/debug.h"
 
+/*
+ * Tests that an empty hashmap gets properly created.
+ */
 START_TEST(hashmap_create)
 {
     DEBUG("\n*** Starting hashmap_create\n");
@@ -53,6 +56,10 @@ START_TEST(hashmap_create)
 }
 END_TEST
 
+/*
+ * Tests adding key-value pairs to a hashmap, and checks that the correct
+ * values can be retrieved with the correct key afterwards.
+ */
 START_TEST(hashmap_populate_and_retrieve)
 {
     DEBUG("\n*** Starting hashmap_populate_and_retrieve\n");
@@ -114,6 +121,9 @@ START_TEST(hashmap_populate_and_retrieve)
 }
 END_TEST
 
+/*
+ * Tests iterating through the key-value pairs stored in a hashmap.
+ */
 START_TEST(hashmap_iterate)
 {
     DEBUG("\n*** Starting hashmap_iterate\n");
@@ -165,6 +175,10 @@ START_TEST(hashmap_iterate)
     libcoll_hashmap_deinit(hm);
 }
 
+/*
+ * Tests that a hashmap gets properly resized once its max load factor is
+ * exceeded.
+ */
 START_TEST(hashmap_resize)
 {
     /* test hashmap capacity increase and the associated rehashing */
@@ -193,7 +207,7 @@ START_TEST(hashmap_resize)
     *testkey3 = 5;
     *testkey4 = 8;
 
-    /* Using stack-allocated values is technically wrong but works here */
+    /* Using stack-allocated values may be technically wrong but works here */
     char *testval1 = "foo";
     char *testval2 = "bar";
     char *testval3 = "baz";

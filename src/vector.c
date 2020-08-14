@@ -152,7 +152,12 @@ static void resize_if_full(libcoll_vector_t *vector)
 {
     if (vector->length == vector->capacity) {
         /* TODO: check for realloc errors */
-        size_t new_cap = 2 * vector->capacity;
+        size_t new_cap;
+        if (vector->capacity > 0) {
+            new_cap = 2 * vector->capacity;
+        } else {
+            new_cap = 1;
+        }
         vector->contents = realloc(vector->contents, new_cap * sizeof(void*));
         vector->capacity = new_cap;
     }

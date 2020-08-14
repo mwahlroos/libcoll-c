@@ -56,42 +56,42 @@ END_TEST
 START_TEST(hashmap_populate_and_retrieve)
 {
     DEBUG("\n*** Starting hashmap_populate_and_retrieve\n");
-    libcoll_hashmap_t *counts = libcoll_hashmap_init();
+    libcoll_hashmap_t *str_int_map = libcoll_hashmap_init();
 
-    counts->hash_code_function = libcoll_hashcode_str;
-    counts->key_comparator_function = libcoll_strcmp_wrapper;
+    str_int_map->hash_code_function = libcoll_hashcode_str;
+    str_int_map->key_comparator_function = libcoll_strcmp_wrapper;
 
-    char *identifiers[] = { "identifier_1", "identifier_2" };
+    char *keys[] = { "identifier_1", "identifier_2" };
     int values[] = { 7, -34 };
 
     /* test inserting values */
     for (int i=0; i<2; i++) {
-        char *key = malloc((strlen(identifiers[i]) + 1) * sizeof(char));
-        strcpy(key, identifiers[i]);
+        char *key = malloc((strlen(keys[i]) + 1) * sizeof(char));
+        strcpy(key, keys[i]);
         int *value = malloc(sizeof(int));
 
         *value = values[i];
-        libcoll_hashmap_put(counts, key, value);
+        libcoll_hashmap_put(str_int_map, key, value);
     }
 
-    ck_assert_uint_eq(libcoll_hashmap_get_size(counts), 2);
-    ck_assert(libcoll_hashmap_contains(counts, identifiers[0]));
+    ck_assert_uint_eq(libcoll_hashmap_get_size(str_int_map), 2);
+    ck_assert(libcoll_hashmap_contains(str_int_map, keys[0]));
 
-    size_t member_count = libcoll_hashmap_get_size(counts);
+    size_t member_count = libcoll_hashmap_get_size(str_int_map);
 
     /* test retrieving a nonexisting value */
     char *invalid_key = "asdf";
-    ck_assert_ptr_null(libcoll_hashmap_get(counts, invalid_key));
-    ck_assert_uint_eq(libcoll_hashmap_get_size(counts), member_count);
+    ck_assert_ptr_null(libcoll_hashmap_get(str_int_map, invalid_key));
+    ck_assert_uint_eq(libcoll_hashmap_get_size(str_int_map), member_count);
 
     /* test retrieving and removing valid values */
     for (int i=0; i<2; i++) {
-        char *key = identifiers[i];
+        char *key = keys[i];
         int expected_value = values[i];
 
-        ck_assert(libcoll_hashmap_contains(counts, key));
+        ck_assert(libcoll_hashmap_contains(str_int_map, key));
 
-        int *retrieved_value = (int*) libcoll_hashmap_get(counts, key);
+        int *retrieved_value = (int*) libcoll_hashmap_get(str_int_map, key);
 
         DEBUGF("Hashmap: retrieved %d with key %s; expected %d\n",
                *retrieved_value, key, expected_value
@@ -100,17 +100,17 @@ START_TEST(hashmap_populate_and_retrieve)
         ck_assert_ptr_nonnull(retrieved_value);
         ck_assert_int_eq(*retrieved_value, expected_value);
 
-        libcoll_map_removal_result_t result = libcoll_hashmap_remove(counts, key);
+        libcoll_map_removal_result_t result = libcoll_hashmap_remove(str_int_map, key);
         ck_assert_str_eq(key, (char*) result.key);
         ck_assert_int_eq(expected_value, *(int*) result.value);
 
         free(result.key);
         free(result.value);
 
-        ck_assert_uint_eq(libcoll_hashmap_get_size(counts), --member_count);
+        ck_assert_uint_eq(libcoll_hashmap_get_size(str_int_map), --member_count);
     }
 
-    libcoll_hashmap_deinit(counts);
+    libcoll_hashmap_deinit(str_int_map);
 }
 END_TEST
 

@@ -35,7 +35,7 @@
 
 #include "../src/debug.h"
 
-/* test data */
+/* test data, consisting of imaginary string occurrence counts */
 libcoll_treemap_t *string_counts;
 
 static const size_t TEST_KEY_COUNT = 10;

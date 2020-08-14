@@ -12,6 +12,7 @@
 #include "hashmap.h"
 #include "treemap.h"
 #include "types.h"
+#include "vector.h"
 
 #define BENCHMARK_SEED                  1U
 #define BENCHMARK_SIZE_DEFAULT          10000000LU
@@ -22,7 +23,8 @@
 typedef enum {
     NONE,
     HASHMAP,
-    TREEMAP
+    TREEMAP,
+    VECTOR
 } BenchmarkTarget;
 
 static FILE* get_null_output()
@@ -71,6 +73,13 @@ static void populate_treemap(libcoll_treemap_t *tm, libcoll_pair_voidptr_t *data
     for (size_t i=0; i<n; i++) {
         libcoll_pair_voidptr_t kvpair = data[i];
         libcoll_treemap_add(tm, kvpair.a, kvpair.b);
+    }
+}
+
+static void populate_vector(libcoll_vector_t *v, libcoll_pair_voidptr_t *data, size_t n)
+{
+    for (size_t i=0; i<n; i++) {
+        libcoll_vector_append(v, data + i);
     }
 }
 
@@ -168,6 +177,25 @@ static void benchmark_treemap(unsigned long testsize)
     libcoll_treemap_deinit(map);
 }
 
+static void benchmark_vector(unsigned long testsize)
+{
+    clock_t start_time;
+
+    libcoll_vector_t *vect = libcoll_vector_init_with_params(1, libcoll_memaddrcmp);
+
+    libcoll_pair_voidptr_t *data = malloc(testsize * sizeof(libcoll_pair_voidptr_t));
+    generate_key_value_data(data, testsize);
+
+    printf("Appending %lu values into an empty vector, one by one... \t", testsize);
+    start_time = clock();
+    populate_vector(vect, data, testsize);
+    printf("%.3f s\n", ((double) (clock() - start_time) / CLOCKS_PER_SEC));
+
+    free(data);
+
+    libcoll_vector_deinit(vect);
+}
+
 int main(int argc, char *argv[])
 {
     /* disable buffering for stdout so that partial output lines get printed
@@ -213,6 +241,8 @@ int main(int argc, char *argv[])
             target = HASHMAP;
         } else if (strcmp(s, "treemap") == 0) {
             target = TREEMAP;
+        } else if (strcmp(s, "vector") == 0) {
+            target = VECTOR;
         }
     }
 
@@ -227,6 +257,12 @@ int main(int argc, char *argv[])
             for (int i=0; i<benchmark_runs; i++) {
                 printf("Benchmark run %u\n", i+1);
                 benchmark_treemap(benchmark_size);
+            }
+            break;
+        case VECTOR:
+            for (int i=0; i<benchmark_runs; i++) {
+                printf("Benchmark run %u\n", i+1);
+                benchmark_vector(benchmark_size);
             }
             break;
         case NONE:

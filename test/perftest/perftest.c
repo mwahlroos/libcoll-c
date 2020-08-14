@@ -231,6 +231,9 @@ int main(int argc, char *argv[])
                     case 't':
                         fprintf(stderr, "-%c requires a positive integer argument\n", optopt);
                         return EXIT_FAILURE;
+                    default:
+                        fprintf(stderr, "Unknown option\n");
+                        return EXIT_FAILURE;
                 }
         }
     }
@@ -266,6 +269,7 @@ int main(int argc, char *argv[])
             }
             break;
         case NONE:
+        default:
             fprintf(stderr, "No benchmark selected\n");
             break;
     }

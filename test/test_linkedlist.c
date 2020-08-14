@@ -36,6 +36,7 @@ START_TEST(linkedlist_create)
 {
     DEBUG("\n*** Starting linkedlist_create\n");
     libcoll_linkedlist_t *ll = libcoll_linkedlist_init();
+
     ck_assert_ptr_nonnull(ll);
     ck_assert_uint_eq(ll->length, 0);
     ck_assert_ptr_null(ll->head);

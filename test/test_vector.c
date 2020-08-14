@@ -37,6 +37,7 @@
 START_TEST(vector_create)
 {
     libcoll_vector_t *vector = libcoll_vector_init();
+
     ck_assert_ptr_nonnull(vector->contents);
     ck_assert(vector->compare_function != NULL);
     libcoll_vector_deinit(vector);
@@ -108,6 +109,7 @@ END_TEST
 START_TEST(vector_pop)
 {
     libcoll_vector_t *vector = libcoll_vector_init();
+
     int a = 13;
     int b;
     libcoll_vector_append(vector, &a);

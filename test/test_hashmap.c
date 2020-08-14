@@ -41,6 +41,7 @@ START_TEST(hashmap_create)
 {
     DEBUG("\n*** Starting hashmap_create\n");
     libcoll_hashmap_t *hashmap = libcoll_hashmap_init();
+
     ck_assert_ptr_nonnull(hashmap);
     ck_assert_ptr_nonnull(hashmap->buckets);
     ck_assert(hashmap->key_comparator_function != NULL);
@@ -56,6 +57,7 @@ START_TEST(hashmap_populate_and_retrieve)
 {
     DEBUG("\n*** Starting hashmap_populate_and_retrieve\n");
     libcoll_hashmap_t *counts = libcoll_hashmap_init();
+
     counts->hash_code_function = libcoll_hashcode_str;
     counts->key_comparator_function = libcoll_strcmp_wrapper;
 
@@ -116,6 +118,7 @@ START_TEST(hashmap_iterate)
 {
     DEBUG("\n*** Starting hashmap_iterate\n");
     libcoll_hashmap_t *hm = libcoll_hashmap_init();
+
     hm->hash_code_function = libcoll_hashcode_str;
     hm->key_comparator_function = libcoll_strcmp_wrapper;
 

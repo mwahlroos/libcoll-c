@@ -89,6 +89,7 @@ START_TEST(treemap_create)
 {
     DEBUG("\n*** Starting treemap_create\n");
     libcoll_treemap_t *treemap = libcoll_treemap_init();
+
     ck_assert_ptr_nonnull(treemap);
     ck_assert_uint_eq(treemap->size, 0);
 

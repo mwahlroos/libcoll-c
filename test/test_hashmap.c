@@ -26,6 +26,8 @@
  */
 
 #include <check.h>
+#include <stdio.h>
+#include "test_hashmap.h"
 
 #include "helpers.h"
 #include "test_hashmap.h"
@@ -36,6 +38,13 @@
 #include "vector.h"  /* use as a utility type */
 
 #include "../src/debug.h"
+
+static void print_hashmap_if_debug(const libcoll_hashmap_t *hm)
+{
+    if (ENABLE_DEBUG) {
+        print_hashmap(hm, stderr);
+    }
+}
 
 /*
  * Tests that an empty hashmap gets properly created.
@@ -213,7 +222,7 @@ START_TEST(hashmap_resize)
     char *testval3 = "baz";
     char *testval4 = "quux";
 
-    print_hashmap(hm);
+    print_hashmap_if_debug(hm);
 
     ck_assert_uint_eq(hm->capacity, init_capacity);
 
@@ -221,7 +230,7 @@ START_TEST(hashmap_resize)
            (void*) testkey1, *testkey1, (void*) testval1, testval1
     );
     libcoll_hashmap_put(hm, testkey1, testval1);
-    print_hashmap(hm);
+    print_hashmap_if_debug(hm);
 
     ck_assert_uint_eq(hm->capacity, init_capacity);
 
@@ -230,7 +239,7 @@ START_TEST(hashmap_resize)
     );
 
     libcoll_hashmap_put(hm, testkey1, testval2);
-    print_hashmap(hm);
+    print_hashmap_if_debug(hm);
 
     ck_assert_uint_eq(hm->capacity, init_capacity);
     DEBUGF("testval2 == %s, testkey1 == %d, val(testkey1) == %s\n", testval2, *testkey1, (char*) libcoll_hashmap_get(hm, testkey1));
@@ -240,7 +249,7 @@ START_TEST(hashmap_resize)
            (void*) testkey2, *testkey2, (void*) testval2, testval2
     );
     libcoll_hashmap_put(hm, testkey2, testval2);
-    print_hashmap(hm);
+    print_hashmap_if_debug(hm);
 
     /* the capacity should have been increased by now from the initial 2 */
     ck_assert_uint_gt(hm->capacity, init_capacity);
@@ -252,7 +261,7 @@ START_TEST(hashmap_resize)
 
     DEBUG("Inserting key-value pair #3...\n");
     libcoll_hashmap_put(hm, testkey3, testval3);
-    print_hashmap(hm);
+    print_hashmap_if_debug(hm);
 
     ck_assert_uint_gt(hm->capacity, previous_capacity);
     ck_assert_str_eq(testval2, (char*) libcoll_hashmap_get(hm, testkey1)); 
@@ -261,7 +270,7 @@ START_TEST(hashmap_resize)
 
     DEBUG("Inserting key-value pair #4...\n");
     libcoll_hashmap_put(hm, testkey4, testval4);
-    print_hashmap(hm);
+    print_hashmap_if_debug(hm);
 
     ck_assert_uint_eq(hm->capacity, previous_capacity);
 

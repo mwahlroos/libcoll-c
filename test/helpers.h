@@ -25,8 +25,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <stdio.h>
 #include "hashmap.h"
 
 /* helper functions for tests */
 
-void print_hashmap(const libcoll_hashmap_t *hm);
+void print_hashmap(const libcoll_hashmap_t *hm, FILE *out);

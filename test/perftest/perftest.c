@@ -1,3 +1,14 @@
+/*
+ * Basic performance test code for libcoll.
+ *
+ * The purpose of these tests is mainly to have some basic facilities for
+ * evaluating whether e.g. optimizations or other changes made to the library
+ * code have an impact on the performance of basic operations on collections.
+ *
+ * They are not inteded as a full-fledged benchmark suite, or, in their present
+ * state, representative of any particular real-world workload.
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

@@ -148,6 +148,45 @@ char libcoll_vector_is_empty(libcoll_vector_t *vector)
     return vector->length == 0;
 }
 
+libcoll_vector_iter_t *libcoll_vector_get_iter(libcoll_vector_t *vector)
+{
+    libcoll_vector_iter_t *iter = malloc(sizeof(libcoll_vector_iter_t));
+    iter->vector = vector;
+    iter->next_index = 0;
+    iter->last_skip_forward = 0;
+
+    return iter;
+}
+
+void libcoll_vector_drop_iter(libcoll_vector_iter_t *iter)
+{
+    free(iter);
+}
+
+char libcoll_vector_iter_has_next(libcoll_vector_iter_t *iter)
+{
+    return iter->vector->length > iter->next_index;
+}
+
+char libcoll_vector_iter_has_previous(libcoll_vector_iter_t *iter)
+{
+    return iter->next_index != 0;
+}
+
+void* libcoll_vector_iter_next(libcoll_vector_iter_t *iter)
+{
+    void *value = iter->vector->contents[iter->next_index];
+    iter->next_index++;
+    return value;
+}
+
+void* libcoll_vector_iter_previous(libcoll_vector_iter_t *iter)
+{
+    void *value = iter->vector->contents[iter->next_index-1];
+    iter->next_index--;
+    return value;
+}
+
 /* internal functions */
 
 static void resize_if_full(libcoll_vector_t *vector)

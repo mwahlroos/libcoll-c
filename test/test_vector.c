@@ -166,6 +166,41 @@ START_TEST(vector_insert)
 }
 END_TEST
 
+START_TEST(vector_iterator)
+{
+    DEBUG("\n*** Starting vector_iterator\n");
+
+    libcoll_vector_t *vector = libcoll_vector_init();
+
+    char *s1 = "Hello";
+    char *s2 = "World";
+    char *s3 = "!";
+
+    libcoll_vector_append(vector, s1);
+    libcoll_vector_append(vector, s2);
+    libcoll_vector_append(vector, s3);
+
+    libcoll_vector_iter_t *iter = libcoll_vector_get_iter(vector);
+
+    ck_assert(libcoll_vector_iter_has_next(iter));
+    ck_assert(!libcoll_vector_iter_has_previous(iter));
+
+    ck_assert_str_eq(s1, (char*) libcoll_vector_iter_next(iter));
+    ck_assert(libcoll_vector_iter_has_next(iter));
+    ck_assert(libcoll_vector_iter_has_previous(iter));
+
+    ck_assert_str_eq(s2, (char*) libcoll_vector_iter_next(iter));
+    ck_assert(libcoll_vector_iter_has_next(iter));
+    ck_assert(libcoll_vector_iter_has_previous(iter));
+
+    ck_assert_str_eq(s3, (char*) libcoll_vector_iter_next(iter));
+    ck_assert(!libcoll_vector_iter_has_next(iter));
+    ck_assert(libcoll_vector_iter_has_previous(iter));
+
+    libcoll_vector_drop_iter(iter);
+    libcoll_vector_deinit(vector);
+}
+
 TCase* create_vector_tests(void)
 {
     TCase *tc_core;
@@ -176,6 +211,7 @@ TCase* create_vector_tests(void)
     tcase_add_test(tc_core, vector_resize);
     tcase_add_test(tc_core, vector_insert);
     tcase_add_test(tc_core, vector_pop);
+    tcase_add_test(tc_core, vector_iterator);
 
     return tc_core;
 }

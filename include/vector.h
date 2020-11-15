@@ -41,6 +41,14 @@ typedef struct libcoll_vector
     int (*compare_function)(const void *value1, const void *value2);
 } libcoll_vector_t;
 
+typedef struct libcoll_vector_iter
+{
+    libcoll_vector_t *vector;
+    size_t next_index;
+    char last_skip_forward;
+} libcoll_vector_iter_t;
+
+
 libcoll_vector_t* libcoll_vector_init();
 
 libcoll_vector_t* libcoll_vector_init_with_params(
@@ -71,5 +79,18 @@ char libcoll_vector_contains(libcoll_vector_t *vector, void *value);
 size_t libcoll_vector_length(libcoll_vector_t *vector);
 
 char libcoll_vector_is_empty(libcoll_vector_t *vector);
+
+libcoll_vector_iter_t *libcoll_vector_get_iter(libcoll_vector_t *vector);
+
+void libcoll_vector_drop_iter(libcoll_vector_iter_t *iter);
+
+char libcoll_vector_iter_has_next(libcoll_vector_iter_t *iter);
+
+char libcoll_vector_iter_has_previous(libcoll_vector_iter_t *iter);
+
+void* libcoll_vector_iter_next(libcoll_vector_iter_t *iter);
+
+void* libcoll_vector_iter_previous(libcoll_vector_iter_t *iter);
+
 
 #endif /* LIBCOLL_VECTOR_H */

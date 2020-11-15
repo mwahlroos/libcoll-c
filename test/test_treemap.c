@@ -48,6 +48,7 @@ static int string_counts_values[10] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 
 void _setup_string_counts_treemap(void)
 {
+    DEBUG("\n*** Setting up a treemap for testing\n");
     string_counts = libcoll_treemap_init_with_comparator(libcoll_strcmp_wrapper);
 
     /*

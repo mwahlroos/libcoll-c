@@ -39,6 +39,8 @@
  */
 START_TEST(vector_create)
 {
+    DEBUG("\n*** Starting vector_create\n");
+
     libcoll_vector_t *vector = libcoll_vector_init();
 
     ck_assert_ptr_nonnull(vector->contents);
@@ -53,6 +55,8 @@ END_TEST
  */
 START_TEST(vector_populate_and_retrieve)
 {
+    DEBUG("\n*** Starting vector_populate_and_retrieve\n");
+
     libcoll_vector_t *vector =
         libcoll_vector_init_with_params(LIBCOLL_VECTOR_DEFAULT_INIT_CAPACITY, libcoll_strcmp_wrapper);
 
@@ -90,6 +94,8 @@ END_TEST
  */
 START_TEST(vector_resize)
 {
+    DEBUG("\n*** Starting vector_resize\n");
+
     size_t init_capacity = 2LU;
     libcoll_vector_t *vector = libcoll_vector_init_with_params(
         init_capacity,
@@ -122,6 +128,8 @@ END_TEST
  */
 START_TEST(vector_pop)
 {
+    DEBUG("\n*** Starting vector_pop\n");
+
     libcoll_vector_t *vector = libcoll_vector_init();
 
     int a = 13;

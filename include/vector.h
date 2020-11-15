@@ -92,5 +92,6 @@ void* libcoll_vector_iter_next(libcoll_vector_iter_t *iter);
 
 void* libcoll_vector_iter_previous(libcoll_vector_iter_t *iter);
 
+void libcoll_vector_iter_remove(libcoll_vector_iter_t *iter);
 
 #endif /* LIBCOLL_VECTOR_H */

@@ -205,6 +205,50 @@ START_TEST(vector_iterator)
     ck_assert(!libcoll_vector_iter_has_next(iter));
     ck_assert(libcoll_vector_iter_has_previous(iter));
 
+    /* test traversing back and forth and removing with the iterator from different positions */
+    ck_assert_str_eq(s3, (char*) libcoll_vector_iter_previous(iter));
+    ck_assert(libcoll_vector_iter_has_next(iter));
+    ck_assert(libcoll_vector_iter_has_previous(iter));
+
+    /* traverse back over another element (s2) */
+    ck_assert_str_eq(s2, (char*) libcoll_vector_iter_previous(iter));
+    ck_assert(libcoll_vector_iter_has_next(iter));
+    ck_assert(libcoll_vector_iter_has_previous(iter));
+
+    /* this should remove s2, i.e. element at index 1 */
+    libcoll_vector_iter_remove(iter);
+
+    ck_assert_uint_eq(vector->length, 2);
+    ck_assert(!libcoll_vector_contains(vector, s2));
+    ck_assert(libcoll_vector_iter_has_next(iter));
+    ck_assert(libcoll_vector_iter_has_previous(iter));
+
+    ck_assert_str_eq(s3, (char*) libcoll_vector_iter_next(iter));
+    ck_assert(!libcoll_vector_iter_has_next(iter));
+    ck_assert(libcoll_vector_iter_has_previous(iter));
+
+    /* this should remove s3, i.e. element at index 1 (by now the end of vector) */
+    libcoll_vector_iter_remove(iter);
+
+    ck_assert_uint_eq(vector->length, 1);
+    ck_assert(!libcoll_vector_contains(vector, s3));
+    ck_assert(!libcoll_vector_iter_has_next(iter));
+    ck_assert(libcoll_vector_iter_has_previous(iter));
+
+    /* traverse back over remaining element (s1) */
+    ck_assert_str_eq(s1, (char*) libcoll_vector_iter_previous(iter));
+    ck_assert(libcoll_vector_iter_has_next(iter));
+    ck_assert(!libcoll_vector_iter_has_previous(iter));
+
+    /* remove remaining element */
+    libcoll_vector_iter_remove(iter);
+
+    ck_assert_uint_eq(vector->length, 0);
+    ck_assert(!libcoll_vector_contains(vector, s1));
+    ck_assert(!libcoll_vector_iter_has_next(iter));
+    ck_assert(!libcoll_vector_iter_has_previous(iter));
+
+
     libcoll_vector_drop_iter(iter);
     libcoll_vector_deinit(vector);
 }

@@ -31,6 +31,8 @@
 #include "comparators.h"
 #include "vector.h"
 
+#include "debug.h"
+
 /* declarations of internal functions */
 static void resize_if_full(libcoll_vector_t *vector);
 
@@ -177,6 +179,7 @@ void* libcoll_vector_iter_next(libcoll_vector_iter_t *iter)
 {
     void *value = iter->vector->contents[iter->next_index];
     iter->next_index++;
+    iter->last_skip_forward = 1;
     return value;
 }
 
@@ -184,7 +187,26 @@ void* libcoll_vector_iter_previous(libcoll_vector_iter_t *iter)
 {
     void *value = iter->vector->contents[iter->next_index-1];
     iter->next_index--;
+    iter->last_skip_forward = 0;
     return value;
+}
+
+void libcoll_vector_iter_remove(libcoll_vector_iter_t *iter)
+{
+    void *value;
+    if (iter->last_skip_forward) {
+        value = libcoll_vector_remove_at(iter->vector, iter->next_index-1);
+        if (value != NULL) {
+            iter->next_index--;
+        } else {
+            ERRORF("libcoll_vector_iter_remove: removal failed; index %lu out of vector range\n", iter->next_index-1);
+        }
+    } else {
+        value = libcoll_vector_remove_at(iter->vector, iter->next_index);
+        if (value == NULL) {
+            ERRORF("libcoll_vector_iter_remove: removal failed; index %lu out of vector range\n", iter->next_index-1);
+        }
+    }
 }
 
 /* internal functions */

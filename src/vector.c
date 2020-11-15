@@ -177,6 +177,10 @@ char libcoll_vector_iter_has_previous(libcoll_vector_iter_t *iter)
 
 void* libcoll_vector_iter_next(libcoll_vector_iter_t *iter)
 {
+    if (iter->next_index >= iter->vector->length) {
+        return NULL;
+    }
+
     void *value = iter->vector->contents[iter->next_index];
     iter->next_index++;
     iter->last_skip_forward = 1;
@@ -185,6 +189,10 @@ void* libcoll_vector_iter_next(libcoll_vector_iter_t *iter)
 
 void* libcoll_vector_iter_previous(libcoll_vector_iter_t *iter)
 {
+    if (iter->next_index == 0) {
+        return NULL;
+    }
+
     void *value = iter->vector->contents[iter->next_index-1];
     iter->next_index--;
     iter->last_skip_forward = 0;

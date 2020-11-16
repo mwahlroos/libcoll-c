@@ -100,7 +100,7 @@ libcoll_treemap_t* libcoll_treemap_init()
 libcoll_treemap_t* libcoll_treemap_init_with_comparator (int (*key_comparator)(const void *key1, const void *key2))
 {
     DEBUG("treemap initializing\n");
-    libcoll_treemap_t *tree = (libcoll_treemap_t*) malloc(sizeof(libcoll_treemap_t));
+    libcoll_treemap_t *tree = malloc(sizeof(libcoll_treemap_t));
     if (NULL != tree) {
         tree->root = NULL_NODE;
         tree->size = 0;
@@ -422,7 +422,7 @@ char libcoll_treemap_is_empty(libcoll_treemap_t *tree)
  */
 libcoll_treemap_iter_t* libcoll_treemap_get_iterator(libcoll_treemap_t *tree)
 {
-    libcoll_treemap_iter_t *iter = (libcoll_treemap_iter_t*) malloc (sizeof(libcoll_treemap_iter_t));
+    libcoll_treemap_iter_t *iter = malloc (sizeof(libcoll_treemap_iter_t));
     if (NULL != iter) {
         iter->tree = tree;
         libcoll_treemap_node_t *first = tree->root;
@@ -596,7 +596,7 @@ bool _libcoll_treemap_verify_red_black_conditions(libcoll_treemap_t *tree)
  */
 static libcoll_treemap_node_t* create_node(void *key, void *value)
 {
-    libcoll_treemap_node_t *new_node = (libcoll_treemap_node_t*) malloc(sizeof(libcoll_treemap_node_t));
+    libcoll_treemap_node_t *new_node = malloc(sizeof(libcoll_treemap_node_t));
     if (NULL != new_node) {
         new_node->key = key;
         new_node->value = value;

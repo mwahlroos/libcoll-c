@@ -215,7 +215,7 @@ libcoll_hashmap_t* libcoll_hashmap_init_with_params(
         int (*key_comparator_function)(const void *key1, const void *key2),
         int (*value_comparator_function)(const void *value1, const void *value2))
 {
-    libcoll_hashmap_t *hm = (libcoll_hashmap_t*) malloc(sizeof(libcoll_hashmap_t));
+    libcoll_hashmap_t *hm = malloc(sizeof(libcoll_hashmap_t));
 
     /* calloc automatically sets the entire allocated memory to zeros/NULLs,
      * which is useful in this case since it means unused buckets are

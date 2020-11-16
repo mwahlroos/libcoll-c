@@ -207,10 +207,10 @@ START_TEST(hashmap_resize)
             libcoll_strcmp_wrapper
     );
 
-    int *testkey1 = (int*) malloc(sizeof(int));
-    int *testkey2 = (int*) malloc(sizeof(int));
-    int *testkey3 = (int*) malloc(sizeof(int));
-    int *testkey4 = (int*) malloc(sizeof(int));
+    int *testkey1 = malloc(sizeof(int));
+    int *testkey2 = malloc(sizeof(int));
+    int *testkey3 = malloc(sizeof(int));
+    int *testkey4 = malloc(sizeof(int));
     *testkey1 = 2;
     *testkey2 = 3;
     *testkey3 = 5;

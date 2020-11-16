@@ -58,10 +58,10 @@ START_TEST(linkedlist_populate_and_iterate)
     DEBUG("\n*** Starting linkedlist_populate_and_iterate\n");
     libcoll_linkedlist_t *list = libcoll_linkedlist_init();
 
-    int *testint1 = (int*) malloc(sizeof(int));
-    int *testint2 = (int*) malloc(sizeof(int));
-    int *testint3 = (int*) malloc(sizeof(int));
-    int *testint4 = (int*) malloc(sizeof(int));
+    int *testint1 = malloc(sizeof(int));
+    int *testint2 = malloc(sizeof(int));
+    int *testint3 = malloc(sizeof(int));
+    int *testint4 = malloc(sizeof(int));
 
     *testint1 = 2;
     *testint2 = 3;

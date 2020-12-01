@@ -81,7 +81,7 @@ void _teardown_string_counts_treemap(void)
         free(entry.b);
     }
 
-    libcoll_treemap_drop_iterator(iter);
+    libcoll_treemap_free_iterator(iter);
 
     libcoll_treemap_deinit(string_counts);
 }
@@ -170,7 +170,7 @@ START_TEST(treemap_iterate)
 
     ck_assert(!libcoll_treemap_has_next(iter));
 
-    libcoll_treemap_drop_iterator(iter);
+    libcoll_treemap_free_iterator(iter);
 }
 
 TCase* create_treemap_tests(void)

@@ -95,7 +95,7 @@ char libcoll_treemap_is_empty(libcoll_treemap_t *tree);
 
 libcoll_treemap_iter_t* libcoll_treemap_get_iterator(libcoll_treemap_t *tree);
 
-void libcoll_treemap_drop_iterator(libcoll_treemap_iter_t *iterator);
+void libcoll_treemap_free_iterator(libcoll_treemap_iter_t *iterator);
 
 bool libcoll_treemap_has_next(libcoll_treemap_iter_t *iterator);
 

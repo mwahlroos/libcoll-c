@@ -63,7 +63,7 @@ static void print_hashmap_contents(const libcoll_hashmap_t *hm, FILE *out)
             }
             fprintf(out, "\n");
 
-            libcoll_linkedlist_drop_iter(iter);
+            libcoll_linkedlist_free_iter(iter);
         }
     }
 }

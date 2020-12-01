@@ -87,7 +87,7 @@ char libcoll_hashmap_is_empty(const libcoll_hashmap_t *hm);
 
 libcoll_hashmap_iter_t *libcoll_hashmap_get_iterator(libcoll_hashmap_t *hm);
 
-void libcoll_hashmap_drop_iterator(libcoll_hashmap_iter_t *iter);
+void libcoll_hashmap_free_iterator(libcoll_hashmap_iter_t *iter);
 
 char libcoll_hashmap_iter_has_next(libcoll_hashmap_iter_t *iter);
 

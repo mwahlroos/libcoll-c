@@ -93,7 +93,7 @@ libcoll_linkedlist_t* libcoll_linkedlist_init_with_comparator(
  * Note that this does not touch the contents the list points to since
  * you may still have pointers to those contents elsewhere.
  * Also, any resources used by iterators must be separately freed
- * by calling libcoll_linkedlist_drop_iter for each iterator.
+ * by calling libcoll_linkedlist_free_iter for each iterator.
  */
 void libcoll_linkedlist_deinit(libcoll_linkedlist_t *list);
 
@@ -133,7 +133,7 @@ char libcoll_linkedlist_remove(libcoll_linkedlist_t *list, void *value);
  * Initializes a new iterator for the given list. The new iterator will point
  * in front of the head of the list.
  *
- * Remember to call libcoll_linkedlist_drop_iter on the iterator to free the memory used by
+ * Remember to call libcoll_linkedlist_free_iter on the iterator to free the memory used by
  * it when you don't need the iterator anymore.
  *
  * Returns: a pointer to the new iterator
@@ -145,7 +145,7 @@ libcoll_linkedlist_iter_t* libcoll_linkedlist_get_iter(libcoll_linkedlist_t *lis
  * the node with the given index. If index >= the length of the list,
  * the iterator will point after the last node on the list.
  *
- * Remember to call libcoll_linkedlist_drop_iter on the iterator to free the memory used by
+ * Remember to call libcoll_linkedlist_free_iter on the iterator to free the memory used by
  * it when you don't need the iterator anymore.
  *
  * Returns: a pointer to the new iterator
@@ -155,7 +155,7 @@ libcoll_linkedlist_iter_t* libcoll_linkedlist_get_iter_at(libcoll_linkedlist_t *
 /*
  * Deletes the iterator and frees the memory used by it.
  */
-void libcoll_linkedlist_drop_iter(libcoll_linkedlist_iter_t *iter);
+void libcoll_linkedlist_free_iter(libcoll_linkedlist_iter_t *iter);
 
 /*
  * Returns TRUE if the given iterator has a node available for retrieving with

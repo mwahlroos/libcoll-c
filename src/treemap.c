@@ -410,7 +410,7 @@ char libcoll_treemap_is_empty(libcoll_treemap_t *tree)
  * iteration.  It is safe to modify the tree through the iterator itself,
  * though, for example by calling tm_remove_last_traversed.
  *
- * The tm_drop_iter function must be called when the iterator is no longer used
+ * The tm_free_iter function must be called when the iterator is no longer used
  * in order to free the memory allocated for the iterator.
  *
  * If allocating memory for the iterator fails, NULL is returned.
@@ -442,7 +442,7 @@ libcoll_treemap_iter_t* libcoll_treemap_get_iterator(libcoll_treemap_t *tree)
  * Params:
  *      iterator -- the iterator to deinitialize
  */
-void libcoll_treemap_drop_iterator(libcoll_treemap_iter_t *iterator)
+void libcoll_treemap_free_iterator(libcoll_treemap_iter_t *iterator)
 {
     free(iterator);
 }

@@ -160,7 +160,7 @@ libcoll_vector_iter_t *libcoll_vector_get_iter(libcoll_vector_t *vector)
     return iter;
 }
 
-void libcoll_vector_drop_iter(libcoll_vector_iter_t *iter)
+void libcoll_vector_free_iter(libcoll_vector_iter_t *iter)
 {
     free(iter);
 }

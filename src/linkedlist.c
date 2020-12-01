@@ -79,7 +79,7 @@ void libcoll_linkedlist_deinit(libcoll_linkedlist_t *list)
         libcoll_linkedlist_iter_next(iter);
         libcoll_linkedlist_iter_remove(iter);
     }
-    libcoll_linkedlist_drop_iter(iter);
+    libcoll_linkedlist_free_iter(iter);
 
     free(list);
 }
@@ -173,7 +173,7 @@ char libcoll_linkedlist_remove(libcoll_linkedlist_t *list, void *value)
         }
     }
 
-    libcoll_linkedlist_drop_iter(iter);
+    libcoll_linkedlist_free_iter(iter);
 
     return success;
 }
@@ -204,7 +204,7 @@ libcoll_linkedlist_iter_t* libcoll_linkedlist_get_iter_at(libcoll_linkedlist_t *
     return iter;
 }
 
-void libcoll_linkedlist_drop_iter(libcoll_linkedlist_iter_t *iter)
+void libcoll_linkedlist_free_iter(libcoll_linkedlist_iter_t *iter)
 {
     free(iter);
 }

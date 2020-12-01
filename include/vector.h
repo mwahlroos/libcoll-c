@@ -82,7 +82,7 @@ char libcoll_vector_is_empty(libcoll_vector_t *vector);
 
 libcoll_vector_iter_t *libcoll_vector_get_iter(libcoll_vector_t *vector);
 
-void libcoll_vector_drop_iter(libcoll_vector_iter_t *iter);
+void libcoll_vector_free_iter(libcoll_vector_iter_t *iter);
 
 char libcoll_vector_iter_has_next(libcoll_vector_iter_t *iter);
 

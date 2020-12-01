@@ -179,7 +179,7 @@ START_TEST(hashmap_iterate)
 
     ck_assert(!libcoll_hashmap_iter_has_next(iter));
 
-    libcoll_hashmap_drop_iterator(iter);
+    libcoll_hashmap_free_iterator(iter);
     libcoll_vector_deinit(tmpvect);
     libcoll_hashmap_deinit(hm);
 }

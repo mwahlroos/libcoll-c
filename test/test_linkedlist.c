@@ -85,7 +85,7 @@ START_TEST(linkedlist_populate_and_iterate)
     ck_assert(libcoll_linkedlist_iter_has_next(iter));
     ck_assert_int_eq(*testint2, *((int*) libcoll_linkedlist_iter_next(iter)));
 
-    libcoll_linkedlist_drop_iter(iter);
+    libcoll_linkedlist_free_iter(iter);
 
     /* test removal */
     char success = libcoll_linkedlist_remove(list, (void*) testint1);
@@ -108,7 +108,7 @@ START_TEST(linkedlist_populate_and_iterate)
     /* should now be at the end of the list */
     ck_assert(!libcoll_linkedlist_iter_has_next(iter));
 
-    libcoll_linkedlist_drop_iter(iter);
+    libcoll_linkedlist_free_iter(iter);
 
     libcoll_linkedlist_deinit(list);
 

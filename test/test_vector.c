@@ -249,7 +249,7 @@ START_TEST(vector_iterator)
     ck_assert(!libcoll_vector_iter_has_previous(iter));
 
 
-    libcoll_vector_drop_iter(iter);
+    libcoll_vector_free_iter(iter);
     libcoll_vector_deinit(vector);
 }
 

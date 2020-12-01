@@ -71,7 +71,7 @@ static libcoll_hashmap_entry_t* find_entry(const libcoll_hashmap_t *hm, const vo
                 break;
             }
         }
-        libcoll_linkedlist_drop_iter(iter);
+        libcoll_linkedlist_free_iter(iter);
     } else {
         DEBUGF("find_entry: no collision list found for key %p\n", key);
     }
@@ -123,7 +123,7 @@ static libcoll_map_insertion_result_t insert_new(libcoll_hashmap_t *hm, const vo
             break;
         }
     }
-    libcoll_linkedlist_drop_iter(iter);
+    libcoll_linkedlist_free_iter(iter);
 
     if (!key_exists) {
         libcoll_hashmap_entry_t *new_entry = malloc(sizeof(libcoll_hashmap_entry_t));
@@ -165,7 +165,7 @@ static void resize(libcoll_hashmap_t *hm, size_t capacity)
 
                 free(old_entry);
             }
-            libcoll_linkedlist_drop_iter(iter);
+            libcoll_linkedlist_free_iter(iter);
             libcoll_linkedlist_deinit(list);
         }
     }
@@ -266,7 +266,7 @@ void libcoll_hashmap_deinit(libcoll_hashmap_t *hm)
 
                 free(entry);
             }
-            libcoll_linkedlist_drop_iter(iter);
+            libcoll_linkedlist_free_iter(iter);
             libcoll_linkedlist_deinit(list);
         }
     }
@@ -336,7 +336,7 @@ libcoll_map_removal_result_t libcoll_hashmap_remove(libcoll_hashmap_t *hm, const
                 free(entry);
             }
         }
-        libcoll_linkedlist_drop_iter(iter);
+        libcoll_linkedlist_free_iter(iter);
     }
 
     return result;
@@ -367,7 +367,7 @@ libcoll_hashmap_iter_t* libcoll_hashmap_get_iterator(libcoll_hashmap_t *hm)
     return iter;
 }
 
-void libcoll_hashmap_drop_iterator(libcoll_hashmap_iter_t *iter)
+void libcoll_hashmap_free_iterator(libcoll_hashmap_iter_t *iter)
 {
     free(iter);
 }

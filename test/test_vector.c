@@ -216,12 +216,21 @@ START_TEST(vector_iterator)
     ck_assert(libcoll_vector_iter_has_previous(iter));
 
     /* this should remove s2, i.e. element at index 1 */
-    libcoll_vector_iter_remove(iter);
+    libcoll_vector_removal_result_t result = libcoll_vector_iter_remove(iter);
+    ck_assert_uint_eq(result.status, VECTOR_ENTRY_REMOVED);
+    ck_assert_uint_eq(result.error, VECTOR_ERROR_NONE);
+    ck_assert_str_eq(s2, (char*) result.value);
 
     ck_assert_uint_eq(vector->length, 2);
     ck_assert(!libcoll_vector_contains(vector, s2));
     ck_assert(libcoll_vector_iter_has_next(iter));
     ck_assert(libcoll_vector_iter_has_previous(iter));
+
+    /* attempt to remove again through the same iterator */
+    result = libcoll_vector_iter_remove(iter);
+    ck_assert_uint_eq(result.status, VECTOR_REMOVAL_FAILED);
+    ck_assert_uint_eq(result.error, VECTOR_ERROR_ITERATOR_DIRTY);
+    ck_assert_uint_eq(vector->length, 2);
 
     ck_assert_str_eq(s3, (char*) libcoll_vector_iter_next(iter));
     ck_assert(!libcoll_vector_iter_has_next(iter));

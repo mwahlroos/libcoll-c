@@ -156,6 +156,7 @@ libcoll_vector_iter_t *libcoll_vector_get_iter(libcoll_vector_t *vector)
     iter->vector = vector;
     iter->next_index = 0;
     iter->last_skip_forward = 0;
+    iter->dirty = 0;
 
     return iter;
 }
@@ -184,6 +185,8 @@ void* libcoll_vector_iter_next(libcoll_vector_iter_t *iter)
     void *value = iter->vector->contents[iter->next_index];
     iter->next_index++;
     iter->last_skip_forward = 1;
+    iter->dirty = 0;
+
     return value;
 }
 
@@ -196,25 +199,43 @@ void* libcoll_vector_iter_previous(libcoll_vector_iter_t *iter)
     void *value = iter->vector->contents[iter->next_index-1];
     iter->next_index--;
     iter->last_skip_forward = 0;
+    iter->dirty = 0;
+
     return value;
 }
 
-void libcoll_vector_iter_remove(libcoll_vector_iter_t *iter)
+libcoll_vector_removal_result_t libcoll_vector_iter_remove(libcoll_vector_iter_t *iter)
 {
-    void *value;
+    libcoll_vector_removal_result_t result;
+    if (iter->dirty) {
+        result.status = VECTOR_REMOVAL_FAILED;
+        result.error = VECTOR_ERROR_ITERATOR_DIRTY;
+        return result;
+    }
+
     if (iter->last_skip_forward) {
-        value = libcoll_vector_remove_at(iter->vector, iter->next_index-1);
-        if (value != NULL) {
+        result.value = libcoll_vector_remove_at(iter->vector, iter->next_index-1);
+        if (result.value != NULL) {
             iter->next_index--;
+            iter->dirty = 1;
+            result.status = VECTOR_ENTRY_REMOVED;
+            result.error = VECTOR_ERROR_NONE;
         } else {
-            ERRORF("libcoll_vector_iter_remove: removal failed; index %lu out of vector range\n", iter->next_index-1);
+            result.status = VECTOR_REMOVAL_FAILED;
+            result.error = VECTOR_INDEX_OUT_OF_RANGE;
         }
     } else {
-        value = libcoll_vector_remove_at(iter->vector, iter->next_index);
-        if (value == NULL) {
-            ERRORF("libcoll_vector_iter_remove: removal failed; index %lu out of vector range\n", iter->next_index-1);
+        result.value = libcoll_vector_remove_at(iter->vector, iter->next_index);
+        if (result.value != NULL) {
+            iter->dirty = 1;
+            result.status = VECTOR_ENTRY_REMOVED;
+            result.error = VECTOR_ERROR_NONE;
+        } else {
+            result.status = VECTOR_REMOVAL_FAILED;
+            result.error = VECTOR_INDEX_OUT_OF_RANGE;
         }
     }
+    return result;
 }
 
 /* internal functions */

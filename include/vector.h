@@ -46,6 +46,7 @@ typedef struct libcoll_vector_iter
     libcoll_vector_t *vector;
     size_t next_index;
     char last_skip_forward;
+    char dirty;
 } libcoll_vector_iter_t;
 
 
@@ -55,6 +56,20 @@ libcoll_vector_t* libcoll_vector_init_with_params(
     size_t initial_capacity,
     int (*compare_function)(const void *value1, const void *value2)
 );
+
+typedef enum {
+    VECTOR_ERROR_NONE, VECTOR_INDEX_OUT_OF_RANGE, VECTOR_ERROR_ITERATOR_DIRTY
+} libcoll_vector_error;
+
+typedef enum {
+    VECTOR_REMOVAL_FAILED, VECTOR_ENTRY_REMOVED
+} libcoll_vector_removal_status;
+
+typedef struct libcoll_vector_removal_result {
+    void *value;
+    libcoll_vector_removal_status status;
+    libcoll_vector_error error;
+} libcoll_vector_removal_result_t;
 
 void libcoll_vector_deinit(libcoll_vector_t *vector);
 
@@ -92,6 +107,6 @@ void* libcoll_vector_iter_next(libcoll_vector_iter_t *iter);
 
 void* libcoll_vector_iter_previous(libcoll_vector_iter_t *iter);
 
-void libcoll_vector_iter_remove(libcoll_vector_iter_t *iter);
+libcoll_vector_removal_result_t libcoll_vector_iter_remove(libcoll_vector_iter_t *iter);
 
 #endif /* LIBCOLL_VECTOR_H */

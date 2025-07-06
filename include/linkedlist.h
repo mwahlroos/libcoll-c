@@ -199,7 +199,7 @@ void* libcoll_linkedlist_iter_previous(libcoll_linkedlist_iter_t *iter);
  * If the last call advancing the iterator was backwards, the iterator will be
  * pointing between the newly inserted node and its predecessor.
  */
-void libcoll_linkedlist_iter_insert(libcoll_linkedlist_iter_t *iter, void *value);
+libcoll_list_addition_result_t libcoll_linkedlist_iter_insert(libcoll_linkedlist_iter_t *iter, void *value);
 
 /*
  * Removes the node last returned by the given iterator.

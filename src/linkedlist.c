@@ -294,7 +294,8 @@ void* libcoll_linkedlist_iter_previous(libcoll_linkedlist_iter_t *iter)
     return node->value;
 }
 
-void libcoll_linkedlist_iter_insert(libcoll_linkedlist_iter_t *iter, void *value) {
+libcoll_list_addition_result_t libcoll_linkedlist_iter_insert(libcoll_linkedlist_iter_t *iter, void *value) {
+    libcoll_list_addition_result_t result;
     libcoll_linkedlist_node_t *new_node = malloc(sizeof(libcoll_linkedlist_node_t));
     new_node->value = value;
 
@@ -307,6 +308,9 @@ void libcoll_linkedlist_iter_insert(libcoll_linkedlist_iter_t *iter, void *value
     } else {
         iter->next = new_node;
     }
+    result.status = LIST_ENTRY_ADDED;
+    result.error = LIST_ERROR_NONE;
+    return result;
 }
 
 libcoll_list_removal_result_t libcoll_linkedlist_iter_remove(libcoll_linkedlist_iter_t *iter)

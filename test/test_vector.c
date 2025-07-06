@@ -232,6 +232,7 @@ START_TEST(vector_iterator)
     ck_assert_uint_eq(result.error, VECTOR_ERROR_ITERATOR_DIRTY);
     ck_assert_uint_eq(vector->length, 2);
 
+    /* check that the current next item is what it's expected to be */
     ck_assert_str_eq(s3, (char*) libcoll_vector_iter_next(iter));
     ck_assert(!libcoll_vector_iter_has_next(iter));
     ck_assert(libcoll_vector_iter_has_previous(iter));

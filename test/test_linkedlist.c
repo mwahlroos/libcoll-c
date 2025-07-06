@@ -126,6 +126,7 @@ START_TEST(linkedlist_populate_and_iterate)
     free(testint2);
     free(testint3);
     free(testint4);
+    free(testint5);
 }
 END_TEST
 

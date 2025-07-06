@@ -26,6 +26,8 @@ LDFLAGS_LIB= -shared
 VALGRIND=valgrind
 VALGRIND_OPTS= --leak-check=full --trace-children=yes
 
+all: so
+
 so:
 	$(CC) $(CFLAGS) $(CFLAGS_LIB) $(CFLAGS_PROD) -c $(SRC)
 	$(LD) $(LDFLAGS_LIB) -soname $(LIB_SONAME) -o $(LIB_FILENAME) -lc $(OBJS)

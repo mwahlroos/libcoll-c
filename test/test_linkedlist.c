@@ -62,11 +62,13 @@ START_TEST(linkedlist_populate_and_iterate)
     int *testint2 = malloc(sizeof(int));
     int *testint3 = malloc(sizeof(int));
     int *testint4 = malloc(sizeof(int));
+    int *testint5 = malloc(sizeof(int));
 
     *testint1 = 2;
     *testint2 = 3;
     *testint3 = 5;
     *testint4 = 8;
+    *testint5 = 13;
 
     /* populate the list */
     libcoll_linkedlist_append(list, testint1);
@@ -100,6 +102,14 @@ START_TEST(linkedlist_populate_and_iterate)
     /* test removal through iterator */
     libcoll_linkedlist_iter_remove(iter);
     ck_assert_uint_eq(libcoll_linkedlist_length(list), 2);
+    ck_assert(!libcoll_linkedlist_contains(list, testint3));
+
+    /* test insertion through iterator */
+    libcoll_linkedlist_iter_insert(iter, testint5);
+    ck_assert_uint_eq(libcoll_linkedlist_length(list), 3);
+    ck_assert(libcoll_linkedlist_contains(list, testint5));
+    ck_assert_int_eq(*testint5, *((int*) iter->previous->value));
+    ck_assert_int_eq(*testint4, *((int*) iter->next->value));
 
     /* check that the last entry on the list is still accessible */
     ck_assert(libcoll_linkedlist_iter_has_next(iter));

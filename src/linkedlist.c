@@ -52,6 +52,24 @@ static void _libcoll_linkedlist_remove_node(libcoll_linkedlist_t *list, libcoll_
         free(node);
     }
 }
+static void _libcoll_linkedlist_insert_node(libcoll_linkedlist_t *list,
+                                            libcoll_linkedlist_node_t *new,
+                                            libcoll_linkedlist_node_t *previous,
+                                            libcoll_linkedlist_node_t *next) {
+    new->previous = previous;
+    new->next = next;
+    if (NULL != previous) {
+        previous->next = new;
+    } else {
+        list->head = new;
+    }
+    if (NULL != next) {
+        next->previous = new;
+    } else {
+        list->tail = new;
+    }
+    list->length++;
+}
 
 libcoll_linkedlist_t* libcoll_linkedlist_init()
 {
@@ -245,6 +263,21 @@ void* libcoll_linkedlist_iter_previous(libcoll_linkedlist_iter_t *iter)
     iter->last_returned = node;
     iter->last_skip_forward = 0;
     return node->value;
+}
+
+void libcoll_linkedlist_iter_insert(libcoll_linkedlist_iter_t *iter, void *value) {
+    libcoll_linkedlist_node_t *new_node = malloc(sizeof(libcoll_linkedlist_node_t));
+    new_node->value = value;
+
+    new_node->previous = iter->previous;
+    new_node->next = iter->next;
+
+    _libcoll_linkedlist_insert_node(iter->list, new_node, iter->previous, iter->next);
+    if (iter->last_skip_forward) {
+        iter->previous = new_node;
+    } else {
+        iter->next = new_node;
+    }
 }
 
 void libcoll_linkedlist_iter_remove(libcoll_linkedlist_iter_t *iter)

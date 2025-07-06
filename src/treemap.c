@@ -43,17 +43,16 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. *
  */
 
-#include <stdlib.h>
 #include <stdbool.h>
+#include <stdlib.h>
+
+#include "comparators.h"
 #include "treemap.h"
-#include "node.h"
+
 #include "debug.h"
 
 #define COLOR_RED   0
 #define COLOR_BLACK 1
-
-/* the default function for comparing stored keys, defined in comparator.c */
-extern int _libcoll_node_comparator_memaddr(const void *key1, const void *key2);
 
 /* define a null node for use as black leaf nodes in the red-black tree */
 static libcoll_treemap_node_t null_node_struct = {
@@ -101,7 +100,7 @@ libcoll_treemap_t* libcoll_treemap_init()
 libcoll_treemap_t* libcoll_treemap_init_with_comparator (int (*key_comparator)(const void *key1, const void *key2))
 {
     DEBUG("treemap initializing\n");
-    libcoll_treemap_t *tree = (libcoll_treemap_t*) malloc(sizeof(libcoll_treemap_t));
+    libcoll_treemap_t *tree = malloc(sizeof(libcoll_treemap_t));
     if (NULL != tree) {
         tree->root = NULL_NODE;
         tree->size = 0;
@@ -109,7 +108,7 @@ libcoll_treemap_t* libcoll_treemap_init_with_comparator (int (*key_comparator)(c
             tree->key_comparator = key_comparator;
         } else {
             // fall back to the default behaviour of comparison by memory address
-            tree->key_comparator = &_libcoll_node_comparator_memaddr;
+            tree->key_comparator = &libcoll_memaddrcmp;
         }
     }
     return tree;
@@ -411,7 +410,7 @@ char libcoll_treemap_is_empty(libcoll_treemap_t *tree)
  * iteration.  It is safe to modify the tree through the iterator itself,
  * though, for example by calling tm_remove_last_traversed.
  *
- * The tm_drop_iter function must be called when the iterator is no longer used
+ * The tm_free_iter function must be called when the iterator is no longer used
  * in order to free the memory allocated for the iterator.
  *
  * If allocating memory for the iterator fails, NULL is returned.
@@ -423,7 +422,7 @@ char libcoll_treemap_is_empty(libcoll_treemap_t *tree)
  */
 libcoll_treemap_iter_t* libcoll_treemap_get_iterator(libcoll_treemap_t *tree)
 {
-    libcoll_treemap_iter_t *iter = (libcoll_treemap_iter_t*) malloc (sizeof(libcoll_treemap_iter_t));
+    libcoll_treemap_iter_t *iter = malloc (sizeof(libcoll_treemap_iter_t));
     if (NULL != iter) {
         iter->tree = tree;
         libcoll_treemap_node_t *first = tree->root;
@@ -443,7 +442,7 @@ libcoll_treemap_iter_t* libcoll_treemap_get_iterator(libcoll_treemap_t *tree)
  * Params:
  *      iterator -- the iterator to deinitialize
  */
-void libcoll_treemap_drop_iterator(libcoll_treemap_iter_t *iterator)
+void libcoll_treemap_free_iterator(libcoll_treemap_iter_t *iterator)
 {
     free(iterator);
 }
@@ -523,11 +522,17 @@ libcoll_treemap_node_t* libcoll_treemap_previous(libcoll_treemap_iter_t *iterato
  *
  * Params:
  *      iterator -- the iterator whose last traversed node is to be removed
+ *
+ * Returns a struct that contains a pointer to the key as the first member
+ * and a pointer to the value as the second member.
  */
-void libcoll_treemap_remove_last_traversed(libcoll_treemap_iter_t *iterator)
+libcoll_pair_voidptr_t libcoll_treemap_remove_last_traversed(libcoll_treemap_iter_t *iterator)
 {
+    libcoll_pair_voidptr_t pair;
     if (NULL_NODE != iterator->last_traversed_node) {
         libcoll_treemap_node_t *to_be_removed = iterator->last_traversed_node;
+        pair.a = to_be_removed->key;
+        pair.b = to_be_removed->value;
 
         if (iterator->last_traversed_node == iterator->previous) {
             iterator->previous = libcoll_treemap_get_predecessor(iterator->previous);
@@ -537,7 +542,11 @@ void libcoll_treemap_remove_last_traversed(libcoll_treemap_iter_t *iterator)
             iterator->last_traversed_node = NULL_NODE;
         }
         remove_node(iterator->tree, to_be_removed);
+    } else {
+        pair.a = NULL;
+        pair.b = NULL;
     }
+    return pair;
 }
 
 /*
@@ -587,7 +596,7 @@ bool _libcoll_treemap_verify_red_black_conditions(libcoll_treemap_t *tree)
  */
 static libcoll_treemap_node_t* create_node(void *key, void *value)
 {
-    libcoll_treemap_node_t *new_node = (libcoll_treemap_node_t*) malloc(sizeof(libcoll_treemap_node_t));
+    libcoll_treemap_node_t *new_node = malloc(sizeof(libcoll_treemap_node_t));
     if (NULL != new_node) {
         new_node->key = key;
         new_node->value = value;

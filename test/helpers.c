@@ -25,64 +25,45 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+#include <stdio.h>
 #include <string.h>
-#include "../src/debug.h"
 #include "hashmap.h"
+
+#include "../src/debug.h"
 
 /* helper functions for tests */
 
-static void print_hashmap_contents(const libcoll_hashmap_t *hm);
+static void print_hashmap_contents(const libcoll_hashmap_t *hm, FILE *out);
 
-/* Compares two pointers by the integer value they point to.
- * Utility function for unit tests.
- */
-int intptrcmp(const void *value1, const void *value2)
+
+void print_hashmap(const libcoll_hashmap_t *hm, FILE *out)
 {
-    int *a = (int*) value1;
-    int *b = (int*) value2;
-    return *a - *b;
-}
-
-/* Compares two pointers by their string values.
- * Wrapper around strcmp that accepts void pointers, for comparing map keys
- * and/or values.
- */
-int strcmp_wrapper(const void *value1, const void *value2)
-{
-    char *s1 = (char*) value1;
-    char *s2 = (char*) value2;
-
-    return strcmp(s1, s2);
-}
-
-void print_hashmap(const libcoll_hashmap_t *hm)
-{
-    DEBUGF("Hashmap contents/capacity: %lu/%lu\n",
+    fprintf(out, "Hashmap contents/capacity: %lu/%lu\n",
           libcoll_hashmap_get_size(hm),
           libcoll_hashmap_get_capacity(hm)
     );
-    DEBUG("Hashmap contents:\n");
-    print_hashmap_contents(hm);
+    fprintf(out, "Hashmap contents:\n");
+    print_hashmap_contents(hm, out);
 }
 
-static void print_hashmap_contents(const libcoll_hashmap_t *hm)
+static void print_hashmap_contents(const libcoll_hashmap_t *hm, FILE *out)
 {
     for (size_t i=0; i<hm->capacity; i++) {
         libcoll_linkedlist_t *collision_list = hm->buckets[i];
         if (NULL == collision_list) {
-            DEBUGF("[%lu] empty bucket\n", i);
+            fprintf(out, "[%lu] empty bucket\n", i);
         } else {
-            DEBUGF("[%lu] nonempty bucket with %lu entries:", i, libcoll_linkedlist_length(collision_list));
+            fprintf(out, "[%lu] nonempty bucket with %lu entries:", i, libcoll_linkedlist_length(collision_list));
             libcoll_linkedlist_iter_t *iter = libcoll_linkedlist_get_iter(collision_list);
             while (libcoll_linkedlist_iter_has_next(iter)) {
                 libcoll_hashmap_entry_t *entry =
                     (libcoll_hashmap_entry_t*) libcoll_linkedlist_iter_next(iter);
 
-                DEBUGF(" (%p -> %p)", entry->key, entry->value);
-                DEBUG("\n");
+                fprintf(out, " (%p -> %p)", entry->key, entry->value);
             }
+            fprintf(out, "\n");
 
-            libcoll_linkedlist_drop_iter(iter);
+            libcoll_linkedlist_free_iter(iter);
         }
     }
 }

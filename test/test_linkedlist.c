@@ -26,14 +26,20 @@
  */
 
 #include <check.h>
-#include "linkedlist.h"
-#include "../src/debug.h"
+
 #include "test_linkedlist.h"
 
+#include "linkedlist.h"
+#include "../src/debug.h"
+
+/*
+ * Tests that an empty linked list gets properly created.
+ */
 START_TEST(linkedlist_create)
 {
     DEBUG("\n*** Starting linkedlist_create\n");
     libcoll_linkedlist_t *ll = libcoll_linkedlist_init();
+
     ck_assert_ptr_nonnull(ll);
     ck_assert_uint_eq(ll->length, 0);
     ck_assert_ptr_null(ll->head);
@@ -42,20 +48,27 @@ START_TEST(linkedlist_create)
 }
 END_TEST
 
+/*
+ * Tests that appending values to a linked list works, that an iterator
+ * properly returns the stored values, and that removing an item through
+ * the iterator works.
+ */
 START_TEST(linkedlist_populate_and_iterate)
 {
     DEBUG("\n*** Starting linkedlist_populate_and_iterate\n");
     libcoll_linkedlist_t *list = libcoll_linkedlist_init();
 
-    int *testint1 = (int*) malloc(sizeof(int));
-    int *testint2 = (int*) malloc(sizeof(int));
-    int *testint3 = (int*) malloc(sizeof(int));
-    int *testint4 = (int*) malloc(sizeof(int));
+    int *testint1 = malloc(sizeof(int));
+    int *testint2 = malloc(sizeof(int));
+    int *testint3 = malloc(sizeof(int));
+    int *testint4 = malloc(sizeof(int));
+    int *testint5 = malloc(sizeof(int));
 
     *testint1 = 2;
     *testint2 = 3;
     *testint3 = 5;
     *testint4 = 8;
+    *testint5 = 13;
 
     /* populate the list */
     libcoll_linkedlist_append(list, testint1);
@@ -74,7 +87,7 @@ START_TEST(linkedlist_populate_and_iterate)
     ck_assert(libcoll_linkedlist_iter_has_next(iter));
     ck_assert_int_eq(*testint2, *((int*) libcoll_linkedlist_iter_next(iter)));
 
-    libcoll_linkedlist_drop_iter(iter);
+    libcoll_linkedlist_free_iter(iter);
 
     /* test removal */
     char success = libcoll_linkedlist_remove(list, (void*) testint1);
@@ -89,15 +102,23 @@ START_TEST(linkedlist_populate_and_iterate)
     /* test removal through iterator */
     libcoll_linkedlist_iter_remove(iter);
     ck_assert_uint_eq(libcoll_linkedlist_length(list), 2);
+    ck_assert(!libcoll_linkedlist_contains(list, testint3));
+
+    /* test insertion through iterator */
+    libcoll_linkedlist_iter_insert(iter, testint5);
+    ck_assert_uint_eq(libcoll_linkedlist_length(list), 3);
+    ck_assert(libcoll_linkedlist_contains(list, testint5));
+    ck_assert_int_eq(*testint5, *((int*) iter->previous->value));
+    ck_assert_int_eq(*testint4, *((int*) iter->next->value));
 
     /* check that the last entry on the list is still accessible */
     ck_assert(libcoll_linkedlist_iter_has_next(iter));
     ck_assert_int_eq(*testint4, *((int*) libcoll_linkedlist_iter_next(iter)));
 
-    /* should  be at the end of the list */
+    /* should now be at the end of the list */
     ck_assert(!libcoll_linkedlist_iter_has_next(iter));
 
-    libcoll_linkedlist_drop_iter(iter);
+    libcoll_linkedlist_free_iter(iter);
 
     libcoll_linkedlist_deinit(list);
 

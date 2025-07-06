@@ -1,10 +1,9 @@
 /*
- * node.h
+ * comparators.c
  *
- * Functions and types related to nodes in data structures (e.g. lists).
+ * Functions that can be used as comparators in various collections.
  *
  * This file is part of libcoll, a generic collections library for C.
- *
  * Copyright (c) 2010-2020 Mika Wahlroos (mika.wahlroos@iki.fi)
  *
  * Permission is hereby granted, free of charge, to any person obtaining
@@ -27,15 +26,32 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <stdlib.h>
+#include <string.h>
 
-#ifndef LIBCOLL_NODE_H
-#define LIBCOLL_NODE_H
+int libcoll_intptrcmp(const void *value1, const void *value2)
+{
+    int *a = (int*) value1;
+    int *b = (int*) value2;
+    return *a - *b;
+}
 
-/*
- * A comparator function for nodes using the identity (i.e. memory address) of
- * the data as a basis of (in)equality.
- */
-int _libcoll_node_comparator_memaddr(const void *value1, const void *value2);
+int libcoll_strcmp_wrapper(const void *value1, const void *value2)
+{
+    char *s1 = (char*) value1;
+    char *s2 = (char*) value2;
 
-#endif  /* LIBCOLL_NODE_H */
+    return strcmp(s1, s2);
+}
+
+int libcoll_memaddrcmp(const void *value1, const void *value2)
+{
+    int cmpval;
+    if (value1 == value2) {
+        cmpval = 0;
+    } else if (value1 < value2) {
+        cmpval = -1;
+    } else {
+        cmpval = 1;
+    }
+    return cmpval;
+}

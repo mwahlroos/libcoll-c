@@ -14,8 +14,8 @@ Features
 
 The library currently supports the following collection types:
 
-* treemap
-* hashmap
+* treemap (with in-order iterators)
+* hashmap (with iterators)
 * linked list (doubly-linked, with iterators)
 * vector
 
@@ -23,6 +23,8 @@ General features:
 
 * Arbitrary pointer types accepted as values
 * Arbitrary pointer types accepted as keys for map-style collections
+* Custom comparators can be defined for comparing stored keys/values by value.
+  Comparators for some common types (e.g. ``int``, ``char*`` are provided.)
 
 Building
 --------
@@ -30,6 +32,9 @@ Building
 To build a shared object (.so) of the library, run ``make``.
 
 To also run included unit tests, run ``make runtests``.
+For building and running automated tests, the `Check`_ framework is required.
+
+.. _Check: https://libcheck.github.io/check/
 
 Type safety
 -----------
@@ -51,10 +56,6 @@ works; no other variants have been tested.
 
 GCC is needed for compiling. Other C compilers should work but have not been
 tested.
-
-For building and running automated tests, the `Check`_ framework is required.
-
-.. _Check: https://libcheck.github.io/check/
 
 Other requirements
 ------------------
@@ -79,5 +80,5 @@ To be honest, this is a hobby project. If you find it useful or educational in
 any way, cool, but it was written mostly to teach myself a bit more C and to
 explore the challenges of designing APIs without automatic memory management.
 
-The library is a work in progress, and may see both API/ABI changes and added
-collection types in the future.
+The library is a work in progress, and **neither the API nor the ABI are stable
+at the moment**.

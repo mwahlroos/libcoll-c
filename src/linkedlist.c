@@ -25,8 +25,10 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+
+#include "comparators.h"
 #include "linkedlist.h"
 #include "list.h"
 #include "debug.h"
@@ -50,6 +52,24 @@ static void _libcoll_linkedlist_remove_node(libcoll_linkedlist_t *list, libcoll_
         free(node);
     }
 }
+static void _libcoll_linkedlist_insert_node(libcoll_linkedlist_t *list,
+                                            libcoll_linkedlist_node_t *new,
+                                            libcoll_linkedlist_node_t *previous,
+                                            libcoll_linkedlist_node_t *next) {
+    new->previous = previous;
+    new->next = next;
+    if (NULL != previous) {
+        previous->next = new;
+    } else {
+        list->head = new;
+    }
+    if (NULL != next) {
+        next->previous = new;
+    } else {
+        list->tail = new;
+    }
+    list->length++;
+}
 
 libcoll_linkedlist_t* libcoll_linkedlist_init()
 {
@@ -58,13 +78,13 @@ libcoll_linkedlist_t* libcoll_linkedlist_init()
 
 libcoll_linkedlist_t* libcoll_linkedlist_init_with_comparator(int (*compare_function)(const void *value1, const void *value2))
 {
-    libcoll_linkedlist_t *list = (libcoll_linkedlist_t*) malloc(sizeof(libcoll_linkedlist_t));
+    libcoll_linkedlist_t *list = malloc(sizeof(libcoll_linkedlist_t));
     list->length = 0;
     list->head = list->tail = NULL;
     if (NULL != compare_function) {
         list->compare_function = compare_function;
     } else {
-        list->compare_function = &_libcoll_node_comparator_memaddr;
+        list->compare_function = &libcoll_memaddrcmp;
     }
     return list;
 }
@@ -77,7 +97,7 @@ void libcoll_linkedlist_deinit(libcoll_linkedlist_t *list)
         libcoll_linkedlist_iter_next(iter);
         libcoll_linkedlist_iter_remove(iter);
     }
-    libcoll_linkedlist_drop_iter(iter);
+    libcoll_linkedlist_free_iter(iter);
 
     free(list);
 }
@@ -87,7 +107,7 @@ libcoll_list_addition_result_t libcoll_linkedlist_append(libcoll_linkedlist_t *l
     libcoll_list_addition_result_t result;
 
     DEBUGF("New node: %d\n", *(int*)(value));
-    libcoll_linkedlist_node_t *new_node = (libcoll_linkedlist_node_t*) malloc(sizeof(libcoll_linkedlist_node_t));
+    libcoll_linkedlist_node_t *new_node = malloc(sizeof(libcoll_linkedlist_node_t));
     new_node->next = NULL;
     new_node->value = value;
     if (NULL == list->head) {
@@ -114,7 +134,7 @@ libcoll_list_addition_result_t libcoll_linkedlist_insert(libcoll_linkedlist_t *l
     if (index >= list->length) {
         libcoll_linkedlist_append(list, value);
     } else {
-        libcoll_linkedlist_node_t *new_node = (libcoll_linkedlist_node_t*) malloc(sizeof(libcoll_linkedlist_node_t));
+        libcoll_linkedlist_node_t *new_node = malloc(sizeof(libcoll_linkedlist_node_t));
         new_node->value = value;
 
         libcoll_linkedlist_node_t *insert_before = list->head;
@@ -200,7 +220,7 @@ char libcoll_linkedlist_remove(libcoll_linkedlist_t *list, void *value)
         }
     }
 
-    libcoll_linkedlist_drop_iter(iter);
+    libcoll_linkedlist_free_iter(iter);
 
     return success;
 }
@@ -208,7 +228,7 @@ char libcoll_linkedlist_remove(libcoll_linkedlist_t *list, void *value)
 
 libcoll_linkedlist_iter_t* libcoll_linkedlist_get_iter(libcoll_linkedlist_t *list)
 {
-    libcoll_linkedlist_iter_t *iter = (libcoll_linkedlist_iter_t*) malloc(sizeof(libcoll_linkedlist_iter_t));
+    libcoll_linkedlist_iter_t *iter = malloc(sizeof(libcoll_linkedlist_iter_t));
     iter->next = list->head;
     iter->previous = NULL;
     iter->list = list;
@@ -231,7 +251,7 @@ libcoll_linkedlist_iter_t* libcoll_linkedlist_get_iter_at(libcoll_linkedlist_t *
     return iter;
 }
 
-void libcoll_linkedlist_drop_iter(libcoll_linkedlist_iter_t *iter)
+void libcoll_linkedlist_free_iter(libcoll_linkedlist_iter_t *iter)
 {
     free(iter);
 }
@@ -272,6 +292,21 @@ void* libcoll_linkedlist_iter_previous(libcoll_linkedlist_iter_t *iter)
     iter->last_returned = node;
     iter->last_skip_forward = 0;
     return node->value;
+}
+
+void libcoll_linkedlist_iter_insert(libcoll_linkedlist_iter_t *iter, void *value) {
+    libcoll_linkedlist_node_t *new_node = malloc(sizeof(libcoll_linkedlist_node_t));
+    new_node->value = value;
+
+    new_node->previous = iter->previous;
+    new_node->next = iter->next;
+
+    _libcoll_linkedlist_insert_node(iter->list, new_node, iter->previous, iter->next);
+    if (iter->last_skip_forward) {
+        iter->previous = new_node;
+    } else {
+        iter->next = new_node;
+    }
 }
 
 libcoll_list_removal_result_t libcoll_linkedlist_iter_remove(libcoll_linkedlist_iter_t *iter)

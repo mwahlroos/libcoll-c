@@ -26,9 +26,13 @@
  */
 
 #include <stdlib.h>
-#include "hashmap.h"
+#include <sys/types.h>  /* for ssize_t */
+
+#include "comparators.h"
 #include "hash.h"
+#include "hashmap.h"
 #include "map.h"
+
 #include "debug.h"
 
 static size_t hash(const libcoll_hashmap_t *hm, const size_t hashcode)
@@ -67,7 +71,7 @@ static libcoll_hashmap_entry_t* find_entry(const libcoll_hashmap_t *hm, const vo
                 break;
             }
         }
-        libcoll_linkedlist_drop_iter(iter);
+        libcoll_linkedlist_free_iter(iter);
     } else {
         DEBUGF("find_entry: no collision list found for key %p\n", key);
     }
@@ -119,7 +123,7 @@ static libcoll_map_insertion_result_t insert_new(libcoll_hashmap_t *hm, const vo
             break;
         }
     }
-    libcoll_linkedlist_drop_iter(iter);
+    libcoll_linkedlist_free_iter(iter);
 
     if (!key_exists) {
         libcoll_hashmap_entry_t *new_entry = malloc(sizeof(libcoll_hashmap_entry_t));
@@ -161,13 +165,40 @@ static void resize(libcoll_hashmap_t *hm, size_t capacity)
 
                 free(old_entry);
             }
-            libcoll_linkedlist_drop_iter(iter);
+            libcoll_linkedlist_free_iter(iter);
             libcoll_linkedlist_deinit(list);
         }
     }
     free(old_buckets);
 }
 
+static ssize_t find_next_nonempty_bucket(libcoll_hashmap_t *hm, size_t start_index)
+{
+    while (start_index < hm->capacity) {
+        if (hm->buckets[start_index] != NULL) {
+            return start_index;
+        }
+
+        start_index++;
+    }
+
+    return -1;
+}
+
+static ssize_t find_previous_nonempty_bucket(libcoll_hashmap_t *hm, size_t start_index)
+{
+    ssize_t tmpindex = (ssize_t) start_index;
+
+    while (tmpindex >= 0) {
+        if (hm->buckets[tmpindex] != NULL) {
+            return tmpindex;
+        }
+
+        tmpindex--;
+    }
+
+    return -1;
+}
 
 libcoll_hashmap_t* libcoll_hashmap_init()
 {
@@ -184,7 +215,7 @@ libcoll_hashmap_t* libcoll_hashmap_init_with_params(
         int (*key_comparator_function)(const void *key1, const void *key2),
         int (*value_comparator_function)(const void *value1, const void *value2))
 {
-    libcoll_hashmap_t *hm = (libcoll_hashmap_t*) malloc(sizeof(libcoll_hashmap_t));
+    libcoll_hashmap_t *hm = malloc(sizeof(libcoll_hashmap_t));
 
     /* calloc automatically sets the entire allocated memory to zeros/NULLs,
      * which is useful in this case since it means unused buckets are
@@ -206,13 +237,13 @@ libcoll_hashmap_t* libcoll_hashmap_init_with_params(
     if (NULL != key_comparator_function) {
         hm->key_comparator_function = key_comparator_function;
     } else {
-        hm->key_comparator_function = &_libcoll_node_comparator_memaddr;
+        hm->key_comparator_function = &libcoll_memaddrcmp;
     }
 
     if (NULL != value_comparator_function) {
         hm->value_comparator_function = value_comparator_function;
     } else {
-        hm->value_comparator_function = &_libcoll_node_comparator_memaddr;
+        hm->value_comparator_function = &libcoll_memaddrcmp;
     }
 
     return hm;
@@ -235,7 +266,7 @@ void libcoll_hashmap_deinit(libcoll_hashmap_t *hm)
 
                 free(entry);
             }
-            libcoll_linkedlist_drop_iter(iter);
+            libcoll_linkedlist_free_iter(iter);
             libcoll_linkedlist_deinit(list);
         }
     }
@@ -305,7 +336,7 @@ libcoll_map_removal_result_t libcoll_hashmap_remove(libcoll_hashmap_t *hm, const
                 free(entry);
             }
         }
-        libcoll_linkedlist_drop_iter(iter);
+        libcoll_linkedlist_free_iter(iter);
     }
 
     return result;
@@ -324,4 +355,77 @@ size_t libcoll_hashmap_get_size(const libcoll_hashmap_t *hm)
 char libcoll_hashmap_is_empty(const libcoll_hashmap_t *hm)
 {
     return hm->total_entries == 0;
+}
+
+libcoll_hashmap_iter_t* libcoll_hashmap_get_iterator(libcoll_hashmap_t *hm)
+{
+    libcoll_hashmap_iter_t *iter = malloc(sizeof(libcoll_hashmap_iter_t));
+    iter->hm = hm;
+    iter->bucket_index = 0;
+    iter->list_node = NULL;
+
+    return iter;
+}
+
+void libcoll_hashmap_free_iterator(libcoll_hashmap_iter_t *iter)
+{
+    free(iter);
+}
+
+char libcoll_hashmap_iter_has_next(libcoll_hashmap_iter_t *iter)
+{
+    if (iter->list_node != NULL && iter->list_node->next != NULL) {
+        return 1;
+    } else {
+        return find_next_nonempty_bucket(iter->hm, iter->bucket_index) != -1;
+    }
+}
+
+libcoll_hashmap_entry_t* libcoll_hashmap_iter_next(libcoll_hashmap_iter_t *iter)
+{
+    libcoll_linkedlist_node_t *next = NULL;
+
+    if (iter->list_node != NULL && iter->list_node->next != NULL) {
+        next = iter->list_node->next;
+    } else {
+        ssize_t next_nonempty_bucket = find_next_nonempty_bucket(iter->hm, iter->bucket_index);
+        if (next_nonempty_bucket != -1) {
+            libcoll_linkedlist_t *list = iter->hm->buckets[next_nonempty_bucket];
+            next = list->head;
+            iter->bucket_index = next_nonempty_bucket + 1;
+        }
+    }
+
+    iter->list_node = next;
+
+    return next != NULL ? (libcoll_hashmap_entry_t*) next->value : NULL;
+}
+
+char libcoll_hashmap_iter_has_previous(libcoll_hashmap_iter_t *iter)
+{
+    if (iter->list_node != NULL && iter->list_node->previous != NULL) {
+        return 1;
+    } else {
+        return find_previous_nonempty_bucket(iter->hm, iter->bucket_index) != -1;
+    }
+}
+
+libcoll_hashmap_entry_t* libcoll_hashmap_iter_previous(libcoll_hashmap_iter_t *iter)
+{
+    libcoll_linkedlist_node_t *previous = NULL;
+
+    if (iter->list_node != NULL && iter->list_node->previous != NULL) {
+        previous = iter->list_node->previous;
+    } else {
+        ssize_t previous_nonempty_bucket = find_previous_nonempty_bucket(iter->hm, iter->bucket_index);
+        if (previous_nonempty_bucket != -1) {
+            libcoll_linkedlist_t *list = iter->hm->buckets[previous_nonempty_bucket];
+            previous = list->tail;
+            iter->bucket_index = previous_nonempty_bucket - 1;
+        }
+    }
+
+    iter->list_node = previous;
+
+    return previous != NULL ? (libcoll_hashmap_entry_t*) previous->value : NULL;
 }

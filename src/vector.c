@@ -26,9 +26,12 @@
  */
 
 #include <stdlib.h>
-#include <sys/types.h>
-#include "node.h"
+#include <sys/types.h>  /* for ssize_t */
+
+#include "comparators.h"
 #include "vector.h"
+
+#include "debug.h"
 
 /* declarations of internal functions */
 static void resize_if_full(libcoll_vector_t *vector);
@@ -39,7 +42,7 @@ libcoll_vector_t* libcoll_vector_init()
 {
     return libcoll_vector_init_with_params(
         LIBCOLL_VECTOR_DEFAULT_INIT_CAPACITY,
-        _libcoll_node_comparator_memaddr
+        libcoll_memaddrcmp
     );
 }
 
@@ -70,14 +73,27 @@ void libcoll_vector_append(libcoll_vector_t *vector, void *value)
 void libcoll_vector_insert(libcoll_vector_t *vector, size_t index, void *value)
 {
     resize_if_full(vector);
-    /* TODO: check for errors in reallocation */
-    for (size_t i=vector->length-1; i>=index; i--) {
-        vector->contents[i+1] = vector->contents[i];
+    if (vector->length > 0) {
+        for (size_t i=vector->length; i>index; i--) {
+            vector->contents[i] = vector->contents[i-1];
+        }
     }
     vector->contents[index] = value;
+    vector->length++;
 }
 
-void* libcoll_vector_remove(libcoll_vector_t *vector, size_t index)
+void* libcoll_vector_remove(libcoll_vector_t *vector, void *value)
+{
+    void *retvalue = NULL;
+    ssize_t index = libcoll_vector_index_of(vector, value);
+    if (index != -1) {
+        retvalue = libcoll_vector_remove_at(vector, (size_t) index);
+    }
+
+    return retvalue;
+}
+
+void* libcoll_vector_remove_at(libcoll_vector_t *vector, size_t index)
 {
     if (index >= vector->length) return NULL;
 
@@ -87,6 +103,16 @@ void* libcoll_vector_remove(libcoll_vector_t *vector, size_t index)
     }
     vector->length--;
     return value;
+}
+
+void* libcoll_vector_get(libcoll_vector_t *vector, size_t index)
+{
+    return index < vector->length ? vector->contents[index] : NULL;
+}
+
+void* libcoll_vector_pop(libcoll_vector_t *vector)
+{
+    return libcoll_vector_remove_at(vector, vector->length-1);
 }
 
 ssize_t libcoll_vector_index_of(libcoll_vector_t *vector, void *value)
@@ -124,13 +150,106 @@ char libcoll_vector_is_empty(libcoll_vector_t *vector)
     return vector->length == 0;
 }
 
+libcoll_vector_iter_t *libcoll_vector_get_iter(libcoll_vector_t *vector)
+{
+    libcoll_vector_iter_t *iter = malloc(sizeof(libcoll_vector_iter_t));
+    iter->vector = vector;
+    iter->next_index = 0;
+    iter->last_skip_forward = 0;
+    iter->dirty = 0;
+
+    return iter;
+}
+
+void libcoll_vector_free_iter(libcoll_vector_iter_t *iter)
+{
+    free(iter);
+}
+
+char libcoll_vector_iter_has_next(libcoll_vector_iter_t *iter)
+{
+    return iter->vector->length > iter->next_index;
+}
+
+char libcoll_vector_iter_has_previous(libcoll_vector_iter_t *iter)
+{
+    return iter->next_index != 0;
+}
+
+void* libcoll_vector_iter_next(libcoll_vector_iter_t *iter)
+{
+    if (iter->next_index >= iter->vector->length) {
+        return NULL;
+    }
+
+    void *value = iter->vector->contents[iter->next_index];
+    iter->next_index++;
+    iter->last_skip_forward = 1;
+    iter->dirty = 0;
+
+    return value;
+}
+
+void* libcoll_vector_iter_previous(libcoll_vector_iter_t *iter)
+{
+    if (iter->next_index == 0) {
+        return NULL;
+    }
+
+    void *value = iter->vector->contents[iter->next_index-1];
+    iter->next_index--;
+    iter->last_skip_forward = 0;
+    iter->dirty = 0;
+
+    return value;
+}
+
+libcoll_vector_removal_result_t libcoll_vector_iter_remove(libcoll_vector_iter_t *iter)
+{
+    libcoll_vector_removal_result_t result;
+    if (iter->dirty) {
+        result.status = VECTOR_REMOVAL_FAILED;
+        result.error = VECTOR_ERROR_ITERATOR_DIRTY;
+        return result;
+    }
+
+    if (iter->last_skip_forward) {
+        result.value = libcoll_vector_remove_at(iter->vector, iter->next_index-1);
+        if (result.value != NULL) {
+            iter->next_index--;
+            iter->dirty = 1;
+            result.status = VECTOR_ENTRY_REMOVED;
+            result.error = VECTOR_ERROR_NONE;
+        } else {
+            result.status = VECTOR_REMOVAL_FAILED;
+            result.error = VECTOR_INDEX_OUT_OF_RANGE;
+        }
+    } else {
+        result.value = libcoll_vector_remove_at(iter->vector, iter->next_index);
+        if (result.value != NULL) {
+            iter->dirty = 1;
+            result.status = VECTOR_ENTRY_REMOVED;
+            result.error = VECTOR_ERROR_NONE;
+        } else {
+            result.status = VECTOR_REMOVAL_FAILED;
+            result.error = VECTOR_INDEX_OUT_OF_RANGE;
+        }
+    }
+    return result;
+}
+
 /* internal functions */
 
 static void resize_if_full(libcoll_vector_t *vector)
 {
     if (vector->length == vector->capacity) {
         /* TODO: check for realloc errors */
-        size_t new_cap = 2 * vector->capacity;
+        size_t new_cap;
+        if (vector->capacity > 0) {
+            new_cap = 2 * vector->capacity;
+        } else {
+            new_cap = 1;
+        }
         vector->contents = realloc(vector->contents, new_cap * sizeof(void*));
         vector->capacity = new_cap;
     }

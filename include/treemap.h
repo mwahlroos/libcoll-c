@@ -27,8 +27,9 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include <stdlib.h>
 #include <stdbool.h>
+#include <stdlib.h>
+
 #include "types.h"
 
 #ifndef LIBCOLL_TREEMAP_H
@@ -94,7 +95,7 @@ char libcoll_treemap_is_empty(libcoll_treemap_t *tree);
 
 libcoll_treemap_iter_t* libcoll_treemap_get_iterator(libcoll_treemap_t *tree);
 
-void libcoll_treemap_drop_iterator(libcoll_treemap_iter_t *iterator);
+void libcoll_treemap_free_iterator(libcoll_treemap_iter_t *iterator);
 
 bool libcoll_treemap_has_next(libcoll_treemap_iter_t *iterator);
 
@@ -104,7 +105,7 @@ bool libcoll_treemap_has_previous(libcoll_treemap_iter_t *iterator);
 
 libcoll_treemap_node_t* libcoll_treemap_previous(libcoll_treemap_iter_t *iterator);
 
-void libcoll_treemap_remove_last_traversed(libcoll_treemap_iter_t *iterator);
+libcoll_pair_voidptr_t libcoll_treemap_remove_last_traversed(libcoll_treemap_iter_t *iterator);
 
 bool _libcoll_treemap_verify_red_black_conditions(libcoll_treemap_t *tree);
 

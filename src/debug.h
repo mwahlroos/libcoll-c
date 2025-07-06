@@ -39,4 +39,8 @@
 #define DEBUGF(fmt, ...)        if (ENABLE_DEBUG) printf(fmt, __VA_ARGS__)
 #define DEBUG(msg)              DEBUGF("%s", msg)
 
+#define ERRORF(fmt, ...)        printf(fmt, __VA_ARGS__)
+#define ERROR(msg)              ERRORF("%s", msg)
+
+
 #endif  /* LIBCOLL_DEBUG_H */
